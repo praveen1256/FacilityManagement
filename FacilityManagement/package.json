@@ -3,8 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
+    "android": "cp ./.env.dev ./.env && react-native run-android",
+    "android-stage": "cp ./.env.stage ./.env && react-native run-android",
+    "android-prod": "cp ./.env.prod ./.env && react-native run-android",
+    "android-release": "cd android && ENVFILE=.env.dev ./gradlew assembleRelease",
+    "android-release-stage": "cd android && ENVFILE=.env.stage ./gradlew assembleRelease",
+    "android-release-prod": "cd android && ENVFILE=.env.prod ./gradlew assembleRelease",
+    "ios": "cp ./.env.dev ./.env && react-native run-ios",
+    "ios-stage": "cp ./.env.stage ./.env && react-native run-ios",
+    "ios-prod": "cp ./.env.prod ./.env && react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest"

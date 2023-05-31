@@ -1,11 +1,13 @@
 import { StyleSheet, Text, View } from "react-native"
 import { theme } from "../../theme";
 import { Button, FM_Header, Header, LabelInput } from "../../components";
-import Config from "react-native-config";
+import { baseURL, buildVariant } from "../../networking/config";
 
 const Login = () => {
   return (
     <View style={styles.loginContainer}>
+      <Text>{baseURL}</Text>
+      <Text>{buildVariant}</Text>
       <Header/>
       <FM_Header/>
       <View style={styles.form}>
