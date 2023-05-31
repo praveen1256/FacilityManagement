@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native"
-import { FM_Colors } from "../constants";
+import { theme } from "../theme";
 
 const FM_Header = ({ }) => {
   return (
@@ -19,25 +19,25 @@ const styles = StyleSheet.create({
     paddingStart: 10,
     paddingBottom: 10,
     marginVertical: 5,
-    backgroundColor: FM_Colors.FM_GREY_BG,
+    backgroundColor: theme.light.colors.primary,
   },
   facilityColor: {
-    color: FM_Colors.FM_RED,
+    color: theme.light.colors.secondary,
     fontSize: 25,
     marginVertical: 5,
   },
   textWhite: {
-    color: FM_Colors.FM_WHITE_TEXT,
+    color: theme.light.colors.white,
     fontSize: 25,
   },
   everyWhereBg: {
     fontSize: 20,
     marginVertical: 15,
-    backgroundColor: FM_Colors.FM_RED,
+    backgroundColor: theme.light.colors.secondary,
     width: '50%'
   },
   everyWhereText: {
-    color: FM_Colors.FM_WHITE_TEXT,
+    color: theme.light.colors.white,
     fontSize: 18,
     padding: 4,
     alignSelf:'flex-end',

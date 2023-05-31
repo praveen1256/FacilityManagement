@@ -1,5 +1,5 @@
 import { StyleSheet, View, TextInput, Text } from "react-native"
-import { FM_Colors } from "../constants";
+import { theme } from "../theme";
 
 interface Props {
   label: string;
@@ -20,14 +20,14 @@ const styles = StyleSheet.create({
         marginHorizontal: 20
     },
     input: {
-        borderColor: FM_Colors.FM_GREY_BG,
+        borderColor: theme.light.colors.primary,
         width: "100%",
         borderWidth: 1,
         borderRadius: 10,
         padding: 10,
     },
     label: {
-      color: FM_Colors.FM_GREY_BG,
+      color: theme.light.colors.primary,
       marginBottom: 8,
       fontSize: 20,
     }

@@ -1,1 +1,0 @@
-export { default as FM_Colors } from './FM_Colors'

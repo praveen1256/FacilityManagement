@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native"
-import FM_Colors from "../constants/FM_Colors";
+import { theme } from "../theme";
 
 const Header = () => {
   return (
@@ -15,11 +15,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginVertical: 30,
-    backgroundColor: FM_Colors.FM_GREY_BG,
+    backgroundColor: theme.light.colors.primary,
     height:40,
   },
   text: {
-    color: FM_Colors.FM_WHITE_TEXT,
+    color: theme.light.colors.white,
     fontSize: 35,
   },
   greyLine: {
