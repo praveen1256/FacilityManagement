@@ -2,12 +2,34 @@ import { StyleSheet, Text, View } from "react-native"
 import { theme } from "../../theme";
 import { Button, FM_Header, Header, LabelInput } from "../../components";
 import { baseURL, buildVariant } from "../../networking/config";
+import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { axiosClient } from "../../networking";
+import { routes } from "../../networking/routes";
 
 const Login = () => {
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const dispatch = useDispatch();
+
+  const handleSubmit = () => {
+    // dispatch(loginAction(username, password));
+    axiosClient.request({
+      method: 'GET',
+      url: routes.authentication.login,
+      data: { username, password },
+    });
+  };
+
+  useEffect(()=>{
+    handleSubmit();
+  },[])
+
   return (
     <View style={styles.loginContainer}>
-      <Text>{baseURL}</Text>
-      <Text>{buildVariant}</Text>
+      {/* <Text>{baseURL}</Text>
+      <Text>{buildVariant}</Text> */}
       <Header/>
       <FM_Header/>
       <View style={styles.form}>
