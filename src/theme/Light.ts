@@ -6,6 +6,9 @@ export const theme: ThemeProp = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        primary: "rgb(255, 45, 85)",
+        primary: "#D52B1E",
+        // Verizon colors
+        // black: "#000000",
+        // red: "#D52B1E",
     },
 };
