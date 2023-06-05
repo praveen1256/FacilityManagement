@@ -11,6 +11,7 @@ import { Colors } from "react-native/Libraries/NewAppScreen";
 import { PaperProvider } from "react-native-paper";
 
 import { LightTheme } from "./theme";
+import ComponentsTester from "./components/ComponentsTester";
 
 function App(): ReactElement {
     const isDarkMode = useColorScheme() === "dark";
@@ -27,6 +28,7 @@ function App(): ReactElement {
                     backgroundColor={backgroundStyle.backgroundColor}
                 />
                 <Text>Facility Management.... Hello...</Text>
+                <ComponentsTester />
             </SafeAreaView>
         </PaperProvider>
     );
