@@ -1,8 +1,8 @@
-import {ThunkAction, ThunkDispatch} from 'redux-thunk';
+import { ThunkAction, ThunkDispatch } from "redux-thunk";
 
-import {rootReducer} from './rootReducer';
-import {configureStore} from './configureStore';
-import * as App from './App';
+import { rootReducer } from "./rootReducer";
+import { configureStore } from "./configureStore";
+import * as App from "./App";
 // import * as Authentication from './Authentication';
 
 //ApplicationState
@@ -15,16 +15,10 @@ export type RootActions = App.ActionInterfaces;
 //Application Store
 export type RootStore = ReturnType<typeof configureStore>;
 //ThunkAction Interface
-export type AppThunkAction<A extends RootActions = RootActions> = ThunkAction<
-  void,
-  RootState,
-  void,
-  A
->;
+export type AppThunkAction<A extends RootActions = RootActions> = ThunkAction<void, RootState, void, A>;
 // //ThunkDispatch Interface
-export type AppThunkDispatch<T extends RootActions = RootActions> =
-  ThunkDispatch<RootState, undefined, T>;
+export type AppThunkDispatch<T extends RootActions = RootActions> = ThunkDispatch<RootState, undefined, T>;
 //ReduxConnector Interface
 //SubStores Exports Start
-export {App};
+export { App };
 //SubStores Exports Start
