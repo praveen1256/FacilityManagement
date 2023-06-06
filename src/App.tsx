@@ -2,7 +2,6 @@ import React from "react";
 import { Provider } from "react-redux";
 import { PaperProvider } from "react-native-paper";
 import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native";
-
 import { LightTheme } from "./theme";
 import Navigator, { RootStackParamList } from "./Navigator";
 import { RootStore } from "./store";
