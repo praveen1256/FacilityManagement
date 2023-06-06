@@ -1,35 +1,27 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React, { ReactElement } from "react";
-import { SafeAreaView, StatusBar, Text, useColorScheme } from "react-native";
-import { Colors } from "react-native/Libraries/NewAppScreen";
 import { PaperProvider } from "react-native-paper";
+import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native";
 
 import { LightTheme } from "./theme";
-import ComponentsTester from "./components/ComponentsTester";
+import Navigator, { RootStackParamList } from "./Navigator";
 
 function App(): ReactElement {
-    const isDarkMode = useColorScheme() === "dark";
-
-    const backgroundStyle = {
-        backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    const intializeApp = async (navigationContainerRef: NavigationContainerRef<RootStackParamList>) => {
+        // eslint-disable-next-line no-console
+        console.log(navigationContainerRef);
     };
 
     return (
         <PaperProvider theme={LightTheme}>
-            <SafeAreaView style={backgroundStyle}>
-                <StatusBar
-                    barStyle={isDarkMode ? "light-content" : "dark-content"}
-                    backgroundColor={backgroundStyle.backgroundColor}
-                />
-                <Text>Facility Management.... Hello...</Text>
-                <ComponentsTester />
-            </SafeAreaView>
+            <NavigationContainer<RootStackParamList>
+                ref={(container) => {
+                    if (container)
+                        // run the following function after main thread is free
+                        setImmediate(() => intializeApp(container));
+                }}
+            >
+                <Navigator />
+            </NavigationContainer>
         </PaperProvider>
     );
 }
