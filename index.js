@@ -1,10 +1,12 @@
-/**
- * @format
- */
-
+import React from "react";
 import { AppRegistry } from "react-native";
 
 import App from "./src/App";
 import { name as appName } from "./app.json";
+import { configureStore } from "./src/store/configureStore";
 
-AppRegistry.registerComponent(appName, () => App);
+const store = configureStore();
+
+const AppWrapper = () => <App store={store} />;
+
+AppRegistry.registerComponent(appName, () => AppWrapper);
