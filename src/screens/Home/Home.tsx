@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import { StatusBar, Text, useColorScheme } from "react-native";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+import { container } from "tsyringe";
 
 import ComponentsTester from "../../components/ComponentsTester";
 interface HomeScreenProps {
@@ -15,6 +16,12 @@ interface HomeScreenProps {
 }
 
 const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
+    React.useEffect(() => {
+        setTimeout(() => {
+            const navigationContainerRef = container.resolve("NavigationRef");
+            console.log("TimeOut!!!", navigationContainerRef);
+        }, 1000);
+    }, []);
     const isDarkMode = useColorScheme() === "dark";
 
     const backgroundStyle = {
