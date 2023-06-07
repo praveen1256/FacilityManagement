@@ -1,8 +1,9 @@
-import * as React from "react";
+import React from "react";
 import { Text, Button } from "react-native-paper";
 
 const ComponentsTester = () => (
     <>
+        {/* eslint-disable-next-line no-console */}
         <Button mode="contained" onPress={() => console.log("Pressed")}>
             Press me
         </Button>
