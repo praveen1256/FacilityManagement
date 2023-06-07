@@ -1,10 +1,11 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { HomeScreen } from "./screens";
+import { HomeScreen, LoginScreen } from "./screens";
 
 export type RootStackParamList = {
     [HomeScreen.HomeScreenName]: undefined;
+    [LoginScreen.LoginScreenName]: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -40,6 +41,11 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
             <>
                 {/* <Stack.Screen name={SplashScreenName} options={SplashScreenHeaderOptions} component={SplashScreen} /> */}
                 <Stack.Screen
+                    name={LoginScreen.LoginScreenName}
+                    options={LoginScreen.LoginScreenHeaderOptions}
+                    component={LoginScreen.LoginScreen}
+                />
+                <Stack.Screen
                     name={HomeScreen.HomeScreenName}
                     options={HomeScreen.HomeScreenHeaderOptions}
                     component={HomeScreen.HomeScreen}
@@ -64,7 +70,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
         );
     };
 
-    return <Stack.Navigator initialRouteName={HomeScreen.HomeScreenName}>{renderStackScreens()}</Stack.Navigator>;
+    return <Stack.Navigator initialRouteName={LoginScreen.LoginScreenName}>{renderStackScreens()}</Stack.Navigator>;
 };
 
 export default Navigator;

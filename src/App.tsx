@@ -7,6 +7,7 @@ import { container } from "tsyringe";
 import { LightTheme } from "./theme";
 import Navigator, { RootStackParamList } from "./Navigator";
 import { RootStore } from "./store";
+import { NavigationService } from "./services/Navigation.Service";
 
 type AppProps = {
     store: RootStore;
@@ -14,11 +15,7 @@ type AppProps = {
 
 const App: React.FunctionComponent<AppProps> = ({ store }) => {
     const intializeApp = async (navigationContainerRef: NavigationContainerRef<RootStackParamList>) => {
-        // eslint-disable-next-line no-console
-        console.log(navigationContainerRef);
-        container.register<NavigationContainerRef<RootStackParamList>>("NavigationRef", {
-            useValue: navigationContainerRef,
-        });
+        container.registerInstance(NavigationService, new NavigationService(navigationContainerRef));
     };
 
     return (
