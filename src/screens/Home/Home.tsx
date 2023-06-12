@@ -1,10 +1,13 @@
-import { StyleSheet, View, Dimensions, ScrollView } from "react-native";
+import { StyleSheet, View, Dimensions, ScrollView, Pressable } from "react-native";
 import { Card, Text } from "react-native-paper";
 import React from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 
 import FM_Header from "../../components/FM_Header";
 import Header from "../../components/Header";
+import { container } from "tsyringe";
+import { NavigationService } from "../../services/Navigation.Service";
+import { WorkTasksScreenName } from "../WorkTasks";
 
 const windowWidth = Dimensions.get("window").width / 4.5;
 const windowHeight = Dimensions.get("window").height / 12;
@@ -51,26 +54,44 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                 </View>
                 <View style={styles.taskContainer}>
                     <View style={styles.taskListCol1}>
-                        <LeafShape style={styles.leafBorder}>
-                            <Text style={styles.taskTitle}>My Tasks 1</Text>
-                            <Text style={styles.taskDescription}>Select this option to find your Work Tasks</Text>
-                        </LeafShape>
-                        <LeafShape style={styles.leafBorder}>
-                            <Text style={styles.taskTitle}>My Responsible Tasks</Text>
-                            <Text style={styles.taskDescription}>
-                                Select this option to find your Responsible Tasks
-                            </Text>
-                        </LeafShape>
+                        <Pressable onPress={() => {
+                            console.log('My Tasks')
+                            const navigationContainer = container.resolve(NavigationService);
+                            navigationContainer.navigate(WorkTasksScreenName, undefined);
+                        }}>
+                            <LeafShape style={styles.leafBorder}>
+                                <Text style={styles.taskTitle}>My Tasks</Text>
+                                <Text style={styles.taskDescription}>Select this option to find your Work Tasks</Text>
+                            </LeafShape>
+                        </Pressable>
+                        <Pressable onPress={() => {
+                            console.log('My Responsible Tasks')
+                        }}>
+                            <LeafShape style={styles.leafBorder}>
+                                <Text style={styles.taskTitle}>My Responsible Tasks</Text>
+                                <Text style={styles.taskDescription}>
+                                    Select this option to find your Responsible Tasks
+                                </Text>
+                            </LeafShape>
+                        </Pressable>
                     </View>
                     <View style={styles.taskListCol2}>
-                        <LeafShape style={styles.leafBorder}>
-                            <Text style={styles.taskTitle}>My Location Tasks</Text>
-                            <Text style={styles.taskDescription}>Select this option to find your Location Tasks</Text>
-                        </LeafShape>
-                        <LeafShape style={styles.leafBorder}>
-                            <Text style={styles.taskTitle}>Service Request</Text>
-                            <Text style={styles.taskDescription}>Submit a new Service Request</Text>
-                        </LeafShape>
+                        <Pressable onPress={() => {
+                            console.log('My Location Taks')
+                        }}>
+                            <LeafShape style={styles.leafBorder}>
+                                <Text style={styles.taskTitle}>My Location Tasks</Text>
+                                <Text style={styles.taskDescription}>Select this option to find your Location Tasks</Text>
+                            </LeafShape>
+                        </Pressable>
+                        <Pressable onPress={() => {
+                            console.log('Service Request')
+                        }}>
+                            <LeafShape style={styles.leafBorder}>
+                                <Text style={styles.taskTitle}>Service Request</Text>
+                                <Text style={styles.taskDescription}>Submit a new Service Request</Text>
+                            </LeafShape>
+                        </Pressable>
                     </View>
                 </View>
                 <Card style={[styles.customerCardStyle, styles.customerCardBg]}>

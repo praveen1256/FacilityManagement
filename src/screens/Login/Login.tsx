@@ -2,11 +2,22 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, TextInput } from "react-native-paper";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-
 import FM_Header from "../../components/FM_Header";
 import Header from "../../components/Header";
+import { useDispatch, useSelector } from "react-redux";
+import { USER_LOGIN } from "../../store/App/actionTypes";
+// import { strings } from "../../localization/Localizaton";
 
 const LoginScreenView = () => {
+
+    // let state = useSelector((state) => state.appReducer);
+    let dispatch = useDispatch();
+    let loginButtonClick = (username:string, password:string) => {
+        dispatch({ type: USER_LOGIN, payload: { user_name: username, user_password: password } });
+        // state.promiseDataObject?.then((response) => {
+        //     console.log('Login Response : ', response.data);
+        // });
+    }
     return (
         <View style={styles.loginContainer}>
             <Header />
@@ -24,9 +35,11 @@ const LoginScreenView = () => {
                         labelStyle={styles.buttonLabel}
                         mode="outlined"
                         // eslint-disable-next-line no-console
-                        onPress={() => console.log("Pressed")}
-                    >
-                        Login In
+                        onPress={() => {
+                                loginButtonClick('XXXX','YYYY');
+                        }}>
+                        {/* {strings.login.button} */}
+                        LOGIN
                     </Button>
                 </View>
             </View>

@@ -1,9 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { HomeScreen, LoginScreen } from "./screens";
+import { HomeScreen, LoginScreen, WorkTasksScreen } from "./screens";
 
 export type RootStackParamList = {
+    [WorkTasksScreen.WorkTasksScreenName]: undefined;
     [HomeScreen.HomeScreenName]: undefined;
     [LoginScreen.LoginScreenName]: undefined;
 };
@@ -49,6 +50,11 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
                     name={HomeScreen.HomeScreenName}
                     options={HomeScreen.HomeScreenHeaderOptions}
                     component={HomeScreen.HomeScreen}
+                />
+                <Stack.Screen
+                    name={WorkTasksScreen.WorkTasksScreenName}
+                    options={WorkTasksScreen.WorkTasksScreenHeaderOptions}
+                    component={WorkTasksScreen.WorkTasksScreen}
                 />
                 {/* <Stack.Screen name={SplashScreenName} options={SplashScreenHeaderOptions} component={SplashScreen} /> */}
                 {/* <Stack.Screen
