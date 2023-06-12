@@ -1,11 +1,11 @@
-import { MD3LightTheme as DefaultTheme } from "react-native-paper";
+import { MD3LightTheme } from "react-native-paper";
 // eslint-disable-next-line import/no-unresolved
 import { ThemeProp } from "react-native-paper/lib/typescript/src/types";
 
 export const theme: ThemeProp = {
-    ...DefaultTheme,
+    ...MD3LightTheme,
     colors: {
-        ...DefaultTheme.colors,
+        ...MD3LightTheme.colors,
         primary: "#D52B1E",
         // Verizon colors
         // black: "#000000",
