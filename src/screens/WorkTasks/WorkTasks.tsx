@@ -1,9 +1,8 @@
-import { StyleSheet, View, Dimensions, ScrollView, TextInput, FlatList } from "react-native";
+import { StyleSheet, View, Dimensions, ScrollView, TextInput, FlatList, Pressable } from "react-native";
 import { Card, Text } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Dropdown } from "react-native-element-dropdown";
-import { FlatGrid } from 'react-native-super-grid';
 
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
@@ -58,7 +57,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
     const [value, setValue] = useState("");
     const [isFocus, setIsFocus] = useState(false);
 
-    const flatListData : any = [
+    const flatListData: any = [
         {
             id: '1',
             priority: 'P3',
@@ -95,8 +94,8 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
     ];
 
     const [workTasksData, setWorkTasksData] = useState([]);
-    const filterData = (searchData:string) => {
-        if(searchData.length==0)
+    const filterData = (searchData: string) => {
+        if (searchData.length == 0)
             setWorkTasksData(flatListData);
     }
 
@@ -115,10 +114,10 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                 style={styles.textInputStyle}
                 underlineColorAndroid="transparent"
                 placeholder="Search Here"
-                onChangeText={(textEntered)=>{
-                    setSearchText(textEntered);  
+                onChangeText={(textEntered) => {
+                    setSearchText(textEntered);
                 }}
-                onEndEditing={()=>{
+                onEndEditing={() => {
                     filterData(searchText);
                 }}
             />
@@ -192,15 +191,20 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                     <FlatList
                         data={flatListData}
                         renderItem={({ item }) =>
-                            <Item
-                                title={item.title}
-                                priority={item.priority}
-                                info1={item.info1}
-                                info2={item.info2}
-                                info3={item.info3}
-                                data1={item.data1}
-                                data2={item.data2}
-                                data3={item.data3} />
+                            <Pressable
+                                // onPress={props.onPress}
+                            >
+                                <Item
+                                    title={item.title}
+                                    priority={item.priority}
+                                    info1={item.info1}
+                                    info2={item.info2}
+                                    info3={item.info3}
+                                    data1={item.data1}
+                                    data2={item.data2}
+                                    data3={item.data3} />
+                            </Pressable>
+
                         }
                         keyExtractor={item => item.id}
                     />
