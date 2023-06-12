@@ -12,6 +12,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.1.0",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
     "@types/webpack-env": "^1.18.1",
@@ -22,6 +23,7 @@
     "eslint-plugin-react": "^7.32.2",
     "lint-staged": "^13.2.2",
     "react": "^18.2.0",
+    "react-hook-form": "^7.44.3",
     "react-native": "0.71.8",
     "react-native-element-dropdown": "^2.9.0",
     "react-native-localization": "^2.3.1",
@@ -35,7 +37,8 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.4.2",
     "reflect-metadata": "^0.1.13",
-    "tsyringe": "^4.7.0"
+    "tsyringe": "^4.7.0",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

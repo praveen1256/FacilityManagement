@@ -1,12 +1,13 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import { HomeScreen, LoginScreen, WorkTasksScreen } from "./screens";
+import { HomeScreen, LoginScreen, WorkTaskScreen } from "./screens";
+import { WorkTaskScreenName } from "./screens/WorkTask";
 
 export type RootStackParamList = {
-    [WorkTasksScreen.WorkTasksScreenName]: undefined;
     [HomeScreen.HomeScreenName]: undefined;
     [LoginScreen.LoginScreenName]: undefined;
+    [WorkTaskScreen.WorkTaskScreenName]: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -52,9 +53,9 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
                     component={HomeScreen.HomeScreen}
                 />
                 <Stack.Screen
-                    name={WorkTasksScreen.WorkTasksScreenName}
-                    options={WorkTasksScreen.WorkTasksScreenHeaderOptions}
-                    component={WorkTasksScreen.WorkTasksScreen}
+                    name={WorkTaskScreen.WorkTaskScreenName}
+                    options={WorkTaskScreen.WorkTaskScreenHeaderOptions}
+                    component={WorkTaskScreen.WorkTaskScreen}
                 />
                 {/* <Stack.Screen name={SplashScreenName} options={SplashScreenHeaderOptions} component={SplashScreen} /> */}
                 {/* <Stack.Screen
@@ -76,7 +77,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
         );
     };
 
-    return <Stack.Navigator initialRouteName={LoginScreen.LoginScreenName}>{renderStackScreens()}</Stack.Navigator>;
+    return <Stack.Navigator initialRouteName={WorkTaskScreenName}>{renderStackScreens()}</Stack.Navigator>;
 };
 
 export default Navigator;
