@@ -2,7 +2,6 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { HomeScreen, LoginScreen, WorkTaskScreen } from "./screens";
-import { WorkTaskScreenName } from "./screens/WorkTask";
 
 export type RootStackParamList = {
     [HomeScreen.HomeScreenName]: undefined;
@@ -77,7 +76,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
         );
     };
 
-    return <Stack.Navigator initialRouteName={WorkTaskScreenName}>{renderStackScreens()}</Stack.Navigator>;
+    return <Stack.Navigator initialRouteName={LoginScreen.LoginScreenName}>{renderStackScreens()}</Stack.Navigator>;
 };
 
 export default Navigator;

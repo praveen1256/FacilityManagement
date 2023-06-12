@@ -24,10 +24,3 @@ export function appInitializationError(error: unknown): AppThunkAction<ActionInt
         dispatch(appInitializationErrorAction(error));
     };
 }
-
-export function pushToLoginScreen(): AppThunkAction<ActionInterfaces> {
-    return async () => {
-        // const navigationService = container.resolve(NavigationService);
-        // navigationService.navigate(OnboardingInitial.name);
-    };
-}

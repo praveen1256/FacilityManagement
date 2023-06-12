@@ -16,6 +16,9 @@ type AppProps = {
 const App: React.FunctionComponent<AppProps> = ({ store }) => {
     const intializeApp = async (navigationContainerRef: NavigationContainerRef<RootStackParamList>) => {
         container.registerInstance(NavigationService, new NavigationService(navigationContainerRef));
+        // Invoke initialization states
+        // Check if the phone is rooted, if yes donot go forward.
+        // Check if all ther permissions available, else show app error screen
     };
 
     return (

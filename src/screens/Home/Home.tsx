@@ -2,10 +2,10 @@ import { StyleSheet, View, Dimensions, ScrollView, Pressable } from "react-nativ
 import { Card, Text } from "react-native-paper";
 import React from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+import { container } from "tsyringe";
 
 import FM_Header from "../../components/FM_Header";
 import Header from "../../components/Header";
-import { container } from "tsyringe";
 import { NavigationService } from "../../services/Navigation.Service";
 import { WorkTasksScreenName } from "../WorkTasks";
 
@@ -54,19 +54,25 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                 </View>
                 <View style={styles.taskContainer}>
                     <View style={styles.taskListCol1}>
-                        <Pressable onPress={() => {
-                            console.log('My Tasks')
-                            const navigationContainer = container.resolve(NavigationService);
-                            navigationContainer.navigate(WorkTasksScreenName, undefined);
-                        }}>
+                        <Pressable
+                            onPress={() => {
+                                // eslint-disable-next-line no-console
+                                console.log("My Tasks");
+                                const navigationContainer = container.resolve(NavigationService);
+                                navigationContainer.navigate(WorkTasksScreenName, undefined);
+                            }}
+                        >
                             <LeafShape style={styles.leafBorder}>
                                 <Text style={styles.taskTitle}>My Tasks</Text>
                                 <Text style={styles.taskDescription}>Select this option to find your Work Tasks</Text>
                             </LeafShape>
                         </Pressable>
-                        <Pressable onPress={() => {
-                            console.log('My Responsible Tasks')
-                        }}>
+                        <Pressable
+                            onPress={() => {
+                                // eslint-disable-next-line no-console
+                                console.log("My Responsible Tasks");
+                            }}
+                        >
                             <LeafShape style={styles.leafBorder}>
                                 <Text style={styles.taskTitle}>My Responsible Tasks</Text>
                                 <Text style={styles.taskDescription}>
@@ -76,17 +82,25 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                         </Pressable>
                     </View>
                     <View style={styles.taskListCol2}>
-                        <Pressable onPress={() => {
-                            console.log('My Location Taks')
-                        }}>
+                        <Pressable
+                            onPress={() => {
+                                // eslint-disable-next-line no-console
+                                console.log("My Location Taks");
+                            }}
+                        >
                             <LeafShape style={styles.leafBorder}>
                                 <Text style={styles.taskTitle}>My Location Tasks</Text>
-                                <Text style={styles.taskDescription}>Select this option to find your Location Tasks</Text>
+                                <Text style={styles.taskDescription}>
+                                    Select this option to find your Location Tasks
+                                </Text>
                             </LeafShape>
                         </Pressable>
-                        <Pressable onPress={() => {
-                            console.log('Service Request')
-                        }}>
+                        <Pressable
+                            onPress={() => {
+                                // eslint-disable-next-line no-console
+                                console.log("Service Request");
+                            }}
+                        >
                             <LeafShape style={styles.leafBorder}>
                                 <Text style={styles.taskTitle}>Service Request</Text>
                                 <Text style={styles.taskDescription}>Submit a new Service Request</Text>

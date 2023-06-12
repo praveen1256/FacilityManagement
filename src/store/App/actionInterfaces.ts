@@ -1,4 +1,4 @@
-import { APP_INITIALIZED, APP_INITIALIZATION_ERROR, APP_INITIALIZE, USER_LOGIN } from "./actionTypes";
+import { APP_INITIALIZED, APP_INITIALIZATION_ERROR, APP_INITIALIZE } from "./actionTypes";
 
 export interface AppInitialize {
     type: typeof APP_INITIALIZE;
@@ -13,11 +13,4 @@ export interface AppInitializationError {
     error: unknown;
 }
 
-export interface UserLogin {
-    type: typeof USER_LOGIN;
-    user_name: string,
-    user_password: string,
-    payload: any,
-}
-
-export type ActionInterfaces = AppInitialize | AppInitialized | AppInitializationError | UserLogin;
+export type ActionInterfaces = AppInitialize | AppInitialized | AppInitializationError;

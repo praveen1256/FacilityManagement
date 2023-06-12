@@ -1,1 +1,1 @@
-export { strings } from '../localization/Localizaton';
+export { locationzedStrings as strings } from "../localization/Localizaton";

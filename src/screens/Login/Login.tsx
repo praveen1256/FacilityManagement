@@ -1,47 +1,128 @@
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import React, { useRef, useState } from "react";
+import { StyleSheet, TextInput as RNTextInput, View } from "react-native";
+import { Button, TextInput, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
+import { connect } from "react-redux";
+import { Controller, useForm } from "react-hook-form";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import FM_Header from "../../components/FM_Header";
 import Header from "../../components/Header";
-import { useDispatch, useSelector } from "react-redux";
-import { USER_LOGIN } from "../../store/App/actionTypes";
-// import { strings } from "../../localization/Localizaton";
+import { AppThunkDispatch, Authentication, RootState } from "../../store";
+import { locationzedStrings } from "../../localization/Localizaton";
 
-const LoginScreenView = () => {
+interface LoginScreenProps {
+    isLoading?: boolean;
+    error: string | null;
+    onPressLogin: (username: string, password: string) => void;
+}
 
-    // let state = useSelector((state) => state.appReducer);
-    let dispatch = useDispatch();
-    let loginButtonClick = (username:string, password:string) => {
-        dispatch({ type: USER_LOGIN, payload: { user_name: username, user_password: password } });
-        // state.promiseDataObject?.then((response) => {
-        //     console.log('Login Response : ', response.data);
-        // });
-    }
+const loginSchema = z.object({
+    username: z
+        .string()
+        .min(3, "Username must contain atleast 3 character(s)")
+        .max(20, "Username must not be longer than 20 character(s)"),
+    password: z
+        .string()
+        .min(3, "Password must contain atleast 3 character(s)")
+        .max(20, "Password must not be longer than 20 character(s)"),
+});
+
+const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onPressLogin, isLoading }) => {
+    const { handleSubmit, control } = useForm<z.infer<typeof loginSchema>>({
+        defaultValues: {
+            password: "",
+            username: "",
+        },
+        resolver: zodResolver(loginSchema),
+    });
+
+    const secondInputRef = useRef<RNTextInput | null>(null);
+
     return (
         <View style={styles.loginContainer}>
             <Header />
             <FM_Header />
             <View style={styles.form}>
-                <View style={styles.idInputLabel}>
-                    <TextInput mode="outlined" style={styles.inputContainerStyle} placeholder="ID" />
-                </View>
-                <View style={styles.passwordInputLabel}>
-                    <TextInput mode="outlined" style={styles.inputContainerStyle} placeholder="Password" />
-                </View>
-                <View style={styles.buttonStyle}>
-                    <Button
-                        style={styles.button}
-                        labelStyle={styles.buttonLabel}
-                        mode="outlined"
-                        // eslint-disable-next-line no-console
-                        onPress={() => {
-                                loginButtonClick('XXXX','YYYY');
-                        }}>
-                        {/* {strings.login.button} */}
-                        LOGIN
-                    </Button>
-                </View>
+                <Controller
+                    control={control}
+                    name="username"
+                    render={({ field: { onChange, onBlur, value }, fieldState }) => (
+                        <>
+                            <TextInput
+                                mode="outlined"
+                                style={styles.inputContainerStyle}
+                                placeholder="ID"
+                                onBlur={onBlur}
+                                onChangeText={onChange}
+                                value={value}
+                                error={!!fieldState.error}
+                                disabled={isLoading}
+                                returnKeyType="next"
+                                onSubmitEditing={() => secondInputRef.current?.focus()}
+                            />
+                            <HelperText type="error" visible={!!fieldState.error}>
+                                {fieldState.error?.message}
+                            </HelperText>
+                        </>
+                    )}
+                />
+                <Controller
+                    control={control}
+                    name="password"
+                    render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                        const [secureTextEntry, setSecureTextEntry] = useState(true);
+                        return (
+                            <>
+                                <TextInput
+                                    mode="outlined"
+                                    style={styles.inputContainerStyle}
+                                    placeholder="Password"
+                                    onBlur={onBlur}
+                                    onChangeText={onChange}
+                                    value={value}
+                                    error={!!fieldState.error}
+                                    disabled={isLoading}
+                                    secureTextEntry={secureTextEntry}
+                                    right={
+                                        <TextInput.Icon
+                                            icon={secureTextEntry ? "eye" : "eye-off"}
+                                            onPress={() => setSecureTextEntry(!secureTextEntry)}
+                                        />
+                                    }
+                                    onSubmitEditing={handleSubmit((data) => onPressLogin(data.username, data.password))}
+                                    ref={(input: RNTextInput) => (secondInputRef.current = input)}
+                                    returnKeyType="go"
+                                />
+                                <HelperText type="error" visible={!!fieldState.error}>
+                                    {fieldState.error?.message}
+                                </HelperText>
+                            </>
+                        );
+                    }}
+                />
+                <HelperText
+                    type="error"
+                    visible={!!error}
+                    style={{ textAlign: "center", fontSize: 16, fontWeight: "bold", color: "red" }}
+                >
+                    {error}
+                </HelperText>
+                <Button
+                    style={styles.button}
+                    labelStyle={styles.buttonLabel}
+                    mode="outlined"
+                    // eslint-disable-next-line no-console
+                    onPress={handleSubmit((data) => onPressLogin(data.username, data.password))}
+                    disabled={isLoading}
+                    icon="login"
+                    loading={isLoading}
+                >
+                    {/* {strings.login.button} */}
+                    {/* Login */}
+                    {locationzedStrings.login.button}
+                </Button>
             </View>
         </View>
     );
@@ -57,15 +138,7 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 10,
         backgroundColor: "#FFFFFF",
-    },
-    idInputLabel: {
-        marginTop: 36,
-    },
-    passwordInputLabel: {
-        marginTop: 24,
-    },
-    buttonStyle: {
-        marginTop: 36,
+        padding: 16,
     },
     fontColorSet: {
         fontSize: 12,
@@ -75,6 +148,7 @@ const styles = StyleSheet.create({
         margin: 8,
     },
     button: {
+        marginTop: 36,
         margin: 4,
         padding: 6,
     },
@@ -88,17 +162,17 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
     headerShown: false,
 };
 
-// const mapDispatch = (dispatch: AppThunkDispatch<AppState.ActionInterfaces>) => ({
-//     onPressContinue: () => console.log("pressContinue!!"),
-// });
+const mapDispatch = (dispatch: AppThunkDispatch<Authentication.ActionInterfaces>) => ({
+    onPressLogin: (username: string, password: string) => dispatch(Authentication.Actions.login(username, password)),
+});
 
-// const mapState = (state: RootState) => ({
-//     isAuthStateInitialized: state.auth.isIntialized,
-// });
+const mapState = (state: RootState) => ({
+    isLoading: state.auth.loading,
+    error: state.auth.error,
+});
 
-// const connector = connect(mapState, mapDispatch);
+const connector = connect(mapState, mapDispatch);
 
-// export const HomeScreen = connector(HomeScreenView);
+export const LoginScreen = connector(LoginScreenView);
 export const LoginScreenHeaderOptions = HeaderOptions;
 export const LoginScreenName = "LoginScreen";
-export const LoginScreen = LoginScreenView;
