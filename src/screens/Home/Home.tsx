@@ -2,24 +2,26 @@ import { StyleSheet, View, Dimensions, ScrollView, Pressable } from "react-nativ
 import { Card, Text } from "react-native-paper";
 import React from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
-import { container } from "tsyringe";
+import { connect } from "react-redux";
 
 import FM_Header from "../../components/FM_Header";
 import Header from "../../components/Header";
-import { NavigationService } from "../../services/Navigation.Service";
-import { WorkTasksScreenName } from "../WorkTasks";
+import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
 
 const windowWidth = Dimensions.get("window").width / 4.5;
 const windowHeight = Dimensions.get("window").height / 12;
 
-const LeafShape = (props: any) => <View style={[styles.square, props.style]}>{props.children}</View>;
+// const LeafShape = (props: any) => <View style={[styles.square, props.style]}>{props.children}</View>;
 
 interface HomeScreenProps {
     isAuthStateInitialized?: boolean;
-    // onPressContinue: () => void;
+    isLoading?: boolean;
+    error: string | null;
+    tasks: any;
+    onPressWorkTaks: (isOnlyCount: boolean) => void;
 }
 
-const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
+const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkTaks, tasks }) => {
     // type Mode = "elevated" | "outlined" | "contained";
     // const [selectedMode, setSelectedMode] = React.useState("elevated" as Mode);
 
@@ -43,7 +45,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                 <View style={styles.view1}> */}
                         <Card style={[styles.cardStyle, styles.card3_Bg]}>
                             <Text style={styles.paragraph}>P2-P7</Text>
-                            <Text style={styles.paragraph}>0</Text>
+                            <Text style={styles.paragraph}>{tasks.data.totalSize}</Text>
                         </Card>
 
                         <Card style={[styles.cardStyle, styles.card4_Bg]}>
@@ -58,14 +60,15 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                             onPress={() => {
                                 // eslint-disable-next-line no-console
                                 console.log("My Tasks");
-                                const navigationContainer = container.resolve(NavigationService);
-                                navigationContainer.navigate(WorkTasksScreenName, undefined);
+                                onPressWorkTaks(false);
                             }}
                         >
-                            <LeafShape style={styles.leafBorder}>
+                            <Card style={styles.tasksCardStyle}>
+                                {/* <LeafShape style={styles.leafBorder}> */}
                                 <Text style={styles.taskTitle}>My Tasks</Text>
                                 <Text style={styles.taskDescription}>Select this option to find your Work Tasks</Text>
-                            </LeafShape>
+                                {/* </LeafShape> */}
+                            </Card>
                         </Pressable>
                         <Pressable
                             onPress={() => {
@@ -73,12 +76,14 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                                 console.log("My Responsible Tasks");
                             }}
                         >
-                            <LeafShape style={styles.leafBorder}>
+                            <Card style={styles.tasksCardStyle}>
+                                {/* <LeafShape style={styles.leafBorder}> */}
                                 <Text style={styles.taskTitle}>My Responsible Tasks</Text>
                                 <Text style={styles.taskDescription}>
                                     Select this option to find your Responsible Tasks
                                 </Text>
-                            </LeafShape>
+                                {/* </LeafShape> */}
+                            </Card>
                         </Pressable>
                     </View>
                     <View style={styles.taskListCol2}>
@@ -88,12 +93,14 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                                 console.log("My Location Taks");
                             }}
                         >
-                            <LeafShape style={styles.leafBorder}>
+                            <Card style={styles.tasksCardStyle}>
+                                {/* <LeafShape style={styles.leafBorder}> */}
                                 <Text style={styles.taskTitle}>My Location Tasks</Text>
                                 <Text style={styles.taskDescription}>
                                     Select this option to find your Location Tasks
                                 </Text>
-                            </LeafShape>
+                                {/* </LeafShape> */}
+                            </Card>
                         </Pressable>
                         <Pressable
                             onPress={() => {
@@ -101,10 +108,12 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = () => {
                                 console.log("Service Request");
                             }}
                         >
-                            <LeafShape style={styles.leafBorder}>
+                            <Card style={styles.tasksCardStyle}>
+                                {/* <LeafShape style={styles.leafBorder}> */}
                                 <Text style={styles.taskTitle}>Service Request</Text>
                                 <Text style={styles.taskDescription}>Submit a new Service Request</Text>
-                            </LeafShape>
+                                {/* </LeafShape> */}
+                            </Card>
                         </Pressable>
                     </View>
                 </View>
@@ -178,7 +187,23 @@ const styles = StyleSheet.create({
     cardStyle: {
         width: windowWidth,
         height: windowHeight,
+        elevation: 3,
+        shadowOffset: {
+            width: 1,
+            height: 1,
+        },
         margin: 6,
+    },
+    tasksCardStyle: {
+        width: windowWidth * 2,
+        height: windowHeight * 2,
+        justifyContent: "center",
+        elevation: 3,
+        shadowOffset: {
+            width: 1,
+            height: 1,
+        },
+        margin: 4,
     },
     customerCardStyle: {
         alignSelf: "center",
@@ -227,9 +252,16 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     leafBorder: {
-        borderTopLeftRadius: 30,
-        borderBottomRightRadius: 30,
-        borderColor: "#222D32",
+        // borderTopLeftRadius: 30,
+        // borderBottomRightRadius: 30,
+        backgroundColor: "white",
+        elevation: 23,
+        borderRadius: 10,
+        shadowColor: "#B2B2B2",
+        shadowOffset: {
+            width: 1,
+            height: 1,
+        },
     },
     square: {
         width: 150,
@@ -246,17 +278,18 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
     headerShown: false,
 };
 
-// const mapDispatch = (dispatch: AppThunkDispatch<AppState.ActionInterfaces>) => ({
-//     onPressContinue: () => console.log("pressContinue!!"),
-// });
+const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
+    onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.workTasksAndCount(isOnlyCount)),
+});
 
-// const mapState = (state: RootState) => ({
-//     isAuthStateInitialized: state.auth.isIntialized,
-// });
+const mapState = (state: RootState) => ({
+    isLoading: state.tasks.loading,
+    error: state.tasks.error,
+    tasks: state.tasks.tasks,
+});
 
-// const connector = connect(mapState, mapDispatch);
+const connector = connect(mapState, mapDispatch);
 
-// export const HomeScreen = connector(HomeScreenView);
+export const HomeScreen = connector(HomeScreenView);
 export const HomeScreenHeaderOptions = HeaderOptions;
 export const HomeScreenName = "HomeScreen";
-export const HomeScreen = HomeScreenView;
