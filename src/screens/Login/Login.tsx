@@ -32,8 +32,8 @@ const loginSchema = z.object({
 const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onPressLogin, isLoading }) => {
     const { handleSubmit, control } = useForm<z.infer<typeof loginSchema>>({
         defaultValues: {
-            password: "",
-            username: "",
+            password: "password",
+            username: "1446144475",
         },
         resolver: zodResolver(loginSchema),
     });

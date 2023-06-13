@@ -1,6 +1,9 @@
 import axios from "axios";
+import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
+import { NavigationService } from "../../services/Navigation.Service";
+import { HomeScreenName } from "../../screens/Home";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import { AUTH_LOGIN_START, AUTH_LOGIN_ERROR, AUTH_LOGIN_SUCCESS } from "./actionTypes";
@@ -23,6 +26,8 @@ export function login(username: string, password: string): AppThunkAction<Action
                         password,
                     }),
                 );
+                const navigationContainer = container.resolve(NavigationService);
+                navigationContainer.navigate(HomeScreenName, undefined);
                 return;
             }
 

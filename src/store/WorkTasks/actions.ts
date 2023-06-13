@@ -3,7 +3,7 @@ import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
 import { NavigationService } from "../../services/Navigation.Service";
-import { HomeScreenName } from "../../screens/Home";
+import { WorkTasksScreenName } from "../../screens/WorkTasks";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import { WORK_TASKS_LOADING, WORK_TASKS_SUCCESS, WORK_TASKS_ERROR } from "./actionTypes";
@@ -23,12 +23,11 @@ export function workTasksAndCount(isOnlyCount: boolean): AppThunkAction<ActionIn
             if (response.status === 200) {
                 dispatch(
                     pureActionCreator(WORK_TASKS_SUCCESS, {
-                        tasks: response.data,
+                        tasks: response.data.data,
                     }),
                 );
-
                 const navigationContainer = container.resolve(NavigationService);
-                navigationContainer.navigate(HomeScreenName, undefined);
+                navigationContainer.navigate(WorkTasksScreenName, undefined);
                 return;
             }
 

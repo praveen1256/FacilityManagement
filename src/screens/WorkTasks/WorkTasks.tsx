@@ -3,6 +3,9 @@ import { Card, Text } from "react-native-paper";
 import React, { useState } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Dropdown } from "react-native-element-dropdown";
+import { connect } from "react-redux";
+
+import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
 
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
@@ -55,6 +58,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
     const [value, setValue] = useState("");
     const [isFocus, setIsFocus] = useState(false);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const flatListData: any = [
         {
             id: "1",
@@ -99,6 +103,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
 
     return (
         <View style={styles.workTaskContainer}>
+            {/* <Text>{JSON.stringify(tasks)}</Text> */}
             <View style={styles.headingContainer}>
                 <View style={styles.leftHeading}>
                     <Text style={styles.headerText}>VERIZON</Text>
@@ -518,6 +523,17 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 // const connector = connect(mapState, mapDispatch);
 
 // export const WorkTasksScreen = connector(WorkTasksScreenView);
+
+const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
+    onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.workTasksAndCount(isOnlyCount)),
+});
+
+const mapState = (state: RootState) => ({
+    tasks: state.tasks,
+});
+
+const connector = connect(mapState, mapDispatch);
+
+export const WorkTasksScreen = connector(WorkTasksScreenView);
 export const WorkTasksScreenHeaderOptions = HeaderOptions;
 export const WorkTasksScreenName = "WorkTasksScreen";
-export const WorkTasksScreen = WorkTasksScreenView;

@@ -5,7 +5,7 @@ export interface AppState {
     loading: boolean;
     isAuthenticated: boolean;
     error: string | null;
-    tasks: any;
+    tasks: unknown;
 }
 
 const initialState: AppState = {
@@ -24,9 +24,6 @@ export const taskReducer = (state: AppState = initialState, action: ActionInterf
                 error: "",
             };
         case WORK_TASKS_SUCCESS:
-            // const navigationContainer = container.resolve(NavigationService);
-            // navigationContainer.navigate(WorkTasksScreenName, undefined);
-            // console.log("WORK_TASKS_SUCCESS : ", action.tasks);
             return {
                 ...state,
                 loading: false,
