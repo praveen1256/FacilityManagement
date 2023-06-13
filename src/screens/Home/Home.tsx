@@ -17,17 +17,20 @@ interface HomeScreenProps {
     isAuthStateInitialized?: boolean;
     isLoading?: boolean;
     error: string | null;
-    tasks: any;
+    // tasks: {
+    //     _id: number;
+    // }[];
     onPressWorkTaks: (isOnlyCount: boolean) => void;
 }
 
-const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkTaks, tasks }) => {
+const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkTaks }) => {
     // type Mode = "elevated" | "outlined" | "contained";
     // const [selectedMode, setSelectedMode] = React.useState("elevated" as Mode);
 
     return (
         <ScrollView>
             <View style={styles.homeContainer}>
+                {/* <Text>{JSON.stringify(tasks)}</Text> */}
                 <Header />
                 <FM_Header />
                 <View style={styles.container}>
@@ -45,7 +48,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkT
                 <View style={styles.view1}> */}
                         <Card style={[styles.cardStyle, styles.card3_Bg]}>
                             <Text style={styles.paragraph}>P2-P7</Text>
-                            <Text style={styles.paragraph}>{tasks.data.totalSize}</Text>
+                            <Text style={styles.paragraph}>0</Text>
                         </Card>
 
                         <Card style={[styles.cardStyle, styles.card4_Bg]}>
@@ -285,7 +288,7 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => 
 const mapState = (state: RootState) => ({
     isLoading: state.tasks.loading,
     error: state.tasks.error,
-    tasks: state.tasks.tasks,
+    // tasks: state.tasks.tasks,
 });
 
 const connector = connect(mapState, mapDispatch);
