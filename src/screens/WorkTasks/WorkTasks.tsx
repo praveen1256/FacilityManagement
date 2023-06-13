@@ -1,13 +1,13 @@
 import { StyleSheet, View, Dimensions, ScrollView, TextInput, FlatList, Pressable } from "react-native";
 import { Card, Text } from "react-native-paper";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Dropdown } from "react-native-element-dropdown";
 
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
 
-const LeafShape = (props: any) => <View style={[styles.square, props.style]}>{props.children}</View>;
+// const LeafShape = (props: any) => <View style={[styles.square, props.style]}>{props.children}</View>;
 
 interface WorkTasksScreenProps {
     isAuthStateInitialized?: boolean;
@@ -17,31 +17,29 @@ interface WorkTasksScreenProps {
 const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () => {
     // type Mode = "elevated" | "outlined" | "contained";
     // const [selectedMode, setSelectedMode] = React.useState("elevated" as Mode);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [searchText, setSearchText] = useState("");
+    // const [modalVisible, setModalVisible] = useState(false);
+    // const [searchText, setSearchText] = useState("");
 
     const data = [
-        { label: 'Sort By Location', value: '1' },
-        { label: 'Sort By ID', value: '2' },
-        { label: 'Sort By Priority', value: '3' },
-        { label: 'Sort By Due Date', value: '4' },
-        { label: 'Sort By Status', value: '5' },
+        { label: "Sort By Location", value: "1" },
+        { label: "Sort By ID", value: "2" },
+        { label: "Sort By Priority", value: "3" },
+        { label: "Sort By Due Date", value: "4" },
+        { label: "Sort By Status", value: "5" },
     ];
 
     type ItemProps = {
-        priority: string,
-        title: string
-        info1: string,
-        info2: string,
-        info3: string,
-        data1: string,
-        data2: string,
-        data3: string,
+        priority: string;
+        title: string;
+        info1: string;
+        info2: string;
+        info3: string;
+        data1: string;
+        data2: string;
+        data3: string;
     };
 
-    const Item = ({
-        priority, title, info1, info2, info3, data1, data2, data3
-    }: ItemProps) => (
+    const Item = ({ priority, title, info1, info2, info3, data1, data2, data3 }: ItemProps) => (
         <Card style={[styles.itemCardStyle]}>
             <Text style={styles.itemPriority}>{priority}</Text>
             <Text style={styles.itemTitle}>{title}</Text>
@@ -59,45 +57,45 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
 
     const flatListData: any = [
         {
-            id: '1',
-            priority: 'P3',
-            title: 'SR-10286097',
-            info1: 'HVAC',
-            info2: 'AREA',
-            info3: 'USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ',
-            data1: '05/17/2023, 14:45:48',
-            data2: 'test spot cooler',
-            data3: 'Corrective',
+            id: "1",
+            priority: "P3",
+            title: "SR-10286097",
+            info1: "HVAC",
+            info2: "AREA",
+            info3: "USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ",
+            data1: "05/17/2023, 14:45:48",
+            data2: "test spot cooler",
+            data3: "Corrective",
         },
         {
-            id: '2',
-            priority: 'P3',
-            title: 'SR-10286097',
-            info1: 'HVAC',
-            info2: 'AREA',
-            info3: 'USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ',
-            data1: '05/17/2023, 14:45:48',
-            data2: 'test spot cooler',
-            data3: 'Corrective',
+            id: "2",
+            priority: "P3",
+            title: "SR-10286097",
+            info1: "HVAC",
+            info2: "AREA",
+            info3: "USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ",
+            data1: "05/17/2023, 14:45:48",
+            data2: "test spot cooler",
+            data3: "Corrective",
         },
         {
-            id: '3',
-            priority: 'P3',
-            title: 'SR-10286097',
-            info1: 'HVAC',
-            info2: 'AREA',
-            info3: 'USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ',
-            data1: '05/17/2023, 14:45:48',
-            data2: 'test spot cooler',
-            data3: 'Corrective',
+            id: "3",
+            priority: "P3",
+            title: "SR-10286097",
+            info1: "HVAC",
+            info2: "AREA",
+            info3: "USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ",
+            data1: "05/17/2023, 14:45:48",
+            data2: "test spot cooler",
+            data3: "Corrective",
         },
     ];
 
-    const [workTasksData, setWorkTasksData] = useState([]);
-    const filterData = (searchData: string) => {
-        if (searchData.length == 0)
-            setWorkTasksData(flatListData);
-    }
+    // const [workTasksData, setWorkTasksData] = useState([]);
+
+    // const filterData = () => {
+    //     // if (searchData.length == 0) setWorkTasksData(flatListData);
+    // };
 
     return (
         <View style={styles.workTaskContainer}>
@@ -114,16 +112,16 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                 style={styles.textInputStyle}
                 underlineColorAndroid="transparent"
                 placeholder="Search Here"
-                onChangeText={(textEntered) => {
-                    setSearchText(textEntered);
-                }}
-                onEndEditing={() => {
-                    filterData(searchText);
-                }}
+                // onChangeText={(textEntered) => {
+                //     setSearchText(textEntered);
+                // }}
+                // onEndEditing={() => {
+                //     filterData();
+                // }}
             />
             <View style={styles.flexRow}>
                 <Dropdown
-                    style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                    style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
                     inputSearchStyle={styles.inputSearchStyle}
@@ -134,23 +132,23 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                     maxHeight={300}
                     labelField="label"
                     valueField="value"
-                    placeholder={!isFocus ? 'Select item' : '...'}
+                    placeholder={!isFocus ? "Select item" : "..."}
                     searchPlaceholder="Search..."
                     value={value}
                     onFocus={() => setIsFocus(true)}
                     onBlur={() => setIsFocus(false)}
-                    onChange={item => {
+                    onChange={(item) => {
                         setValue(item.value);
                         setIsFocus(false);
                     }}
-                // renderLeftIcon={() => (
-                //     <AntDesign
-                //         style={styles.icon}
-                //         color={isFocus ? 'blue' : 'black'}
-                //         name="Safety"
-                //         size={20}
-                //     />
-                // )}
+                    // renderLeftIcon={() => (
+                    //     <AntDesign
+                    //         style={styles.icon}
+                    //         color={isFocus ? 'blue' : 'black'}
+                    //         name="Safety"
+                    //         size={20}
+                    //     />
+                    // )}
                 />
                 <View style={styles.flexRow}>
                     <Text style={styles.allStyle}>All</Text>
@@ -190,9 +188,9 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                 <View style={styles.taskContainer}>
                     <FlatList
                         data={flatListData}
-                        renderItem={({ item }) =>
+                        renderItem={({ item }) => (
                             <Pressable
-                                // onPress={props.onPress}
+                            // onPress={props.onPress}
                             >
                                 <Item
                                     title={item.title}
@@ -202,11 +200,11 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                                     info3={item.info3}
                                     data1={item.data1}
                                     data2={item.data2}
-                                    data3={item.data3} />
+                                    data3={item.data3}
+                                />
                             </Pressable>
-
-                        }
-                        keyExtractor={item => item.id}
+                        )}
+                        keyExtractor={(item) => item.id}
                     />
                 </View>
             </ScrollView>
@@ -269,35 +267,35 @@ const styles = StyleSheet.create({
         margin: 6,
     },
     allStyle: {
-        backgroundColor: '#FF0000',
+        backgroundColor: "#FF0000",
         width: 70,
         height: 35,
         borderTopLeftRadius: 15,
         borderBottomLeftRadius: 15,
-        textAlignVertical: 'center',
-        textAlign: 'center',
+        textAlignVertical: "center",
+        textAlign: "center",
     },
     cmStyle: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: "#FFFFFF",
         marginHorizontal: 1,
         width: 70,
         height: 35,
-        textAlignVertical: 'center',
-        textAlign: 'center',
+        textAlignVertical: "center",
+        textAlign: "center",
     },
     pmStyle: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: "#FFFFFF",
         width: 70,
         height: 35,
         borderTopRightRadius: 15,
         borderBottomRightRadius: 15,
-        textAlignVertical: 'center',
-        textAlign: 'center',
+        textAlignVertical: "center",
+        textAlign: "center",
     },
     itemCardStyle: {
         margin: 10,
         padding: 15,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: "#FFFFFF",
     },
     customerCardStyle: {
         alignSelf: "center",
@@ -361,17 +359,17 @@ const styles = StyleSheet.create({
     },
     centeredView: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
         marginTop: 22,
     },
     modalView: {
         margin: 20,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         borderRadius: 20,
         padding: 35,
-        alignItems: 'center',
-        shadowColor: '#000',
+        alignItems: "center",
+        shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -382,7 +380,7 @@ const styles = StyleSheet.create({
     },
     modalText: {
         marginBottom: 15,
-        textAlign: 'center',
+        textAlign: "center",
     },
     button: {
         width: 100,
@@ -392,63 +390,62 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     buttonOpen: {
-        backgroundColor: '#222D32',
+        backgroundColor: "#222D32",
     },
     buttonClose: {
-        backgroundColor: '#2196F3',
+        backgroundColor: "#2196F3",
     },
     textStyle: {
-        color: 'white',
-        fontWeight: 'bold',
-        textAlign: 'center',
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center",
     },
     headerText: {
         color: "#222D32",
-        fontWeight: 'bold',
+        fontWeight: "bold",
         fontSize: 25,
-        marginVertical: 10
+        marginVertical: 10,
     },
     subHeaderText: {
         flex: 1,
         color: "#222D32",
-        fontWeight: 'bold',
+        fontWeight: "bold",
         fontSize: 16,
         marginHorizontal: 10,
     },
     techNameText: {
         color: "#222D32",
-        fontWeight: 'bold',
+        fontWeight: "bold",
         fontSize: 16,
-        justifyContent: 'flex-end',
+        justifyContent: "flex-end",
         marginHorizontal: 10,
-
     },
     headingContainer: {
-        flexDirection: 'column',
-        display: 'flex',
-        marginBottom: 10
+        flexDirection: "column",
+        display: "flex",
+        marginBottom: 10,
     },
     leftHeading: {
         color: "#222D32",
         fontSize: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
     },
     flexRow: {
-        flexDirection: 'row',
+        flexDirection: "row",
     },
     textInputStyle: {
-        height: '5%',
+        height: "5%",
         borderRadius: 10,
         borderWidth: 1,
         paddingLeft: 20,
         margin: 5,
-        borderColor: '#222D32',
-        backgroundColor: '#FFFFFF',
+        borderColor: "#222D32",
+        backgroundColor: "#FFFFFF",
     },
     dropdown: {
         width: 165,
-        borderColor: 'gray',
+        borderColor: "gray",
         borderWidth: 0.5,
         borderRadius: 8,
         paddingHorizontal: 8,
@@ -469,45 +466,45 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     item: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: "#FFFFFF",
         padding: 20,
         marginVertical: 8,
         marginHorizontal: 16,
     },
     itemPriority: {
         fontSize: 14,
-        alignSelf: 'flex-end',
+        alignSelf: "flex-end",
     },
     itemTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
     itemInfo1: {
         fontSize: 14,
     },
     itemInfo2: {
         fontSize: 14,
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
     itemInfo3: {
         fontSize: 12,
     },
     itemInfo4: {
         fontSize: 14,
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
     itemInfo5: {
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
     itemInfo6: {
         fontSize: 14,
-        alignSelf: 'flex-end',
+        alignSelf: "flex-end",
     },
 });
 
 const HeaderOptions: NativeStackHeaderProps["options"] = {
-    headerShown: false,
+    headerShown: true,
 };
 
 // const mapDispatch = (dispatch: AppThunkDispatch<AppState.ActionInterfaces>) => ({
