@@ -40,13 +40,14 @@
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
+        "varsIgnorePattern": "^_",
         "argsIgnorePattern": "^_"
       }
     ],
     "@typescript-eslint/explicit-member-accessibility": "off",
     "react/prop-types": "off",
-    "no-console": "error",
-    "@typescript-eslint/no-explicit-any": "off",
+    "no-console": "warn",
+    "@typescript-eslint/no-explicit-any": "error",
     "no-throw-literal": "error"
   },
   "settings": {
