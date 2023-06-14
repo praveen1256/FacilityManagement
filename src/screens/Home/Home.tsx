@@ -286,8 +286,8 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => 
 });
 
 const mapState = (state: RootState) => ({
-    isLoading: state.tasks.loading,
-    error: state.tasks.error,
+    isLoading: state.worktasks.loading,
+    error: state.worktasks.error,
     // tasks: state.tasks.tasks,
 });
 

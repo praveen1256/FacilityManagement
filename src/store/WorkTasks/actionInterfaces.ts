@@ -6,7 +6,10 @@ export interface WorkTasksLoading {
 
 export interface WorkTasksSuccess {
     type: typeof WORK_TASKS_SUCCESS;
-    tasks: any;
+    // TODO: fix me
+    tasks: {
+        _id: number;
+    }[];
 }
 
 export interface WorkTasksError {
