@@ -10,19 +10,44 @@ import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
 
-// const LeafShape = (props: any) => <View style={[styles.square, props.style]}>{props.children}</View>;
-
 interface WorkTasksScreenProps {
-    isAuthStateInitialized?: boolean;
-    // onPressContinue: () => void;
+    tasks: {
+        Building: string;
+        Description: string;
+        Address: string;
+        TaskPriority: string;
+        ModifiedDateTime: string;
+        SRCreatedDateTime: string;
+        LegacyGLC: null;
+        ServiceClass: string;
+        ResourceAssignmentStatus: string;
+        PlannedEnd: string;
+        TaskReIssueReason: string;
+        Currency: string;
+        TaskType: string;
+        SRRecordID: string;
+        ID: string;
+        SRDescription: string;
+        SRID: string;
+        EquipmentAlias: null;
+        Status: string;
+        CreatedFromMobile: string;
+        RequestClass: string;
+        PlannedStart: string;
+        LocationCode: string;
+        SRServiceRequested: string;
+        ResolutionType: string;
+        City: string;
+        TaskName: string;
+        State: string;
+        _id: string;
+        PrimaryWorkLocation: string;
+        CreatedDateTime: string;
+    }[];
+    // onPressWorkTaks: (isOnlyCount: boolean) => void;
 }
 
-const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () => {
-    // type Mode = "elevated" | "outlined" | "contained";
-    // const [selectedMode, setSelectedMode] = React.useState("elevated" as Mode);
-    // const [modalVisible, setModalVisible] = useState(false);
-    // const [searchText, setSearchText] = useState("");
-
+const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (tasks) => {
     const data = [
         { label: "Sort By Location", value: "1" },
         { label: "Sort By ID", value: "2" },
@@ -32,78 +57,43 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
     ];
 
     type ItemProps = {
+        srid: string;
         priority: string;
-        title: string;
-        info1: string;
-        info2: string;
-        info3: string;
-        data1: string;
-        data2: string;
-        data3: string;
+        address: string;
+        city: string;
+        description: string;
+        createdDateTime: string;
+        taskReIssueReason: string;
+        taskType: string;
     };
 
-    const Item = ({ priority, title, info1, info2, info3, data1, data2, data3 }: ItemProps) => (
+    const Item = ({
+        srid,
+        priority,
+        address,
+        city,
+        description,
+        createdDateTime,
+        taskReIssueReason,
+        taskType,
+    }: ItemProps) => (
         <Card style={[styles.itemCardStyle]}>
             <Text style={styles.itemPriority}>{priority}</Text>
-            <Text style={styles.itemTitle}>{title}</Text>
-            <Text style={styles.itemInfo1}>{info1}</Text>
-            <Text style={styles.itemInfo2}>{info2}</Text>
-            <Text style={styles.itemInfo3}>{info3}</Text>
-            <Text style={styles.itemInfo4}>{data1}</Text>
-            <Text style={styles.itemInfo5}>{data2}</Text>
-            <Text style={styles.itemInfo6}>{data3}</Text>
+            <Text style={styles.itemTitle}>{srid}</Text>
+            <Text style={styles.itemInfo1}>{address}</Text>
+            <Text style={styles.itemInfo2}>{city}</Text>
+            <Text style={styles.itemInfo3}>{description}</Text>
+            <Text style={styles.itemInfo4}>{createdDateTime}</Text>
+            <Text style={styles.itemInfo5}>{taskReIssueReason}</Text>
+            <Text style={styles.itemInfo6}>{taskType}</Text>
         </Card>
     );
 
     const [value, setValue] = useState("");
     const [isFocus, setIsFocus] = useState(false);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const flatListData: any = [
-        {
-            id: "1",
-            priority: "P3",
-            title: "SR-10286097",
-            info1: "HVAC",
-            info2: "AREA",
-            info3: "USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ",
-            data1: "05/17/2023, 14:45:48",
-            data2: "test spot cooler",
-            data3: "Corrective",
-        },
-        {
-            id: "2",
-            priority: "P3",
-            title: "SR-10286097",
-            info1: "HVAC",
-            info2: "AREA",
-            info3: "USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ",
-            data1: "05/17/2023, 14:45:48",
-            data2: "test spot cooler",
-            data3: "Corrective",
-        },
-        {
-            id: "3",
-            priority: "P3",
-            title: "SR-10286097",
-            info1: "HVAC",
-            info2: "AREA",
-            info3: "USE FOR VZW MOBILE EQPT A. || 20000003839 || BASKING RIDGE || NJ",
-            data1: "05/17/2023, 14:45:48",
-            data2: "test spot cooler",
-            data3: "Corrective",
-        },
-    ];
-
-    // const [workTasksData, setWorkTasksData] = useState([]);
-
-    // const filterData = () => {
-    //     // if (searchData.length == 0) setWorkTasksData(flatListData);
-    // };
-
     return (
         <View style={styles.workTaskContainer}>
-            {/* <Text>{JSON.stringify(tasks)}</Text> */}
             <View style={styles.headingContainer}>
                 <View style={styles.leftHeading}>
                     <Text style={styles.headerText}>VERIZON</Text>
@@ -113,17 +103,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                     <Text style={styles.techNameText}>Tech Name</Text>
                 </View>
             </View>
-            <TextInput
-                style={styles.textInputStyle}
-                underlineColorAndroid="transparent"
-                placeholder="Search Here"
-                // onChangeText={(textEntered) => {
-                //     setSearchText(textEntered);
-                // }}
-                // onEndEditing={() => {
-                //     filterData();
-                // }}
-            />
+            <TextInput style={styles.textInputStyle} underlineColorAndroid="transparent" placeholder="Search Here" />
             <View style={styles.flexRow}>
                 <Dropdown
                     style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
@@ -171,10 +151,6 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
                         <Text style={styles.paragraph}>Active P2-P7</Text>
                         <Text style={styles.paragraph}>0</Text>
                     </Card>
-                    {/* </View>
-
-                    <View style={styles.view1}> */}
-
                     <Card style={[styles.cardStyle, styles.card3_Bg]}>
                         <Text style={styles.paragraph}>Completed</Text>
                         <Text style={styles.paragraph}>0</Text>
@@ -192,24 +168,24 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = () =>
             <ScrollView horizontal={false}>
                 <View style={styles.taskContainer}>
                     <FlatList
-                        data={flatListData}
+                        data={tasks.tasks}
                         renderItem={({ item }) => (
                             <Pressable
                             // onPress={props.onPress}
                             >
                                 <Item
-                                    title={item.title}
-                                    priority={item.priority}
-                                    info1={item.info1}
-                                    info2={item.info2}
-                                    info3={item.info3}
-                                    data1={item.data1}
-                                    data2={item.data2}
-                                    data3={item.data3}
+                                    srid={item.SRID}
+                                    priority={item.TaskPriority}
+                                    address={item.Address}
+                                    city={item.City}
+                                    description={item.Description}
+                                    createdDateTime={item.CreatedDateTime}
+                                    taskReIssueReason={item.TaskReIssueReason}
+                                    taskType={item.TaskType}
                                 />
                             </Pressable>
                         )}
-                        keyExtractor={(item) => item.id}
+                        keyExtractor={(item) => item.ID}
                     />
                 </View>
             </ScrollView>
@@ -511,18 +487,6 @@ const styles = StyleSheet.create({
 const HeaderOptions: NativeStackHeaderProps["options"] = {
     headerShown: true,
 };
-
-// const mapDispatch = (dispatch: AppThunkDispatch<AppState.ActionInterfaces>) => ({
-//     onPressContinue: () => console.log("pressContinue!!"),
-// });
-
-// const mapState = (state: RootState) => ({
-//     isAuthStateInitialized: state.auth.isIntialized,
-// });
-
-// const connector = connect(mapState, mapDispatch);
-
-// export const WorkTasksScreen = connector(WorkTasksScreenView);
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
     onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.workTasksAndCount(isOnlyCount)),
