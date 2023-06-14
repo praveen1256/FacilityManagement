@@ -1,4 +1,4 @@
-import { StyleSheet, View, Dimensions, ScrollView, TextInput, FlatList, Pressable } from "react-native";
+import { StyleSheet, View, Dimensions, TextInput, FlatList, Pressable } from "react-native";
 import { Card, Text } from "react-native-paper";
 import React, { useState } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
@@ -165,30 +165,28 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (task
                     </Card>
                 </View>
             </View>
-            <ScrollView horizontal={false}>
-                <View style={styles.taskContainer}>
-                    <FlatList
-                        data={tasks.tasks}
-                        renderItem={({ item }) => (
-                            <Pressable
-                            // onPress={props.onPress}
-                            >
-                                <Item
-                                    srid={item.SRID}
-                                    priority={item.TaskPriority}
-                                    address={item.Address}
-                                    city={item.City}
-                                    description={item.Description}
-                                    createdDateTime={item.CreatedDateTime}
-                                    taskReIssueReason={item.TaskReIssueReason}
-                                    taskType={item.TaskType}
-                                />
-                            </Pressable>
-                        )}
-                        keyExtractor={(item) => item.ID}
-                    />
-                </View>
-            </ScrollView>
+            <View style={styles.taskContainer}>
+                <FlatList
+                    data={tasks.tasks}
+                    renderItem={({ item }) => (
+                        <Pressable
+                        // onPress={props.onPress}
+                        >
+                            <Item
+                                srid={item.SRID}
+                                priority={item.TaskPriority}
+                                address={item.Address}
+                                city={item.City}
+                                description={item.Description}
+                                createdDateTime={item.CreatedDateTime}
+                                taskReIssueReason={item.TaskReIssueReason}
+                                taskType={item.TaskType}
+                            />
+                        </Pressable>
+                    )}
+                    keyExtractor={(item) => item.ID}
+                />
+            </View>
         </View>
     );
 };
