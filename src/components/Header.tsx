@@ -1,10 +1,12 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { locationzedStrings } from "../localization/Localizaton";
+
 const Header: React.FunctionComponent = () => {
     return (
         <View style={styles.headerBackground}>
-            <Text style={styles.text}>VERIZON</Text>
+            <Text style={styles.text}>{locationzedStrings.header.headerVerizon}</Text>
             <View style={styles.greyLine} />
         </View>
     );

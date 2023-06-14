@@ -7,11 +7,10 @@ import { connect } from "react-redux";
 import FM_Header from "../../components/FM_Header";
 import Header from "../../components/Header";
 import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
+import { locationzedStrings } from "../../localization/Localizaton";
 
 const windowWidth = Dimensions.get("window").width / 4.5;
 const windowHeight = Dimensions.get("window").height / 12;
-
-// const LeafShape = (props: any) => <View style={[styles.square, props.style]}>{props.children}</View>;
 
 interface HomeScreenProps {
     isAuthStateInitialized?: boolean;
@@ -30,29 +29,28 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkT
     return (
         <ScrollView>
             <View style={styles.homeContainer}>
-                {/* <Text>{JSON.stringify(tasks)}</Text> */}
                 <Header />
                 <FM_Header />
                 <View style={styles.container}>
                     <View style={styles.view1}>
                         <Card style={[styles.cardStyle, styles.card1_Bg]}>
-                            <Text style={styles.paragraph}>P1</Text>
+                            <Text style={styles.paragraph}>{locationzedStrings.home.card1_count_title}</Text>
                             <Text style={styles.paragraph}>0</Text>
                         </Card>
                         <Card style={[styles.cardStyle, styles.card2_Bg]}>
-                            <Text style={styles.paragraph}>OverDue</Text>
+                            <Text style={styles.paragraph}>{locationzedStrings.home.card2_count_title}</Text>
                             <Text style={styles.paragraph}>0</Text>
                         </Card>
                         {/* </View>
 
                 <View style={styles.view1}> */}
                         <Card style={[styles.cardStyle, styles.card3_Bg]}>
-                            <Text style={styles.paragraph}>P2-P7</Text>
+                            <Text style={styles.paragraph}>{locationzedStrings.home.card3_count_title}</Text>
                             <Text style={styles.paragraph}>0</Text>
                         </Card>
 
                         <Card style={[styles.cardStyle, styles.card4_Bg]}>
-                            <Text style={styles.paragraph}>Today</Text>
+                            <Text style={styles.paragraph}>{locationzedStrings.home.card4_count_title}</Text>
                             <Text style={styles.paragraph}>0</Text>
                         </Card>
                     </View>
@@ -61,16 +59,12 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkT
                     <View style={styles.taskListCol1}>
                         <Pressable
                             onPress={() => {
-                                // eslint-disable-next-line no-console
-                                console.log("My Tasks");
                                 onPressWorkTaks(false);
                             }}
                         >
                             <Card style={styles.tasksCardStyle}>
-                                {/* <LeafShape style={styles.leafBorder}> */}
-                                <Text style={styles.taskTitle}>My Tasks</Text>
-                                <Text style={styles.taskDescription}>Select this option to find your Work Tasks</Text>
-                                {/* </LeafShape> */}
+                                <Text style={styles.taskTitle}>{locationzedStrings.home.card1_title}</Text>
+                                <Text style={styles.taskDescription}>{locationzedStrings.home.card1_message}</Text>
                             </Card>
                         </Pressable>
                         <Pressable
@@ -80,12 +74,8 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkT
                             }}
                         >
                             <Card style={styles.tasksCardStyle}>
-                                {/* <LeafShape style={styles.leafBorder}> */}
-                                <Text style={styles.taskTitle}>My Responsible Tasks</Text>
-                                <Text style={styles.taskDescription}>
-                                    Select this option to find your Responsible Tasks
-                                </Text>
-                                {/* </LeafShape> */}
+                                <Text style={styles.taskTitle}>{locationzedStrings.home.card2_title}</Text>
+                                <Text style={styles.taskDescription}>{locationzedStrings.home.card2_message}</Text>
                             </Card>
                         </Pressable>
                     </View>
@@ -97,12 +87,8 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkT
                             }}
                         >
                             <Card style={styles.tasksCardStyle}>
-                                {/* <LeafShape style={styles.leafBorder}> */}
-                                <Text style={styles.taskTitle}>My Location Tasks</Text>
-                                <Text style={styles.taskDescription}>
-                                    Select this option to find your Location Tasks
-                                </Text>
-                                {/* </LeafShape> */}
+                                <Text style={styles.taskTitle}>{locationzedStrings.home.card3_title}</Text>
+                                <Text style={styles.taskDescription}>{locationzedStrings.home.card3_message}</Text>
                             </Card>
                         </Pressable>
                         <Pressable
@@ -112,26 +98,17 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkT
                             }}
                         >
                             <Card style={styles.tasksCardStyle}>
-                                {/* <LeafShape style={styles.leafBorder}> */}
-                                <Text style={styles.taskTitle}>Service Request</Text>
-                                <Text style={styles.taskDescription}>Submit a new Service Request</Text>
-                                {/* </LeafShape> */}
+                                <Text style={styles.taskTitle}>{locationzedStrings.home.card4_title}</Text>
+                                <Text style={styles.taskDescription}>{locationzedStrings.home.card4_message}</Text>
                             </Card>
                         </Pressable>
                     </View>
                 </View>
                 <Card style={[styles.customerCardStyle, styles.customerCardBg]}>
-                    <Text style={styles.customerCareInfo}>
-                        For all critical requests, please contact the GRE Customer Experience Team at
-                    </Text>
-                    <Text style={styles.customerCareCall}>+1-(888) 696-3973</Text>
-                    <Text style={styles.customerCareInfo}>
-                        You will need to select the correct line of business from the IVR.
-                    </Text>
-                    <Text style={styles.customerCareInfo}>
-                        For International Peoperties, if you need further assistance, please call your Local Facilities
-                        Contact.
-                    </Text>
+                    <Text style={styles.customerCareInfo}>{locationzedStrings.home.critical_request}</Text>
+                    <Text style={styles.customerCareCall}>{locationzedStrings.home.customercare_call}</Text>
+                    <Text style={styles.customerCareInfo}>{locationzedStrings.home.ivr_message}</Text>
+                    <Text style={styles.customerCareInfo}>{locationzedStrings.home.local_assistance}</Text>
                 </Card>
             </View>
         </ScrollView>
