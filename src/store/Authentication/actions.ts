@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
@@ -13,10 +13,8 @@ export function login(username: string, password: string): AppThunkAction<Action
         // get the username and password,
         dispatch(pureActionCreator(AUTH_LOGIN_START, {}));
         // let the store know we are checking the crentials, by dispatching loading state
+        const url = `https://verizon-dev2.tririga.com/oslc/login?USERNAME=${username}&PASSWORD=${password}`;
         try {
-            // call the api to check the credentials
-            // TODO: need to move this api to a function!!!
-            const url = `https://verizon-dev2.tririga.com/oslc/login?USERNAME=${username}&PASSWORD=${password}`;
             const response = await axios.get(url);
             // if the credentials are correct, dispatch the success state
             if (response.status === 200) {
@@ -38,9 +36,21 @@ export function login(username: string, password: string): AppThunkAction<Action
             );
         } catch (error) {
             // if the credentials are incorrect, dispatch the error state
+            console.log("url : ", url);
+            console.log(error);
+            const err = error as AxiosError;
+
+            if (err.code === "Unauthorized") {
+                dispatch(
+                    pureActionCreator(AUTH_LOGIN_ERROR, {
+                        error: "Invalid credentials", // Invalid credentials
+                    }),
+                );
+                return;
+            }
             dispatch(
                 pureActionCreator(AUTH_LOGIN_ERROR, {
-                    error: "Invalid credentials",
+                    error: err.message || "Something went wrong",
                 }),
             );
         }

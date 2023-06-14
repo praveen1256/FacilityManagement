@@ -15,7 +15,7 @@ const initialState: AppState = {
     tasks: "",
 };
 
-export const taskReducer = (state: AppState = initialState, action: ActionInterfaces): AppState => {
+export const workTasksReducer = (state: AppState = initialState, action: ActionInterfaces): AppState => {
     switch (action.type) {
         case WORK_TASKS_LOADING:
             return {

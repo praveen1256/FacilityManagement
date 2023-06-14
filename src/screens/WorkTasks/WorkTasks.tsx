@@ -529,7 +529,7 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => 
 });
 
 const mapState = (state: RootState) => ({
-    tasks: state.tasks,
+    tasks: state.worktasks.tasks,
 });
 
 const connector = connect(mapState, mapDispatch);
