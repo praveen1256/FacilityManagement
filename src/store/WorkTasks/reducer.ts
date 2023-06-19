@@ -5,14 +5,46 @@ export interface AppState {
     loading: boolean;
     isAuthenticated: boolean;
     error: string | null;
-    tasks: unknown;
+    tasks: {
+        Building: string;
+        Description: string;
+        Address: string;
+        TaskPriority: string;
+        ModifiedDateTime: string;
+        SRCreatedDateTime: string;
+        LegacyGLC: null;
+        ServiceClass: string;
+        ResourceAssignmentStatus: string;
+        PlannedEnd: string;
+        TaskReIssueReason: string;
+        Currency: string;
+        TaskType: string;
+        SRRecordID: string;
+        ID: string;
+        SRDescription: string;
+        SRID: string;
+        EquipmentAlias: null;
+        Status: string;
+        CreatedFromMobile: string;
+        RequestClass: string;
+        PlannedStart: string;
+        LocationCode: string;
+        SRServiceRequested: string;
+        ResolutionType: string;
+        City: string;
+        TaskName: string;
+        State: string;
+        _id: string;
+        PrimaryWorkLocation: string;
+        CreatedDateTime: string;
+    }[];
 }
 
 const initialState: AppState = {
     loading: false,
     error: null,
     isAuthenticated: false,
-    tasks: "",
+    tasks: [],
 };
 
 export const workTasksReducer = (state: AppState = initialState, action: ActionInterfaces): AppState => {

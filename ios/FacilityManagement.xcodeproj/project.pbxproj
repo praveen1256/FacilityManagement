@@ -38,6 +38,23 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = FacilityManagement/main.m; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-FacilityManagement-FacilityManagementTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FacilityManagement-FacilityManagementTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B4392A12AC88292D35C810B /* Pods-FacilityManagement.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacilityManagement.debug.xcconfig"; path = "Target Support Files/Pods-FacilityManagement/Pods-FacilityManagement.debug.xcconfig"; sourceTree = "<group>"; };
+		44D1B9B72A3A08C900A382A7 /* Fontisto.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Fontisto.ttf; sourceTree = "<group>"; };
+		44D1B9B82A3A08C900A382A7 /* Octicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Octicons.ttf; sourceTree = "<group>"; };
+		44D1B9B92A3A08C900A382A7 /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Feather.ttf; sourceTree = "<group>"; };
+		44D1B9BA2A3A08C900A382A7 /* Entypo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Entypo.ttf; sourceTree = "<group>"; };
+		44D1B9BB2A3A08C900A382A7 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Brands.ttf; sourceTree = "<group>"; };
+		44D1B9BC2A3A08C900A382A7 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialCommunityIcons.ttf; sourceTree = "<group>"; };
+		44D1B9BD2A3A08C900A382A7 /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AntDesign.ttf; sourceTree = "<group>"; };
+		44D1B9BE2A3A08C900A382A7 /* Foundation.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Foundation.ttf; sourceTree = "<group>"; };
+		44D1B9BF2A3A08C900A382A7 /* Ionicons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Ionicons.ttf; sourceTree = "<group>"; };
+		44D1B9C02A3A08C900A382A7 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Solid.ttf; sourceTree = "<group>"; };
+		44D1B9C12A3A08C900A382A7 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome5_Regular.ttf; sourceTree = "<group>"; };
+		44D1B9C22A3A08C900A382A7 /* FontAwesome.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FontAwesome.ttf; sourceTree = "<group>"; };
+		44D1B9C32A3A08C900A382A7 /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
+		44D1B9C42A3A08C900A382A7 /* EvilIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = EvilIcons.ttf; sourceTree = "<group>"; };
+		44D1B9C52A3A08C900A382A7 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
+		44D1B9C62A3A08C900A382A7 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = MaterialIcons.ttf; sourceTree = "<group>"; };
+		44FEC7B72A39EAF500F8B7C2 /* MaterialIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = MaterialIcons.ttf; path = Fonts/MaterialIcons.ttf; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-FacilityManagement.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacilityManagement.release.xcconfig"; path = "Target Support Files/Pods-FacilityManagement/Pods-FacilityManagement.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-FacilityManagement-FacilityManagementTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacilityManagement-FacilityManagementTests.debug.xcconfig"; path = "Target Support Files/Pods-FacilityManagement-FacilityManagementTests/Pods-FacilityManagement-FacilityManagementTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-FacilityManagement.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FacilityManagement.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,6 +103,7 @@
 		13B07FAE1A68108700A75B9A /* FacilityManagement */ = {
 			isa = PBXGroup;
 			children = (
+				44D1B9B62A3A08C900A382A7 /* Fonts */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -106,6 +124,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		44D1B9B62A3A08C900A382A7 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				44D1B9B72A3A08C900A382A7 /* Fontisto.ttf */,
+				44D1B9B82A3A08C900A382A7 /* Octicons.ttf */,
+				44D1B9B92A3A08C900A382A7 /* Feather.ttf */,
+				44D1B9BA2A3A08C900A382A7 /* Entypo.ttf */,
+				44D1B9BB2A3A08C900A382A7 /* FontAwesome5_Brands.ttf */,
+				44D1B9BC2A3A08C900A382A7 /* MaterialCommunityIcons.ttf */,
+				44D1B9BD2A3A08C900A382A7 /* AntDesign.ttf */,
+				44D1B9BE2A3A08C900A382A7 /* Foundation.ttf */,
+				44D1B9BF2A3A08C900A382A7 /* Ionicons.ttf */,
+				44D1B9C02A3A08C900A382A7 /* FontAwesome5_Solid.ttf */,
+				44D1B9C12A3A08C900A382A7 /* FontAwesome5_Regular.ttf */,
+				44D1B9C22A3A08C900A382A7 /* FontAwesome.ttf */,
+				44D1B9C32A3A08C900A382A7 /* Zocial.ttf */,
+				44D1B9C42A3A08C900A382A7 /* EvilIcons.ttf */,
+				44D1B9C52A3A08C900A382A7 /* SimpleLineIcons.ttf */,
+				44D1B9C62A3A08C900A382A7 /* MaterialIcons.ttf */,
+			);
+			name = Fonts;
+			path = "../node_modules/react-native-vector-icons/Fonts";
+			sourceTree = "<group>";
+		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -116,6 +158,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				44FEC7B72A39EAF500F8B7C2 /* MaterialIcons.ttf */,
 				13B07FAE1A68108700A75B9A /* FacilityManagement */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* FacilityManagementTests */,
@@ -591,6 +634,7 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
+				NEW_SETTING = "";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
@@ -656,6 +700,7 @@
 					"\"$(inherited)\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
+				NEW_SETTING = "";
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",

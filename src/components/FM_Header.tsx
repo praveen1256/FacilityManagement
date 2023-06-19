@@ -1,13 +1,15 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { locationzedStrings } from "../localization/Localizaton";
+
 const FM_Header = ({}) => {
     return (
         <View style={styles.headerBackground}>
-            <Text style={styles.facilityColor}>Facility</Text>
-            <Text style={styles.textWhite}>Management</Text>
+            <Text style={styles.facilityColor}>{locationzedStrings.header.headerFacility}</Text>
+            <Text style={styles.textWhite}>{locationzedStrings.header.headerManagement}</Text>
             <View style={styles.everyWhereBg}>
-                <Text style={styles.everyWhereText}>EveryWhere</Text>
+                <Text style={styles.everyWhereText}>{locationzedStrings.header.headerEveryWhere}</Text>
             </View>
         </View>
     );

@@ -53,7 +53,7 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
                             <TextInput
                                 mode="outlined"
                                 style={styles.inputContainerStyle}
-                                placeholder="ID"
+                                placeholder={locationzedStrings.login.placeHolderId}
                                 onBlur={onBlur}
                                 onChangeText={onChange}
                                 value={value}
@@ -78,7 +78,7 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
                                 <TextInput
                                     mode="outlined"
                                     style={styles.inputContainerStyle}
-                                    placeholder="Password"
+                                    placeholder={locationzedStrings.login.placeHolderPassword}
                                     onBlur={onBlur}
                                     onChangeText={onChange}
                                     value={value}
@@ -119,8 +119,6 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
                     icon="login"
                     loading={isLoading}
                 >
-                    {/* {strings.login.button} */}
-                    {/* Login */}
                     {locationzedStrings.login.button}
                 </Button>
             </View>
