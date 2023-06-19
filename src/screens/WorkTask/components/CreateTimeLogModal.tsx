@@ -143,9 +143,74 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                             control={control}
                             name="hours"
                             render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                // const [datePickerOpen, setDatePickerOpen] = React.useState(false);
                                 return (
                                     <>
-                                        <TextInput
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                                justifyContent: "space-between",
+                                                flexWrap: "wrap",
+                                            }}
+                                        >
+                                            <TextInput
+                                                mode="outlined"
+                                                label="Start Time"
+                                                // style={styles.inputContainerStyle}
+                                                editable={false}
+                                                onBlur={onBlur}
+                                                // onChangeText={onChange}
+                                                value={"10:00 AM"}
+                                                error={!!fieldState.error}
+                                                right={
+                                                    <TextInput.Icon
+                                                        icon="calendar"
+                                                        // onPress={() => setDatePickerOpen(true)}
+                                                    />
+                                                }
+                                                autoCapitalize="none"
+                                                returnKeyType="next"
+                                            />
+                                            <TextInput
+                                                mode="outlined"
+                                                label="End Time"
+                                                // style={styles.inputContainerStyle}
+                                                editable={false}
+                                                onBlur={onBlur}
+                                                // onChangeText={onChange}
+                                                value={"10:00 AM"}
+                                                error={!!fieldState.error}
+                                                right={
+                                                    <TextInput.Icon
+                                                        icon="calendar"
+                                                        // onPress={() => setDatePickerOpen(true)}
+                                                    />
+                                                }
+                                                autoCapitalize="none"
+                                                returnKeyType="next"
+                                            />
+                                            <TextInput
+                                                mode="outlined"
+                                                label="Hours"
+                                                // style={styles.inputContainerStyle}
+                                                editable={false}
+                                                onBlur={onBlur}
+                                                // onChangeText={onChange}
+                                                value={"8 hours"}
+                                                error={!!fieldState.error}
+                                                // right={
+                                                //     <TextInput.Icon
+                                                //         icon="calendar"
+                                                //         onPress={() => setDatePickerOpen(true)}
+                                                //     />
+                                                // }
+                                                style={{ marginTop: 10 }}
+                                                autoCapitalize="none"
+                                                returnKeyType="next"
+                                            />
+                                        </View>
+
+                                        {/* <TextInput
                                             mode="outlined"
                                             label="Hours"
                                             keyboardType="numeric"
@@ -155,7 +220,7 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                                             error={!!fieldState.error}
                                             // disabled={isLoading}
                                             returnKeyType="next"
-                                        />
+                                        /> */}
                                         <HelperText type="error" visible={!!fieldState.error}>
                                             {fieldState.error?.message}
                                         </HelperText>

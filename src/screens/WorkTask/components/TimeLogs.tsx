@@ -20,6 +20,7 @@ type TimeLogsProps = {
     timeLogCategoriesError: string | null;
     // Timelog creation dependencies
     onTimeLogCreate: (...args: Parameters<typeof createTimeLog>) => void;
+    onInitiateCreateTimeLog?: () => void;
 };
 
 const TimeLogs: React.FC<TimeLogsProps> = ({
@@ -66,10 +67,10 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
                             name={item.Name}
                             date={item.Date}
                             hours={item.Hours}
-                            isLoading={item.isLoading}
+                            isLoading={item.isLoading || false}
                             onDelete={() => onTimeLogDelete(workTaskId, item._id)}
-                            loadingMessage={item.loadingMessage}
-                            errorMessage={item.error}
+                            loadingMessage={item.loadingMessage || null}
+                            errorMessage={item.error || null}
                         />
                     ))}
                 <Button
