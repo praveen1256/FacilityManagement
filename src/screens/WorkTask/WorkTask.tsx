@@ -33,6 +33,7 @@ type WorkTaskScreenViewProps = {
     timeLogCategoriesLoading: boolean;
     timeLogCategoriesError: string | null;
     onTimeLogCreate: (...args: Parameters<typeof WorkTask.Actions.createTimeLog>) => void;
+    onTimeLogCancelRetry: (...args: Parameters<typeof WorkTask.Actions.onTimeLogCancelRetry>) => void;
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -45,6 +46,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         timeLogCategoriesLoading,
         timeLogCategoriesError,
         onTimeLogCreate,
+        onTimeLogCancelRetry,
     } = props;
 
     const { workTaskId } = props.route.params;
@@ -135,6 +137,9 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                             timeLogCategoriesLoading={timeLogCategoriesLoading}
                             timeLogCategoriesError={timeLogCategoriesError}
                             onTimeLogCreate={onTimeLogCreate}
+                            // FIXME: take service request id from the work task
+                            serviceRequestId={"SR-10248438"}
+                            onCancelRetry={onTimeLogCancelRetry}
                         />
                     </List.Accordion>
                 </View>
@@ -154,6 +159,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     // Flexbox
                     flex: 1,
                     flexDirection: "row",
+                    display: "none",
                 }}
             >
                 {/* TimeSlot icon */}
@@ -209,6 +215,8 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => (
         dispatch(WorkTask.Actions.deleteTimeLog(workTaskId, timeLogId)),
     onTimeLogCreate: (...args: Parameters<typeof WorkTask.Actions.createTimeLog>) =>
         dispatch(WorkTask.Actions.createTimeLog(...args)),
+    onTimeLogCancelRetry: (...args: Parameters<typeof WorkTask.Actions.onTimeLogCancelRetry>) =>
+        dispatch(WorkTask.Actions.onTimeLogCancelRetry(...args)),
 });
 
 const mapState = (state: RootState) => ({

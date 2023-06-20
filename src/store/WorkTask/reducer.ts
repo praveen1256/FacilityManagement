@@ -14,6 +14,7 @@ import {
     TIME_LOG_CREATE,
     TIME_LOG_CREATE_SUCCESS,
     TIME_LOG_CREATE_ERROR,
+    TIME_LOG_RESET,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -36,6 +37,7 @@ export interface TimeLogExtended extends TimeLog {
     isLoading?: boolean;
     error?: string | null;
     loadingMessage?: string | null;
+    errorMode?: "DELETE" | "CREATE" | null;
 }
 
 export interface WorkTaskState {
@@ -166,6 +168,8 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                             ...timeLog,
                             isLoading: false,
                             error: action.error,
+                            errorMode: "DELETE",
+                            loadingMessage: null,
                         };
                     }
                     return timeLog;
@@ -173,9 +177,36 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
             };
         // Create TimeLog
         case TIME_LOG_CREATE:
+            // If the create mode is retry, we need to find the timeLog and update its loading state
+            if (action.mode === "RETRY") {
+                return {
+                    ...state,
+                    timeLogs: state.timeLogs.map((timeLog) => {
+                        if (timeLog._id === action.timeLog._id) {
+                            return {
+                                ...timeLog,
+                                isLoading: true,
+                                error: null,
+                                loadingMessage: "Creating...",
+                                errorMode: null,
+                            };
+                        }
+                        return timeLog;
+                    }),
+                };
+            }
             return {
                 ...state,
-                timeLogs: [...state.timeLogs, action.timeLog],
+                timeLogs: [
+                    ...state.timeLogs,
+                    {
+                        ...action.timeLog,
+                        isLoading: true,
+                        error: null,
+                        loadingMessage: "Creating...",
+                        errorMode: null,
+                    },
+                ],
             };
         case TIME_LOG_CREATE_SUCCESS:
             return {
@@ -183,7 +214,7 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 timeLogs: state.timeLogs.map((timeLog) => {
                     if (timeLog._id === action.pseudoId) {
                         return {
-                            ...timeLog,
+                            ...action.timeLog,
                             isLoading: false,
                             error: null,
                             loadingMessage: null,
@@ -203,6 +234,30 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                             isLoading: false,
                             error: action.error,
                             loadingMessage: null,
+                            errorMode: "CREATE",
+                        };
+                    }
+                    return timeLog;
+                }),
+            };
+
+        case TIME_LOG_RESET:
+            if (action.clearMode === "DELETE") {
+                return {
+                    ...state,
+                    timeLogs: state.timeLogs.filter((timeLog) => timeLog._id !== action.timeLogId),
+                };
+            }
+            return {
+                ...state,
+                timeLogs: state.timeLogs.map((timeLog) => {
+                    if (timeLog._id === action.timeLogId) {
+                        return {
+                            ...timeLog,
+                            isLoading: false,
+                            error: null,
+                            loadingMessage: null,
+                            errorMode: null,
                         };
                     }
                     return timeLog;

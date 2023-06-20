@@ -14,6 +14,7 @@ import {
     WORK_TASK_ERROR,
     WORK_TASK_LOADING,
     WORK_TASK_SUCCESS,
+    TIME_LOG_RESET,
 } from "./actionTypes";
 import { TimeLog, TimeLogCategory } from "./reducer";
 
@@ -88,6 +89,14 @@ export interface TimeLogCreate {
     type: typeof TIME_LOG_CREATE;
     timeLog: TimeLog;
     workTaskId: string;
+    mode: "CREATE" | "RETRY";
+}
+
+export interface TimeLogReset {
+    type: typeof TIME_LOG_RESET;
+    clearMode: "DELETE" | "ERROR";
+    workTaskId: string;
+    timeLogId: string;
 }
 
 export interface TimeLogCreateSuccess {
@@ -119,7 +128,8 @@ export type ActionInterfaces =
     | TimeLogCreateError
     | TimeLogCategoriesLoading
     | TimeLogCategoriesSuccess
-    | TimeLogCategoriesError;
+    | TimeLogCategoriesError
+    | TimeLogReset;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,

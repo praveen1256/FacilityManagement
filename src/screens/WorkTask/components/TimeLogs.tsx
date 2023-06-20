@@ -1,8 +1,9 @@
 import React from "react";
 import { View } from "react-native";
 import { ActivityIndicator, Button, Card, HelperText, Text } from "react-native-paper";
+import dayjs from "dayjs";
 
-import { createTimeLog, deleteTimeLog } from "../../../store/WorkTask/actions";
+import { WorkTask } from "../../../store";
 import { TimeLogCategory, TimeLogExtended } from "../../../store/WorkTask/reducer";
 import { useAppTheme } from "../../../theme";
 
@@ -12,15 +13,16 @@ type TimeLogsProps = {
     timeLogs: TimeLogExtended[];
     timeLogsLoading: boolean;
     timeLogsError: string | null;
-    onTimeLogDelete: (...args: Parameters<typeof deleteTimeLog>) => void;
+    onTimeLogDelete: (...args: Parameters<typeof WorkTask.Actions.deleteTimeLog>) => void;
     workTaskId: string;
+    serviceRequestId: string;
     // TimeLog Dependencies
     timeLogCategories: TimeLogCategory[];
     timeLogCategoriesLoading: boolean;
     timeLogCategoriesError: string | null;
     // Timelog creation dependencies
-    onTimeLogCreate: (...args: Parameters<typeof createTimeLog>) => void;
-    onInitiateCreateTimeLog?: () => void;
+    onTimeLogCreate: (...args: Parameters<typeof WorkTask.Actions.createTimeLog>) => void;
+    onCancelRetry: (...args: Parameters<typeof WorkTask.Actions.onTimeLogCancelRetry>) => void;
 };
 
 const TimeLogs: React.FC<TimeLogsProps> = ({
@@ -33,6 +35,8 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
     timeLogCategoriesError,
     timeLogCategoriesLoading,
     onTimeLogCreate,
+    serviceRequestId,
+    onCancelRetry,
 }) => {
     const [isAddTimeLogModalOpen, setIsAddTimeLogModalOpen] = React.useState(false);
     return (
@@ -42,11 +46,9 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
                 onClose={() => setIsAddTimeLogModalOpen(false)}
                 timeLogCategories={timeLogCategories}
                 onSubmit={(data) => {
-                    onTimeLogCreate(workTaskId, {
-                        Category: data.category,
-                        Date: data.date.toDateString(),
-                        Hours: data.hours.toString(),
-                        Description: data.comment,
+                    setIsAddTimeLogModalOpen(false);
+                    onTimeLogCreate(workTaskId, serviceRequestId, {
+                        ...data,
                     });
                 }}
             />
@@ -71,6 +73,27 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
                             onDelete={() => onTimeLogDelete(workTaskId, item._id)}
                             loadingMessage={item.loadingMessage || null}
                             errorMessage={item.error || null}
+                            onRetry={() => {
+                                if (item.errorMode === "DELETE") {
+                                    onTimeLogDelete(workTaskId, item._id);
+                                } else if (item.errorMode === "CREATE") {
+                                    onTimeLogCreate(
+                                        workTaskId,
+                                        serviceRequestId,
+                                        {
+                                            ...item,
+                                        },
+                                        item._id,
+                                    );
+                                }
+                            }}
+                            onCancelRetry={() => {
+                                if (item.errorMode === "DELETE") {
+                                    onCancelRetry(workTaskId, item._id, "ERROR");
+                                } else if (item.errorMode === "CREATE") {
+                                    onCancelRetry(workTaskId, item._id, "DELETE");
+                                }
+                            }}
                         />
                     ))}
                 <Button
@@ -105,6 +128,8 @@ type TimeLogCardProps = {
     onDelete: () => void;
     loadingMessage: string | null;
     errorMessage: string | null;
+    onRetry: () => void;
+    onCancelRetry: () => void;
 };
 
 const TimeLogCard: React.FunctionComponent<TimeLogCardProps> = ({
@@ -118,6 +143,8 @@ const TimeLogCard: React.FunctionComponent<TimeLogCardProps> = ({
     onDelete,
     loadingMessage,
     errorMessage,
+    onRetry,
+    onCancelRetry,
 }) => {
     const appTheme = useAppTheme();
 
@@ -142,13 +169,41 @@ const TimeLogCard: React.FunctionComponent<TimeLogCardProps> = ({
                     flex: 1,
                     justifyContent: "center",
                     alignItems: "center",
-                    display: isLoading ? "flex" : "none",
+                    display: isLoading || errorMessage ? "flex" : "none",
                 }}
             >
                 <Text variant="bodyMedium" style={{ color: appTheme.colors?.primary, fontWeight: "bold" }}>
-                    {loadingMessage}
+                    {loadingMessage || errorMessage}
                 </Text>
-                <ActivityIndicator animating={true} />
+                {isLoading && <ActivityIndicator animating={true} />}
+                {/* If theres a error message, show retry button */}
+                {errorMessage && (
+                    <View
+                        style={{
+                            flexDirection: "row",
+                        }}
+                    >
+                        <Button
+                            mode="contained"
+                            onPress={onRetry}
+                            style={{
+                                marginHorizontal: 10,
+                            }}
+                        >
+                            Retry
+                        </Button>
+                        {/* Cancel */}
+                        <Button
+                            mode="outlined"
+                            onPress={onCancelRetry}
+                            style={{
+                                marginHorizontal: 10,
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                    </View>
+                )}
             </View>
             <Card>
                 <Card.Content>
@@ -167,7 +222,7 @@ const TimeLogCard: React.FunctionComponent<TimeLogCardProps> = ({
                         },
                         {
                             label: "Date",
-                            value: date,
+                            value: dayjs(date).format("ddd, MMMM D, YYYY"),
                         },
                         {
                             label: "Hours",

@@ -1,23 +1,26 @@
 import React from "react";
 import { View } from "react-native";
 import { Modal, Portal, Text, Button, TextInput, HelperText } from "react-native-paper";
-import { DatePickerModal } from "react-native-paper-dates";
+import { TimePickerModal, DatePickerModal } from "react-native-paper-dates";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { Dropdown } from "react-native-element-dropdown";
+import dayjs from "dayjs";
 
-import { TimeLogCategory } from "../../../store/WorkTask/reducer";
+import { TimeLog, TimeLogCategory } from "../../../store/WorkTask/reducer";
 import { useAppTheme } from "../../../theme";
 
 const timeLogSchema = z.object({
     date: z.date().refine((val) => val <= new Date(), "Date cannot be in the future"),
-    hours: z.preprocess(
-        (val) => Number(val),
-        z.number().min(1, "Must be at least 1 hour").max(24, "Must be less than 24 hours"),
-    ),
+    // hours: z.preprocess(
+    //     (val) => Number(val),
+    //     z.number().min(1, "Must be at least 1 hour").max(24, "Must be less than 24 hours"),
+    // ),
     category: z.string().nonempty("Category is required"),
     comment: z.string().nonempty("Comment is required"),
+    startTime: z.date(),
+    endTime: z.date(),
 });
 
 type TimeLogFormValues = z.infer<typeof timeLogSchema>;
@@ -26,46 +29,69 @@ type CreateTimeLogModalProps = {
     isOpen: boolean;
     onClose: () => void;
     timeLogCategories: TimeLogCategory[];
-    onSubmit: (data: TimeLogFormValues) => void;
+    onSubmit: (data: Pick<TimeLog, "Category" | "Description" | "Hours" | "Date">) => void;
 };
 
-const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose, timeLogCategories }) => {
+const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose, timeLogCategories, onSubmit }) => {
     const containerStyle = { backgroundColor: "white", padding: 20 };
     const theme = useAppTheme();
+
+    // Create a memoized date objects with 1hr as difference
+    const defaultStartEndTime = React.useMemo(() => {
+        const startTime = new Date();
+        const endTime = new Date();
+        endTime.setHours(startTime.getHours() + 1);
+        return {
+            startTime: startTime,
+            endTime: endTime,
+        };
+    }, []);
 
     const { handleSubmit, control, reset, watch, formState } = useForm<TimeLogFormValues>({
         mode: "onBlur",
         reValidateMode: "onChange",
         defaultValues: {
             date: new Date(),
-            hours: 1,
+            startTime: defaultStartEndTime.startTime,
+            endTime: defaultStartEndTime.endTime,
             category: "",
             comment: "",
         },
         resolver: zodResolver(timeLogSchema),
     });
 
-    // const onSubmit = React.useCallback(
-    //     (data: TimeLogFormValues) => {
-    //         console.log(data);
-    //     }
-    //     [reset],
-    // );
+    const processSubmit = React.useCallback(
+        (data: TimeLogFormValues) => {
+            // Get the time difference in 1.5 hour format
+            const { startTime, endTime } = data;
 
-    watch();
-    console.log(formState);
+            const diff = dayjs(endTime).diff(dayjs(startTime), "hour", true);
+            const hours = Math.floor(diff);
+            const minutes = Math.floor((diff - hours) * 60);
+            // Convert mins to decimal
+            const decimalMinutes = minutes / 60;
+            const totalHours = hours + decimalMinutes;
 
-    // const onDismissSingle = React.useCallback(() => {
-    //     setDatePickerOpen(false);
-    // }, [setDatePickerOpen]);
+            onSubmit({
+                Category: data.category,
+                Description: data.comment,
+                Hours: `${totalHours}`,
+                Date: data.date.toISOString(),
+            });
+        },
+        [reset],
+    );
 
-    // const onConfirmSingleDate = React.useCallback<(params: { date: Date }) => void>(
-    //     (params) => {
-    //         setDatePickerOpen(false);
-    //         setValue("date", params.date);
-    //     },
-    //     [setDatePickerOpen, setDate],
-    // );
+    const [startTime, endTime] = watch(["startTime", "endTime"]);
+
+    const getTimeDiff = React.useCallback(() => {
+        const start = dayjs(startTime);
+        const end = dayjs(endTime);
+        const diffHours = end.diff(start, "hour", true);
+        const diffMinutes = end.diff(start, "minute", true);
+        // return in "HH:MM" format
+        return `${Math.floor(diffHours)}hour(s) ${Math.floor(diffMinutes % 60)} minute(s)`;
+    }, [startTime, endTime]);
 
     return (
         <>
@@ -131,6 +157,7 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                                             onConfirm={(params) => {
                                                 setDatePickerOpen(false);
                                                 onChange(params.date);
+                                                // Convert to Date object
                                             }}
                                         />
                                     </>
@@ -138,96 +165,120 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                             }}
                         />
                     </View>
-                    <View style={{ marginVertical: 0 }}>
-                        <Controller
-                            control={control}
-                            name="hours"
-                            render={({ field: { onChange, onBlur, value }, fieldState }) => {
-                                // const [datePickerOpen, setDatePickerOpen] = React.useState(false);
-                                return (
-                                    <>
-                                        <View
-                                            style={{
-                                                flexDirection: "row",
-                                                justifyContent: "space-between",
-                                                flexWrap: "wrap",
-                                            }}
-                                        >
+                    <View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                display: "flex",
+                                justifyContent: "space-between",
+                            }}
+                        >
+                            <Controller
+                                control={control}
+                                name="startTime"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                    const [timePickerOpen, setTimePickerOpen] = React.useState(false);
+                                    return (
+                                        <>
+                                            <TimePickerModal
+                                                visible={timePickerOpen}
+                                                onConfirm={(params) => {
+                                                    setTimePickerOpen(false);
+                                                    // Create a new date object with the same date as the current value
+                                                    const newDate = new Date(value);
+                                                    // Set the hours and minutes to the new values
+                                                    newDate.setHours(params.hours);
+                                                    newDate.setMinutes(params.minutes);
+                                                    // Update the value
+                                                    onChange(newDate);
+                                                }}
+                                                onDismiss={() => setTimePickerOpen(false)}
+                                                hours={value.getHours()}
+                                                minutes={value.getMinutes()}
+                                                locale="en"
+                                            />
+
                                             <TextInput
                                                 mode="outlined"
                                                 label="Start Time"
-                                                // style={styles.inputContainerStyle}
                                                 editable={false}
                                                 onBlur={onBlur}
-                                                // onChangeText={onChange}
-                                                value={"10:00 AM"}
+                                                // TODO: Format the date
+                                                value={dayjs(value).format("hh:mm A")}
                                                 error={!!fieldState.error}
                                                 right={
                                                     <TextInput.Icon
-                                                        icon="calendar"
-                                                        // onPress={() => setDatePickerOpen(true)}
+                                                        icon="clock"
+                                                        onPress={() => setTimePickerOpen(true)}
                                                     />
                                                 }
                                                 autoCapitalize="none"
                                                 returnKeyType="next"
                                             />
+                                        </>
+                                    );
+                                }}
+                            />
+                            <Controller
+                                control={control}
+                                name="endTime"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                    const [timePickerOpen, setTimePickerOpen] = React.useState(false);
+                                    return (
+                                        <>
+                                            <TimePickerModal
+                                                visible={timePickerOpen}
+                                                onConfirm={(params) => {
+                                                    setTimePickerOpen(false);
+                                                    // Create a new date object with the same date as the current value
+                                                    const newDate = new Date(value);
+                                                    // Set the hours and minutes to the new values
+                                                    newDate.setHours(params.hours);
+                                                    newDate.setMinutes(params.minutes);
+                                                    // Update the value
+                                                    onChange(newDate);
+                                                }}
+                                                onDismiss={() => setTimePickerOpen(false)}
+                                                hours={value.getHours()}
+                                                minutes={value.getMinutes()}
+                                                locale="en"
+                                            />
+
                                             <TextInput
                                                 mode="outlined"
                                                 label="End Time"
-                                                // style={styles.inputContainerStyle}
                                                 editable={false}
                                                 onBlur={onBlur}
-                                                // onChangeText={onChange}
-                                                value={"10:00 AM"}
+                                                // TODO: Format the date
+                                                value={dayjs(value).format("hh:mm A")}
                                                 error={!!fieldState.error}
                                                 right={
                                                     <TextInput.Icon
-                                                        icon="calendar"
-                                                        // onPress={() => setDatePickerOpen(true)}
+                                                        icon="clock"
+                                                        onPress={() => setTimePickerOpen(true)}
                                                     />
                                                 }
                                                 autoCapitalize="none"
                                                 returnKeyType="next"
                                             />
-                                            <TextInput
-                                                mode="outlined"
-                                                label="Hours"
-                                                // style={styles.inputContainerStyle}
-                                                editable={false}
-                                                onBlur={onBlur}
-                                                // onChangeText={onChange}
-                                                value={"8 hours"}
-                                                error={!!fieldState.error}
-                                                // right={
-                                                //     <TextInput.Icon
-                                                //         icon="calendar"
-                                                //         onPress={() => setDatePickerOpen(true)}
-                                                //     />
-                                                // }
-                                                style={{ marginTop: 10 }}
-                                                autoCapitalize="none"
-                                                returnKeyType="next"
-                                            />
-                                        </View>
-
-                                        {/* <TextInput
-                                            mode="outlined"
-                                            label="Hours"
-                                            keyboardType="numeric"
-                                            onBlur={onBlur}
-                                            onChangeText={onChange}
-                                            value={value.toString()}
-                                            error={!!fieldState.error}
-                                            // disabled={isLoading}
-                                            returnKeyType="next"
-                                        /> */}
-                                        <HelperText type="error" visible={!!fieldState.error}>
-                                            {fieldState.error?.message}
-                                        </HelperText>
-                                    </>
-                                );
+                                        </>
+                                    );
+                                }}
+                            />
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                display: "flex",
                             }}
-                        />
+                        >
+                            <Text variant="titleSmall">Time : {getTimeDiff()}</Text>
+                        </View>
+                        <HelperText type="error" visible={!!formState.errors?.endTime}>
+                            {formState.errors?.endTime?.message}
+                        </HelperText>
                     </View>
                     {/* Time Category */}
                     <View style={{ marginVertical: 0 }}>
@@ -239,6 +290,12 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                                 return (
                                     <>
                                         <Dropdown<TimeLogCategory>
+                                            style={{
+                                                // TODO: Need to fix the border color
+                                                borderColor: fieldState.error?.message ? theme.colors?.error : "black",
+                                                borderWidth: 1,
+                                                padding: 8,
+                                            }}
                                             data={timeLogCategories}
                                             labelField="Name"
                                             valueField="Name"
@@ -291,7 +348,7 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                         }}
                     >
                         <Button
-                            onPress={handleSubmit((d) => console.log("Submit!!", d))}
+                            onPress={handleSubmit(processSubmit)}
                             uppercase={false}
                             mode="contained"
                             style={{
