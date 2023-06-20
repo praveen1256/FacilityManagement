@@ -26,9 +26,10 @@ interface HomeScreenProps {
 }
 
 const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkTaks }) => {
+    const isLoginPage = false;
     return (
         <View style={styles.homeContainer}>
-            <Header />
+            <Header loginPage={isLoginPage} />
             <ScrollView>
                 <View>
                     <FM_Header />
