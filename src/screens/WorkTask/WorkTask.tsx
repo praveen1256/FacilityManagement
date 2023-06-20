@@ -7,8 +7,7 @@ import { connect } from "react-redux";
 import { useAppTheme } from "../../theme";
 import { RootStackParamList } from "../../Navigator";
 import { AppThunkDispatch, RootState, WorkTask } from "../../store";
-import { EventLog, TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
-import { WorkTask as IWorkTask } from "../../store/WorkTasks/reducer";
+import { EventLog, FullWorkTask, TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
 
 import TimeLogs from "./components/TimeLogs";
 
@@ -32,7 +31,7 @@ type WorkTaskScreenViewProps = {
     eventLogs: EventLog[];
     eventLogsLoading: boolean;
     eventLogsError: string | null;
-    workTask: IWorkTask | null;
+    workTask: FullWorkTask | null;
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -127,8 +126,70 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         expanded={true}
                         right={() => <></>}
                     >
-                        <Text>General Stuff!!</Text>
-                        <Text>WorkTaskID: {workTaskId}</Text>
+                        <View
+                            style={{
+                                marginHorizontal: 16,
+                            }}
+                        >
+                            {[
+                                {
+                                    label: "Request Class",
+                                    value: workTask.RequestClass.value,
+                                },
+                                {
+                                    label: "Description",
+                                    value: workTask.Description,
+                                },
+                                {
+                                    label: "Address",
+                                    value: workTask.Address,
+                                },
+                                {
+                                    label: "City",
+                                    value: workTask.City,
+                                },
+                                {
+                                    label: "Buildind Name",
+                                    value: workTask.Building,
+                                },
+                                {
+                                    label: "State",
+                                    value: workTask.StateProvince,
+                                },
+                                {
+                                    label: "Requested By",
+                                    // FIXME: this should be the name of the user
+                                    // This should be pulled from the api - Single Work Task Details(Postman)
+                                    value: workTask.RequestedByFullName,
+                                },
+                                {
+                                    label: "Requested For",
+                                    // FIXME: this should be the name of the user
+                                    // This should be pulled from the api - Single Work Task Details(Postman)
+                                    value: workTask.RequestedForFullName,
+                                },
+                            ].map((item, idx) => (
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                    }}
+                                    key={`${workTask._id}-${idx}`}
+                                >
+                                    <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>
+                                        {item.label} :{" "}
+                                    </Text>
+                                    <Text
+                                        variant="bodyMedium"
+                                        style={{
+                                            flex: 1,
+                                            flexWrap: "wrap",
+                                        }}
+                                    >
+                                        {item.value}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
                     </List.Accordion>
                     <List.Accordion
                         title={

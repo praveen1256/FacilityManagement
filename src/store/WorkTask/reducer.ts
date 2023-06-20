@@ -1,5 +1,3 @@
-import { WorkTask } from "../WorkTasks/reducer";
-
 import {
     WORK_TASK_ERROR,
     TIME_LOGS_ERROR,
@@ -52,10 +50,88 @@ export interface EventLog {
     _id: string;
 }
 
+export interface FullWorkTask {
+    Zip: string;
+    CustomerOrganization: string;
+    Address: string;
+    CompletedBy: unknown;
+    TaskPriority: {
+        id: number;
+        value: string;
+    };
+    SecondaryUse: string;
+    PlannedEnd: string;
+    TaskReIssueReason: string;
+    Currency: string;
+    RequestedByWorkPhone: unknown;
+    TaskType: {
+        id: number;
+        value: string;
+    };
+    QuoteRequired: boolean;
+    ID: string;
+    Space: unknown;
+    Status: string;
+    RequestedByEmail: unknown;
+    RequestClass: {
+        id: number;
+        value: string;
+    };
+    CreatedBy: string;
+    PlannedStart: string;
+    RequestedForFullName: string;
+    Priority: string;
+    RequestedByFullName: string;
+    StateProvince: string;
+    triTechnicianOnSiteTimeDT: unknown;
+    LocationCode: string;
+    ResolutionType: string;
+    City: string;
+    LateCompletionReason: unknown;
+    AssetName: unknown;
+    RequestedForEmail: unknown;
+    TimeCategory: string;
+    TaskName: string;
+    TimeEntryComment: unknown;
+    _id: string;
+    PrimaryWorkLocationWT: string;
+    PrimaryWorkLocation: string;
+    CreatedDateTime: string;
+    Building: string;
+    cstProblemStabilizedDT: unknown;
+    Description: string;
+    VRepairID: unknown;
+    Hours: string;
+    BuildingName: string;
+    ModifiedDateTime: string;
+    cstCompletedDateTimeDT: unknown;
+    CauseType: string;
+    Direction: {
+        id: number;
+        value: string;
+    };
+    AssignToMe: boolean;
+    ServiceClass: string;
+    CompletionComment: unknown;
+    AssetID: unknown;
+    respperson: string;
+    TimeEntryDate: string;
+    Floor: unknown;
+    CreatedFromMobile: string;
+    VRepairAlarm: string;
+    RepairDefinition: string;
+    RequestedForWorkPhone: unknown;
+    AdminRetail: string;
+    RequestedForLookup: string;
+    GeographyLookup: string;
+    resporg: string;
+    RequestedByLookup: string;
+}
+
 export interface WorkTaskState {
     loading: boolean;
     error: string | null;
-    workTask: WorkTask | null;
+    workTask: FullWorkTask | null;
     // Timelogs Dependencies - Categories - TODO: Move to a separate reducer
     timeLogCategoriesLoading: boolean;
     timeLogCategoriesError: string | null;

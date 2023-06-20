@@ -1,5 +1,3 @@
-import { WorkTask } from "../WorkTasks/reducer";
-
 import {
     TIME_LOGS_ERROR,
     TIME_LOGS_LOADING,
@@ -21,7 +19,7 @@ import {
     EVENT_LOGS_LOADING,
     EVENT_LOGS_SUCCESS,
 } from "./actionTypes";
-import { EventLog, TimeLog, TimeLogCategory } from "./reducer";
+import { EventLog, FullWorkTask, TimeLog, TimeLogCategory } from "./reducer";
 export interface WorkTaskLoading {
     type: typeof WORK_TASK_LOADING;
 }
@@ -29,7 +27,7 @@ export interface WorkTaskLoading {
 export interface WorkTaskSuccess {
     type: typeof WORK_TASK_SUCCESS;
     // TODO: fix me
-    workTask: WorkTask;
+    workTask: FullWorkTask;
 }
 
 export interface WorkTaskError {

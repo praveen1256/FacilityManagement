@@ -26,29 +26,28 @@ import {
     EVENT_LOGS_ERROR,
     EVENT_LOGS_LOADING,
     EVENT_LOGS_SUCCESS,
+    WORK_TASK_LOADING,
 } from "./actionTypes";
-import { EventLog, TimeLog } from "./reducer";
+import { EventLog, FullWorkTask, TimeLog } from "./reducer";
 
 export const loadWorkTask =
     (workTaskId: WorkTask["_id"]): AppThunkAction<ActionInterfaces> =>
-    async (dispatch, getState) => {
-        const workTask = getState().worktasks.tasks.find((task) => task._id === workTaskId);
-        if (!workTask) {
-            // Navigate back or show alert with error
-            return;
-        }
+    async (dispatch, _getState) => {
+        dispatch(pureActionCreator(WORK_TASK_LOADING, {}));
 
-        await testingDelay();
-
-        // dispatch(pureActionCreator(WORK_TASK_LOADING, {}));
         try {
             // const state = getState();
-            // await axios.get(`https://verizon-dev2.tririga.com/oslc/login?USERNAME=1446144475&PASSWORD=password`);
-            // const url = "https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/COUNT_P2P3";
-            // const response = await axios.get(url);
+            await axios.get(`https://verizon-dev2.tririga.com/oslc/login?USERNAME=1446144475&PASSWORD=password`);
+            const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}?countOnly=false`;
+            const response = await axios.get<{
+                data: FullWorkTask;
+            }>(url);
+
+            await testingDelay();
+
             dispatch(
                 pureActionCreator(WORK_TASK_SUCCESS, {
-                    workTask: workTask,
+                    workTask: response.data.data,
                 }),
             );
             // // Navigate to the work task screen
