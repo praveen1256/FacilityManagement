@@ -1,8 +1,11 @@
-import { StyleSheet, View, Dimensions, ScrollView, Pressable } from "react-native";
+import { StyleSheet, View, Dimensions, ScrollView } from "react-native";
 import { Card, Text } from "react-native-paper";
 import React from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import ColorfulCard from "react-native-colorful-card";
 
 import FM_Header from "../../components/FM_Header";
 import Header from "../../components/Header";
@@ -23,95 +26,105 @@ interface HomeScreenProps {
 }
 
 const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkTaks }) => {
-    // type Mode = "elevated" | "outlined" | "contained";
-    // const [selectedMode, setSelectedMode] = React.useState("elevated" as Mode);
-
     return (
-        <ScrollView>
-            <View style={styles.homeContainer}>
-                <Header />
-                <FM_Header />
-                <View style={styles.container}>
-                    <View style={styles.view1}>
-                        <Card style={[styles.cardStyle, styles.card1_Bg]}>
-                            <Text style={styles.paragraph}>{locationzedStrings.home.card1_count_title}</Text>
-                            <Text style={styles.paragraph}>0</Text>
-                        </Card>
-                        <Card style={[styles.cardStyle, styles.card2_Bg]}>
-                            <Text style={styles.paragraph}>{locationzedStrings.home.card2_count_title}</Text>
-                            <Text style={styles.paragraph}>0</Text>
-                        </Card>
-                        {/* </View>
+        <View style={styles.homeContainer}>
+            <Header />
+            <ScrollView>
+                <View>
+                    <FM_Header />
+                    <View style={styles.container}>
+                        <View style={styles.view1}>
+                            <Card style={[styles.cardStyle, styles.card1_Bg]}>
+                                <Text style={styles.paragraph}>{locationzedStrings.home.card1_count_title}</Text>
+                                <Text style={styles.paragraph}>0</Text>
+                            </Card>
+                            <Card style={[styles.cardStyle, styles.card2_Bg]}>
+                                <Text style={styles.paragraph}>{locationzedStrings.home.card2_count_title}</Text>
+                                <Text style={styles.paragraph}>0</Text>
+                            </Card>
+                            <Card style={[styles.cardStyle, styles.card3_Bg]}>
+                                <Text style={styles.paragraph}>{locationzedStrings.home.card3_count_title}</Text>
+                                <Text style={styles.paragraph}>0</Text>
+                            </Card>
 
-                <View style={styles.view1}> */}
-                        <Card style={[styles.cardStyle, styles.card3_Bg]}>
-                            <Text style={styles.paragraph}>{locationzedStrings.home.card3_count_title}</Text>
-                            <Text style={styles.paragraph}>0</Text>
-                        </Card>
+                            <Card style={[styles.cardStyle, styles.card4_Bg]}>
+                                <Text style={styles.paragraph}>{locationzedStrings.home.card4_count_title}</Text>
+                                <Text style={styles.paragraph}>0</Text>
+                            </Card>
+                        </View>
+                    </View>
+                    <View style={styles.taskContainer}>
+                        <View style={styles.taskListCol1}>
+                            <ColorfulCard
+                                title={locationzedStrings.home.card1_title}
+                                // iconImageStyle={styles.iconBackgroundStyle}
+                                value=""
+                                valuePostfix=""
+                                footerTitle={locationzedStrings.home.card1_message}
+                                footerValue=""
+                                iconImageSource={require("../../assets/images/tasks.png")}
+                                style={{ backgroundColor: "#e48058" }}
+                                onPress={() => {
+                                    onPressWorkTaks(false);
+                                }}
+                            />
 
-                        <Card style={[styles.cardStyle, styles.card4_Bg]}>
-                            <Text style={styles.paragraph}>{locationzedStrings.home.card4_count_title}</Text>
-                            <Text style={styles.paragraph}>0</Text>
-                        </Card>
+                            <ColorfulCard
+                                title={locationzedStrings.home.card2_title}
+                                value=""
+                                valuePostfix=""
+                                footerTitle={locationzedStrings.home.card2_message}
+                                footerValue=""
+                                iconImageSource={require("../../assets/images/porfolios.png")}
+                                style={{ backgroundColor: "#26AFE5", marginVertical: 10 }}
+                                onPress={() => {
+                                    // onPressWorkTaks(false);
+                                }}
+                            />
+                        </View>
+                        <View style={styles.taskListCol2}>
+                            <ColorfulCard
+                                title={locationzedStrings.home.card3_title}
+                                value=""
+                                valuePostfix=""
+                                footerTitle={locationzedStrings.home.card3_message}
+                                footerValue=""
+                                iconImageSource={require("../../assets/images/alarm-clock.png")}
+                                style={{ backgroundColor: "#515ae5" }}
+                                onPress={() => {
+                                    // onPressWorkTaks(false);
+                                }}
+                            />
+
+                            <ColorfulCard
+                                title={locationzedStrings.home.card4_title}
+                                value=""
+                                valuePostfix=""
+                                footerTitle={locationzedStrings.home.card4_message}
+                                footerValue=""
+                                iconImageSource={require("../../assets/images/repair-tool.png")}
+                                style={{ backgroundColor: "#87c43e", marginVertical: 10 }}
+                                onPress={() => {
+                                    // onPressWorkTaks(false);
+                                }}
+                            />
+                        </View>
                     </View>
+                    <Card style={[styles.customerCardStyle, styles.customerCardBg]}>
+                        <View style={styles.criticalView}>
+                            <FontAwesome5 style={styles.callIcon} name="exclamation-triangle" size={30} />
+                            <Text style={styles.criticalCareInfo}>{locationzedStrings.home.critical_request}</Text>
+                        </View>
+                        <View style={styles.callView}>
+                            <MaterialIcon style={styles.callIcon} name="call" size={30} />
+                            <Text style={styles.customerCareCall}>{locationzedStrings.home.customercare_call}</Text>
+                        </View>
+                        <Text style={styles.customerCareInfo}>{locationzedStrings.home.ivr_message}</Text>
+                        <Text style={styles.customerCareInfo}>{locationzedStrings.home.local_assistance}</Text>
+                    </Card>
                 </View>
-                <View style={styles.taskContainer}>
-                    <View style={styles.taskListCol1}>
-                        <Pressable
-                            onPress={() => {
-                                onPressWorkTaks(false);
-                            }}
-                        >
-                            <Card style={styles.tasksCardStyle}>
-                                <Text style={styles.taskTitle}>{locationzedStrings.home.card1_title}</Text>
-                                <Text style={styles.taskDescription}>{locationzedStrings.home.card1_message}</Text>
-                            </Card>
-                        </Pressable>
-                        <Pressable
-                            onPress={() => {
-                                // eslint-disable-next-line no-console
-                                console.log("My Responsible Tasks");
-                            }}
-                        >
-                            <Card style={styles.tasksCardStyle}>
-                                <Text style={styles.taskTitle}>{locationzedStrings.home.card2_title}</Text>
-                                <Text style={styles.taskDescription}>{locationzedStrings.home.card2_message}</Text>
-                            </Card>
-                        </Pressable>
-                    </View>
-                    <View style={styles.taskListCol2}>
-                        <Pressable
-                            onPress={() => {
-                                // eslint-disable-next-line no-console
-                                console.log("My Location Taks");
-                            }}
-                        >
-                            <Card style={styles.tasksCardStyle}>
-                                <Text style={styles.taskTitle}>{locationzedStrings.home.card3_title}</Text>
-                                <Text style={styles.taskDescription}>{locationzedStrings.home.card3_message}</Text>
-                            </Card>
-                        </Pressable>
-                        <Pressable
-                            onPress={() => {
-                                // eslint-disable-next-line no-console
-                                console.log("Service Request");
-                            }}
-                        >
-                            <Card style={styles.tasksCardStyle}>
-                                <Text style={styles.taskTitle}>{locationzedStrings.home.card4_title}</Text>
-                                <Text style={styles.taskDescription}>{locationzedStrings.home.card4_message}</Text>
-                            </Card>
-                        </Pressable>
-                    </View>
-                </View>
-                <Card style={[styles.customerCardStyle, styles.customerCardBg]}>
-                    <Text style={styles.customerCareInfo}>{locationzedStrings.home.critical_request}</Text>
-                    <Text style={styles.customerCareCall}>{locationzedStrings.home.customercare_call}</Text>
-                    <Text style={styles.customerCareInfo}>{locationzedStrings.home.ivr_message}</Text>
-                    <Text style={styles.customerCareInfo}>{locationzedStrings.home.local_assistance}</Text>
-                </Card>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 };
 
@@ -143,12 +156,22 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 10,
     },
+    criticalCareInfo: {
+        fontSize: 16,
+        color: "#FFFFFF",
+        textAlign: "center",
+        marginTop: 10,
+    },
     customerCareCall: {
         fontSize: 16,
         fontWeight: "bold",
         color: "#ED7000",
         textAlign: "center",
+        textAlignVertical: "center",
         marginTop: 10,
+    },
+    iconStyle: {
+        alignSelf: "center",
     },
     taskTitle: {
         fontSize: 14,
@@ -191,6 +214,22 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         padding: 15,
     },
+    criticalView: {
+        flexDirection: "row",
+        marginLeft: 10,
+    },
+    callView: {
+        height: 40,
+        flexDirection: "row",
+        justifyContent: "center",
+        margin: 4,
+    },
+    callIcon: {
+        alignSelf: "center",
+        marginTop: 10,
+        marginRight: 10,
+        color: "#ED7000",
+    },
     view1: {
         flexDirection: "row",
         justifyContent: "center",
@@ -231,17 +270,11 @@ const styles = StyleSheet.create({
         alignSelf: "flex-start",
         flexDirection: "row",
     },
-    leafBorder: {
-        // borderTopLeftRadius: 30,
-        // borderBottomRightRadius: 30,
-        backgroundColor: "white",
-        elevation: 23,
-        borderRadius: 10,
-        shadowColor: "#B2B2B2",
-        shadowOffset: {
-            width: 1,
-            height: 1,
-        },
+    iconBackgroundStyle: {
+        backgroundColor: "#fe8f62",
+        padding: 30,
+        borderTopLeftRadius: 150,
+        borderBottomLeftRadius: 150,
     },
     square: {
         width: 150,
