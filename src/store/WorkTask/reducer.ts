@@ -17,6 +17,9 @@ import {
     TIME_LOG_CREATE_SUCCESS,
     TIME_LOG_CREATE_ERROR,
     TIME_LOG_RESET,
+    EVENT_LOGS_LOADING,
+    EVENT_LOGS_ERROR,
+    EVENT_LOGS_SUCCESS,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -42,6 +45,13 @@ export interface TimeLogExtended extends TimeLog {
     errorMode?: "DELETE" | "CREATE" | null;
 }
 
+export interface EventLog {
+    Comment: string;
+    ModifiedDateTime: string;
+    Photo: string | null;
+    _id: string;
+}
+
 export interface WorkTaskState {
     loading: boolean;
     error: string | null;
@@ -54,6 +64,10 @@ export interface WorkTaskState {
     timeLogsLoading: boolean;
     timeLogsError: string | null;
     timeLogs: TimeLogExtended[];
+    // Event Logs
+    eventLogsLoading: boolean;
+    eventLogsError: string | null;
+    eventLogs: EventLog[];
 }
 
 const initialState: WorkTaskState = {
@@ -68,6 +82,10 @@ const initialState: WorkTaskState = {
     timeLogsLoading: false,
     timeLogsError: null,
     timeLogs: [],
+    // Event Logs
+    eventLogsLoading: false,
+    eventLogsError: null,
+    eventLogs: [],
 };
 
 export const workTaskReducer = (state: WorkTaskState = initialState, action: ActionInterfaces): WorkTaskState => {
@@ -83,6 +101,10 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 loading: false,
                 error: null,
                 workTask: action.workTask,
+                // Removing existing state
+                // TODO: Move to a separate action
+                eventLogs: [],
+                timeLogs: [],
             };
         case WORK_TASK_ERROR:
             return {
@@ -258,6 +280,26 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                     return timeLog;
                 }),
             };
+        case EVENT_LOGS_LOADING:
+            return {
+                ...state,
+                eventLogsLoading: true,
+            };
+        case EVENT_LOGS_SUCCESS:
+            return {
+                ...state,
+                eventLogsLoading: false,
+                eventLogsError: null,
+                eventLogs: action.eventLogs,
+            };
+
+        case EVENT_LOGS_ERROR:
+            return {
+                ...state,
+                eventLogsLoading: false,
+                eventLogsError: action.error,
+            };
+
         default:
             return {
                 ...state,

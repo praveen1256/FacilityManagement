@@ -1,11 +1,10 @@
 import axios, { AxiosError } from "axios";
 import dayjs from "dayjs";
-import { container } from "tsyringe";
+// import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
 import { WorkTask } from "../WorkTasks/reducer";
-import { NavigationService } from "../../services/Navigation.Service";
-import { WorkTaskScreen } from "../../screens";
+import { ANIMATION_DELAY_MS, testingDelay } from "../../EnableAnimationsDelay";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import {
@@ -24,8 +23,11 @@ import {
     TIME_LOG_RESET,
     WORK_TASK_ERROR,
     WORK_TASK_SUCCESS,
+    EVENT_LOGS_ERROR,
+    EVENT_LOGS_LOADING,
+    EVENT_LOGS_SUCCESS,
 } from "./actionTypes";
-import { TimeLog } from "./reducer";
+import { EventLog, TimeLog } from "./reducer";
 
 export const loadWorkTask =
     (workTaskId: WorkTask["_id"]): AppThunkAction<ActionInterfaces> =>
@@ -35,6 +37,8 @@ export const loadWorkTask =
             // Navigate back or show alert with error
             return;
         }
+
+        await testingDelay();
 
         // dispatch(pureActionCreator(WORK_TASK_LOADING, {}));
         try {
@@ -47,9 +51,9 @@ export const loadWorkTask =
                     workTask: workTask,
                 }),
             );
-            // Navigate to the work task screen
-            const navigationContainer = container.resolve(NavigationService);
-            navigationContainer.navigate(WorkTaskScreen.WorkTaskScreenName, undefined);
+            // // Navigate to the work task screen
+            // const navigationContainer = container.resolve(NavigationService);
+            // navigationContainer.navigate(WorkTaskScreen.WorkTaskScreenName, undefined);
         } catch (error) {
             const err = error as AxiosError;
             dispatch(pureActionCreator(WORK_TASK_ERROR, { error: err.message }));
@@ -65,6 +69,8 @@ export const loadTimeLogCategories = (): AppThunkAction<ActionInterfaces> => asy
     }
 
     dispatch(pureActionCreator(TIME_LOG_CATEGORIES_LOADING, {}));
+
+    await testingDelay(ANIMATION_DELAY_MS * 3);
     try {
         // const state = getState();
         await axios.get(`https://verizon-dev2.tririga.com/oslc/login?USERNAME=1446144475&PASSWORD=password`);
@@ -89,6 +95,9 @@ export const loadTimeLogs =
 
             const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}/cstTMLog?countOnly=false`;
             const response = await axios.get(url);
+
+            await testingDelay(ANIMATION_DELAY_MS * 2);
+
             dispatch(pureActionCreator(TIME_LOGS_SUCCESS, { timeLogs: response.data.data }));
         } catch (error) {
             const err = error as AxiosError;
@@ -106,9 +115,8 @@ export const deleteTimeLog =
             }),
         );
         try {
-            // const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
             // Testing
-            // await delay(2000);
+            await testingDelay();
             // throw new Error("Testing");
 
             const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}/cstTMLog?method=delete&actionGroup=actions&action=delete`;
@@ -177,10 +185,9 @@ export const createTimeLog =
         try {
             // const state = getState();
             // TODO: Call the create API
-            const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
             // // Testing
-            // await delay(2000);
+            await testingDelay();
             // throw new Error("Testing");
 
             const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstHelper?actionGroup=actions&action=calculate&refresh=true`;
@@ -200,6 +207,7 @@ export const createTimeLog =
             });
 
             // Allow Breathing room for the Server to create the timelog
+            const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
             await delay(4000);
 
             // Fetch all the timelogs again
@@ -250,4 +258,32 @@ export const onTimeLogCancelRetry =
                 workTaskId,
             }),
         );
+    };
+
+// Load all the events for the work task
+export const loadEvents =
+    (workTaskId: string): AppThunkAction<ActionInterfaces> =>
+    async (dispatch, _getState) => {
+        dispatch(pureActionCreator(EVENT_LOGS_LOADING, {}));
+        try {
+            const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}/cstEventLog?countOnly=false&query=true`;
+            const res = await axios.get<{
+                data: EventLog[];
+            }>(url);
+
+            await testingDelay(ANIMATION_DELAY_MS * 2);
+
+            dispatch(
+                pureActionCreator(EVENT_LOGS_SUCCESS, {
+                    eventLogs: res.data.data,
+                }),
+            );
+        } catch (error) {
+            const err = error as AxiosError;
+            dispatch(
+                pureActionCreator(EVENT_LOGS_ERROR, {
+                    error: err.message || "Something went wrong",
+                }),
+            );
+        }
     };

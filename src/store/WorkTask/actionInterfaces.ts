@@ -17,8 +17,11 @@ import {
     WORK_TASK_LOADING,
     WORK_TASK_SUCCESS,
     TIME_LOG_RESET,
+    EVENT_LOGS_ERROR,
+    EVENT_LOGS_LOADING,
+    EVENT_LOGS_SUCCESS,
 } from "./actionTypes";
-import { TimeLog, TimeLogCategory } from "./reducer";
+import { EventLog, TimeLog, TimeLogCategory } from "./reducer";
 export interface WorkTaskLoading {
     type: typeof WORK_TASK_LOADING;
 }
@@ -112,6 +115,20 @@ export interface TimeLogCreateError {
     workTaskId: string;
 }
 
+export interface EventLogLoading {
+    type: typeof EVENT_LOGS_LOADING;
+}
+
+export interface EventLogSuccess {
+    type: typeof EVENT_LOGS_SUCCESS;
+    eventLogs: EventLog[];
+}
+
+export interface EventLogError {
+    type: typeof EVENT_LOGS_ERROR;
+    error: string;
+}
+
 export type ActionInterfaces =
     | WorkTaskLoading
     | WorkTaskSuccess
@@ -128,7 +145,10 @@ export type ActionInterfaces =
     | TimeLogCategoriesLoading
     | TimeLogCategoriesSuccess
     | TimeLogCategoriesError
-    | TimeLogReset;
+    | TimeLogReset
+    | EventLogLoading
+    | EventLogSuccess
+    | EventLogError;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,

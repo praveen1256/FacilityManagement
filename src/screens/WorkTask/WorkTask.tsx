@@ -1,19 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect } from "react";
-import { LayoutAnimation, Platform, ScrollView, StyleSheet, UIManager, View } from "react-native";
-import { Card, List, Text, Button, Avatar, ActivityIndicator, HelperText, IconButton } from "react-native-paper";
+import { Platform, ScrollView, StyleSheet, UIManager, View } from "react-native";
+import { List, Text, Button, IconButton, ActivityIndicator, Card, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import axios from "axios";
 import { connect } from "react-redux";
 
 import { useAppTheme } from "../../theme";
-import Header from "../../components/Header";
 import { RootStackParamList } from "../../Navigator";
 import { AppThunkDispatch, RootState, WorkTask } from "../../store";
-import { TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
+import { EventLog, TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
+import { WorkTask as IWorkTask } from "../../store/WorkTasks/reducer";
 
 import TimeLogs from "./components/TimeLogs";
 
@@ -34,6 +29,10 @@ type WorkTaskScreenViewProps = {
     timeLogCategoriesError: string | null;
     onTimeLogCreate: (...args: Parameters<typeof WorkTask.Actions.createTimeLog>) => void;
     onTimeLogCancelRetry: (...args: Parameters<typeof WorkTask.Actions.onTimeLogCancelRetry>) => void;
+    eventLogs: EventLog[];
+    eventLogsLoading: boolean;
+    eventLogsError: string | null;
+    workTask: IWorkTask | null;
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -47,7 +46,12 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         timeLogCategoriesError,
         onTimeLogCreate,
         onTimeLogCancelRetry,
+        workTask,
+        eventLogs,
+        eventLogsError,
+        eventLogsLoading,
     } = props;
+    console.log("WorkTaskScreenView: ", props);
 
     const { workTaskId } = props.route.params;
 
@@ -71,11 +75,43 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         });
     };
 
+    if (!workTask) {
+        // Loading
+        return (
+            <View
+                style={[
+                    styles.layoutContainer,
+                    {
+                        width: "100%",
+                        height: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    },
+                ]}
+            >
+                <ActivityIndicator animating={true} />
+                <Text>Loading...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.layoutContainer}>
             <ScrollView>
                 {/* <Header /> */}
                 <View style={styles.form}>
+                    {/* Header */}
+                    <View
+                        style={{
+                            flex: 1,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text variant="headlineLarge">{workTask.ID}</Text>
+                    </View>
+
                     <List.Accordion
                         title={
                             <Text
@@ -106,10 +142,56 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                             </Text>
                         }
                         id="events"
-                        right={() => <></>}
-                        expanded
+                        right={eventLogsLoading ? () => <ActivityIndicator animating={eventLogsLoading} /> : undefined}
                     >
-                        <Text>Events Stuff!!</Text>
+                        {eventLogsLoading && <ActivityIndicator animating={true} />}
+                        {eventLogsError && (
+                            <HelperText type="error" visible={true}>
+                                {eventLogsError}
+                            </HelperText>
+                        )}
+                        {eventLogs.map((eventLog) => (
+                            <Card
+                                key={eventLog._id}
+                                style={{
+                                    marginVertical: 8,
+                                    marginHorizontal: 16,
+                                }}
+                            >
+                                <Card.Content>
+                                    {[
+                                        {
+                                            label: "Comment",
+                                            value: eventLog.Comment,
+                                        },
+                                        {
+                                            label: "Date",
+                                            value: eventLog.ModifiedDateTime,
+                                        },
+                                    ].map((item, idx) => (
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                            }}
+                                            key={`${eventLog._id}-${idx}`}
+                                        >
+                                            <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>
+                                                {item.label} :{" "}
+                                            </Text>
+                                            <Text
+                                                variant="bodyMedium"
+                                                style={{
+                                                    flex: 1,
+                                                    flexWrap: "wrap",
+                                                }}
+                                            >
+                                                {item.value}
+                                            </Text>
+                                        </View>
+                                    ))}
+                                </Card.Content>
+                            </Card>
+                        ))}
                     </List.Accordion>
                     {/* TIMELOG Section!! */}
                     <List.Accordion
@@ -126,6 +208,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         id="timelog"
                         onPress={() => handleAccordianPress("timelog")}
                         expanded={expandedAccordians.includes("timelog")}
+                        right={timeLogsLoading ? () => <ActivityIndicator animating={timeLogsLoading} /> : undefined}
                     >
                         <TimeLogs
                             timeLogs={timeLogs}
@@ -146,6 +229,12 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
             </ScrollView>
             <View
                 style={{
+                    paddingBottom: 64,
+                }}
+            />
+
+            <View
+                style={{
                     backgroundColor: "grey",
                     position: "absolute",
                     bottom: 0,
@@ -159,7 +248,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     // Flexbox
                     flex: 1,
                     flexDirection: "row",
-                    display: "none",
+                    display: "flex",
                 }}
             >
                 {/* TimeSlot icon */}
@@ -210,6 +299,7 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => ({
     initializeState: (workTaskId: string) => {
         dispatch(WorkTask.Actions.loadWorkTask(workTaskId));
+        dispatch(WorkTask.Actions.loadEvents(workTaskId));
         dispatch(WorkTask.Actions.loadTimeLogs(workTaskId));
         dispatch(WorkTask.Actions.loadTimeLogCategories());
     },
@@ -233,6 +323,10 @@ const mapState = (state: RootState) => ({
     timeLogs: state.workTask.timeLogs,
     timeLogsLoading: state.workTask.timeLogsLoading,
     timeLogsError: state.workTask.timeLogsError,
+    // Event logs
+    eventLogs: state.workTask.eventLogs,
+    eventLogsLoading: state.workTask.eventLogsLoading,
+    eventLogsError: state.workTask.eventLogsError,
 });
 
 const connector = connect(mapState, mapDispatch);
