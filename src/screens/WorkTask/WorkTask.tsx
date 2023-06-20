@@ -203,11 +203,13 @@ const styles = StyleSheet.create({
 });
 
 const HeaderOptions: NativeStackHeaderProps["options"] = {
-    headerShown: false,
+    headerShown: true,
+    headerTitle: "Work Task",
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => ({
     initializeState: (workTaskId: string) => {
+        dispatch(WorkTask.Actions.loadWorkTask(workTaskId));
         dispatch(WorkTask.Actions.loadTimeLogs(workTaskId));
         dispatch(WorkTask.Actions.loadTimeLogCategories());
     },

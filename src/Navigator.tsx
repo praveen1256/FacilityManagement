@@ -87,9 +87,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
         );
     };
 
-    return (
-        <Stack.Navigator initialRouteName={WorkTaskScreen.WorkTaskScreenName}>{renderStackScreens()}</Stack.Navigator>
-    );
+    return <Stack.Navigator initialRouteName={LoginScreen.LoginScreenName}>{renderStackScreens()}</Stack.Navigator>;
 };
 
 export default Navigator;

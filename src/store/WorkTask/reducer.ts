@@ -1,3 +1,5 @@
+import { WorkTask } from "../WorkTasks/reducer";
+
 import {
     WORK_TASK_ERROR,
     TIME_LOGS_ERROR,
@@ -43,9 +45,7 @@ export interface TimeLogExtended extends TimeLog {
 export interface WorkTaskState {
     loading: boolean;
     error: string | null;
-    workTask: {
-        _id: string;
-    };
+    workTask: WorkTask | null;
     // Timelogs Dependencies - Categories - TODO: Move to a separate reducer
     timeLogCategoriesLoading: boolean;
     timeLogCategoriesError: string | null;
@@ -59,9 +59,7 @@ export interface WorkTaskState {
 const initialState: WorkTaskState = {
     loading: false,
     error: null,
-    workTask: {
-        _id: "",
-    },
+    workTask: null,
     // Timelogs Dependencies - Categories - TODO: Move to a separate reducer
     timeLogCategoriesLoading: false,
     timeLogCategoriesError: null,
@@ -84,10 +82,7 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 ...state,
                 loading: false,
                 error: null,
-                workTask: {
-                    // Add the worktask details here!!
-                    _id: "1234",
-                },
+                workTask: action.workTask,
             };
         case WORK_TASK_ERROR:
             return {

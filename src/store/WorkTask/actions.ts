@@ -1,7 +1,11 @@
 import axios, { AxiosError } from "axios";
 import dayjs from "dayjs";
+import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
+import { WorkTask } from "../WorkTasks/reducer";
+import { NavigationService } from "../../services/Navigation.Service";
+import { WorkTaskScreen } from "../../screens";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import {
@@ -18,11 +22,48 @@ import {
     TIME_LOG_CATEGORIES_SUCCESS,
     TIME_LOG_CATEGORIES_ERROR,
     TIME_LOG_RESET,
+    WORK_TASK_ERROR,
+    WORK_TASK_SUCCESS,
 } from "./actionTypes";
 import { TimeLog } from "./reducer";
 
+export const loadWorkTask =
+    (workTaskId: WorkTask["_id"]): AppThunkAction<ActionInterfaces> =>
+    async (dispatch, getState) => {
+        const workTask = getState().worktasks.tasks.find((task) => task._id === workTaskId);
+        if (!workTask) {
+            // Navigate back or show alert with error
+            return;
+        }
+
+        // dispatch(pureActionCreator(WORK_TASK_LOADING, {}));
+        try {
+            // const state = getState();
+            // await axios.get(`https://verizon-dev2.tririga.com/oslc/login?USERNAME=1446144475&PASSWORD=password`);
+            // const url = "https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/COUNT_P2P3";
+            // const response = await axios.get(url);
+            dispatch(
+                pureActionCreator(WORK_TASK_SUCCESS, {
+                    workTask: workTask,
+                }),
+            );
+            // Navigate to the work task screen
+            const navigationContainer = container.resolve(NavigationService);
+            navigationContainer.navigate(WorkTaskScreen.WorkTaskScreenName, undefined);
+        } catch (error) {
+            const err = error as AxiosError;
+            dispatch(pureActionCreator(WORK_TASK_ERROR, { error: err.message }));
+        }
+    };
 // Timelog categories loading action
-export const loadTimeLogCategories = (): AppThunkAction<ActionInterfaces> => async (dispatch, _getState) => {
+export const loadTimeLogCategories = (): AppThunkAction<ActionInterfaces> => async (dispatch, getState) => {
+    // If the categories are already loaded, don't load them again
+    const timeLogCategories = getState().workTask.timeLogCategories.length > 0;
+    if (timeLogCategories) {
+        // Timelogs are already loaded, so no need to load them again
+        return;
+    }
+
     dispatch(pureActionCreator(TIME_LOG_CATEGORIES_LOADING, {}));
     try {
         // const state = getState();
