@@ -3,10 +3,20 @@ import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
 import { NavigationService } from "../../services/Navigation.Service";
+import { WorkTaskScreenName } from "../../screens/WorkTask";
 import { WorkTasksScreenName } from "../../screens/WorkTasks";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import { WORK_TASKS_LOADING, WORK_TASKS_SUCCESS, WORK_TASKS_ERROR } from "./actionTypes";
+
+export function navigateToWorkTask(workTaskId: string): AppThunkAction<ActionInterfaces> {
+    return async () => {
+        console.log("navigateToWorkTask : ", workTaskId);
+        // Navigate to the work task screen with the param as workTaskId
+        const navigationContainer = container.resolve(NavigationService);
+        navigationContainer.navigate(WorkTaskScreenName, { workTaskId: workTaskId });
+    };
+}
 
 export function workTasksAndCount(isOnlyCount: boolean): AppThunkAction<ActionInterfaces> {
     return async (dispatch) => {

@@ -3,11 +3,14 @@ import { Provider } from "react-redux";
 import { PaperProvider } from "react-native-paper";
 import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native";
 import { container } from "tsyringe";
+import { enGB, registerTranslation } from "react-native-paper-dates";
 
 import { LightTheme } from "./theme";
 import Navigator, { RootStackParamList } from "./Navigator";
 import { RootStore } from "./store";
 import { NavigationService } from "./services/Navigation.Service";
+
+registerTranslation("en-GB", enGB);
 
 type AppProps = {
     store: RootStore;

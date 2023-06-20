@@ -7,7 +7,9 @@ export type RootStackParamList = {
     [HomeScreen.HomeScreenName]: undefined;
     [LoginScreen.LoginScreenName]: undefined;
     [WorkTasksScreen.WorkTasksScreenName]: undefined;
-    [WorkTaskScreen.WorkTaskScreenName]: undefined;
+    [WorkTaskScreen.WorkTaskScreenName]: {
+        workTaskId: string;
+    };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -61,6 +63,9 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
                     name={WorkTaskScreen.WorkTaskScreenName}
                     options={WorkTaskScreen.WorkTaskScreenHeaderOptions}
                     component={WorkTaskScreen.WorkTaskScreen}
+                    initialParams={{
+                        workTaskId: "1856911114",
+                    }}
                 />
                 {/* <Stack.Screen name={SplashScreenName} options={SplashScreenHeaderOptions} component={SplashScreen} /> */}
                 {/* <Stack.Screen

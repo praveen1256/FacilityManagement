@@ -6,6 +6,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import { connect } from "react-redux";
 
 import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
+import { WorkTask as IWorkTask } from "../../store/WorkTasks/reducer";
 
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
@@ -45,9 +46,10 @@ interface WorkTasksScreenProps {
         CreatedDateTime: string;
     }[];
     // onPressWorkTaks: (isOnlyCount: boolean) => void;
+    onSelectWorkTask: (task: IWorkTask) => void;
 }
 
-const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (tasks) => {
+const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ tasks, onSelectWorkTask }) => {
     const data = [
         { label: "Sort By Location", value: "1" },
         { label: "Sort By ID", value: "2" },
@@ -167,10 +169,11 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (task
             </View>
             <View style={styles.taskContainer}>
                 <FlatList
-                    data={tasks.tasks}
+                    data={tasks}
                     renderItem={({ item }) => (
                         <Pressable
-                        // onPress={props.onPress}
+                            // onPress={props.onPress}
+                            onPress={() => onSelectWorkTask(item)}
                         >
                             <Item
                                 srid={item.SRID}
@@ -488,6 +491,7 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
     onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.workTasksAndCount(isOnlyCount)),
+    onSelectWorkTask: (workTask: IWorkTask) => dispatch(WorkTasks.Actions.navigateToWorkTask(workTask._id)),
 });
 
 const mapState = (state: RootState) => ({
