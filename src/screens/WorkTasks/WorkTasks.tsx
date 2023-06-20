@@ -86,9 +86,9 @@ interface WorkTasksScreenProps {
 }
 
 const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ tasks, onSelectWorkTask }) => {
-    const [tasksList, _setTasksList] = useState(tasks.tasks);
-    const [switchSelectorList, setSwitchSelectorList] = useState(tasks.tasks);
-    const [filteredList, setFilteredList] = useState(tasks.tasks);
+    const [tasksList, _setTasksList] = useState(tasks);
+    const [switchSelectorList, setSwitchSelectorList] = useState(tasks);
+    const [filteredList, setFilteredList] = useState(tasks);
 
     const [filter, setFilter] = useState("all");
     const [value, setValue] = useState("");
