@@ -48,39 +48,7 @@ interface WorkTaskInterface {
 }
 
 interface WorkTasksScreenProps {
-    tasks: {
-        Building: string;
-        Description: string;
-        Address: string;
-        TaskPriority: string;
-        ModifiedDateTime: string;
-        SRCreatedDateTime: string;
-        LegacyGLC: null;
-        ServiceClass: string;
-        ResourceAssignmentStatus: string;
-        PlannedEnd: string;
-        TaskReIssueReason: string;
-        Currency: string;
-        TaskType: string;
-        SRRecordID: string;
-        ID: string;
-        SRDescription: string;
-        SRID: string;
-        EquipmentAlias: null;
-        Status: string;
-        CreatedFromMobile: string;
-        RequestClass: string;
-        PlannedStart: string;
-        LocationCode: string;
-        SRServiceRequested: string;
-        ResolutionType: string;
-        City: string;
-        TaskName: string;
-        State: string;
-        _id: string;
-        PrimaryWorkLocation: string;
-        CreatedDateTime: string;
-    }[];
+    tasks: IWorkTask[];
     // onPressWorkTaks: (isOnlyCount: boolean) => void;
     onSelectWorkTask: (task: IWorkTask) => void;
 }
@@ -362,7 +330,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
                             />
                         </Pressable>
                     )}
-                    keyExtractor={(item) => item.ID}
+                    keyExtractor={(item, idx) => `${item._id}-${item.SRID}-${idx}`}
                 />
             </View>
         </View>

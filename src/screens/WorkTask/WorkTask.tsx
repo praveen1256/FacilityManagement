@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { Platform, ScrollView, StyleSheet, UIManager, View } from "react-native";
+import { LayoutAnimation, Platform, ScrollView, StyleSheet, UIManager, View } from "react-native";
 import { List, Text, Button, IconButton, ActivityIndicator, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import dayjs from "dayjs";
+import AntDesignIcon from "react-native-vector-icons/AntDesign";
 
 import { useAppTheme } from "../../theme";
 import { RootStackParamList } from "../../Navigator";
@@ -12,6 +13,7 @@ import { EventLog, FullWorkTask, TimeLogCategory, TimeLogExtended } from "../../
 
 import TimeLogs from "./components/TimeLogs";
 import CardLabelValue from "./components/CardLabelValue";
+import GeneralCard from "./GeneralCard";
 
 // TODO: move this to the App.tsx file, since its better to define this only once instead of many places!!
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -65,7 +67,8 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
     const theme = useAppTheme();
 
     const handleAccordianPress = (id: string | number) => {
-        // LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        // LayoutAnimation.configureNext(LayoutAnimation.create(200, "linear", "scaleY"));
         setExpandedAccordians((prevExpandedAccordians) => {
             if (prevExpandedAccordians.includes(id)) {
                 return prevExpandedAccordians.filter((accordianId) => accordianId !== id);
@@ -102,96 +105,13 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                 {/* <Header /> */}
                 <View style={styles.form}>
                     {/* Header */}
-                    <View
+                    <GeneralCard
+                        workTask={workTask}
                         style={{
-                            flex: 1,
-                            justifyContent: "center",
-                            alignItems: "center",
+                            marginBottom: 8,
                         }}
-                    >
-                        <Text variant="headlineLarge">{workTask.ID}</Text>
-                    </View>
-
-                    <List.Accordion
-                        title={
-                            <Text
-                                variant="headlineMedium"
-                                style={{
-                                    color: theme.colors?.primary,
-                                }}
-                            >
-                                General
-                            </Text>
-                        }
-                        id="general"
-                        expanded={true}
-                        right={() => <></>}
-                    >
-                        <View
-                            style={{
-                                marginHorizontal: 16,
-                            }}
-                        >
-                            {[
-                                {
-                                    label: "Request Class",
-                                    value: workTask.RequestClass.value,
-                                },
-                                {
-                                    label: "Description",
-                                    value: workTask.Description,
-                                },
-                                {
-                                    label: "Address",
-                                    value: workTask.Address,
-                                },
-                                {
-                                    label: "City",
-                                    value: workTask.City,
-                                },
-                                {
-                                    label: "Buildind Name",
-                                    value: workTask.Building,
-                                },
-                                {
-                                    label: "State",
-                                    value: workTask.StateProvince,
-                                },
-                                {
-                                    label: "Requested By",
-                                    // FIXME: this should be the name of the user
-                                    // This should be pulled from the api - Single Work Task Details(Postman)
-                                    value: workTask.RequestedByFullName,
-                                },
-                                {
-                                    label: "Requested For",
-                                    // FIXME: this should be the name of the user
-                                    // This should be pulled from the api - Single Work Task Details(Postman)
-                                    value: workTask.RequestedForFullName,
-                                },
-                            ].map((item, idx) => (
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                    }}
-                                    key={`${workTask._id}-${idx}`}
-                                >
-                                    <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>
-                                        {item.label} :{" "}
-                                    </Text>
-                                    <Text
-                                        variant="bodyMedium"
-                                        style={{
-                                            flex: 1,
-                                            flexWrap: "wrap",
-                                        }}
-                                    >
-                                        {item.value}
-                                    </Text>
-                                </View>
-                            ))}
-                        </View>
-                    </List.Accordion>
+                    />
+                    {/* </List.Accordion> */}
                     {/* -------EVENT LOGS------- */}
                     <List.Accordion
                         title={
@@ -206,30 +126,33 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         }
                         id="events"
                         right={eventLogsLoading ? () => <ActivityIndicator animating={eventLogsLoading} /> : undefined}
+                        expanded={expandedAccordians.includes("events")}
+                        onPress={() => handleAccordianPress("events")}
                     >
-                        {eventLogsLoading && <ActivityIndicator animating={true} />}
-                        {eventLogsError && (
-                            <HelperText type="error" visible={true}>
-                                {eventLogsError}
-                            </HelperText>
-                        )}
-
-                        {eventLogs.map((eventLog) => (
-                            <CardLabelValue
-                                key={eventLog._id}
-                                id={eventLog._id}
-                                items={[
-                                    {
-                                        label: "Comment",
-                                        value: eventLog.Comment,
-                                    },
-                                    {
-                                        label: "Date",
-                                        value: dayjs(eventLog.ModifiedDateTime).format("MM/DD/YYYY"),
-                                    },
-                                ]}
-                            />
-                        ))}
+                        <View>
+                            {eventLogsLoading && <ActivityIndicator animating={true} />}
+                            {eventLogsError && (
+                                <HelperText type="error" visible={true}>
+                                    {eventLogsError}
+                                </HelperText>
+                            )}
+                            {eventLogs.map((eventLog) => (
+                                <CardLabelValue
+                                    key={eventLog._id}
+                                    id={eventLog._id}
+                                    items={[
+                                        {
+                                            label: "Comment",
+                                            value: eventLog.Comment,
+                                        },
+                                        {
+                                            label: "Date",
+                                            value: dayjs(eventLog.ModifiedDateTime).format("MM/DD/YYYY"),
+                                        },
+                                    ]}
+                                />
+                            ))}
+                        </View>
                     </List.Accordion>
                     {/* TIMELOG Section!! */}
                     <List.Accordion
@@ -289,6 +212,8 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         }
                         id="child-work-tasks"
                         // right={childWorkTasksLoading ? () => <ActivityIndicator animating={childWorkTasksLoading} /> : undefined}
+                        onPress={() => handleAccordianPress("child-work-tasks")}
+                        expanded={expandedAccordians.includes("child-work-tasks")}
                     >
                         {[
                             {
@@ -353,6 +278,8 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         }
                         id="parent-work-task"
                         // right={parentWorkTaskLoading ? () => <ActivityIndicator animating={parentWorkTaskLoading} /> : undefined}
+                        onPress={() => handleAccordianPress("parent-work-task")}
+                        expanded={expandedAccordians.includes("parent-work-task")}
                     >
                         {[
                             {
@@ -427,6 +354,8 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         }
                         id="service-requests"
                         // right={serviceRequestsLoading ? () => <ActivityIndicator animating={serviceRequestsLoading} /> : undefined}
+                        onPress={() => handleAccordianPress("service-requests")}
+                        expanded={expandedAccordians.includes("service-requests")}
                     >
                         {[
                             {
@@ -507,28 +436,41 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     flex: 1,
                     flexDirection: "row",
                     display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
                 }}
             >
-                {/* TimeSlot icon */}
-                <Button
-                    icon={"clock"}
-                    mode="contained"
-                    onPress={() => {
-                        console.log("Pressed");
-                    }}
-                    textColor="white"
-                >
-                    Add Time Slot
-                </Button>
+                {/* Comment Icon */}
                 <IconButton
-                    icon="clock"
-                    size={20}
+                    icon={"comment"}
+                    // size={20}
                     onPress={() => console.log("Pressed")}
                     iconColor="white"
                     style={{
                         backgroundColor: theme.colors?.primary,
                     }}
                 />
+
+                {/* TimeSlot icon */}
+                <IconButton
+                    icon={"account-clock"}
+                    // size={20}
+                    onPress={() => console.log("Pressed")}
+                    iconColor="white"
+                    style={{
+                        backgroundColor: theme.colors?.primary,
+                    }}
+                />
+                <Button
+                    icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
+                    mode="contained"
+                    onPress={() => {
+                        console.log("Pressed");
+                    }}
+                    textColor="white"
+                >
+                    Complete
+                </Button>
             </View>
         </View>
     );
