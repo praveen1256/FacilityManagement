@@ -179,8 +179,6 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 workTask: action.workTask,
                 // Removing existing state
                 // TODO: Move to a separate action
-                eventLogs: [],
-                timeLogs: [],
             };
         case WORK_TASK_ERROR:
             return {
@@ -193,6 +191,8 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
             return {
                 ...state,
                 timeLogCategoriesLoading: true,
+                timeLogCategoriesError: null,
+                timeLogCategories: [],
             };
 
         case TIME_LOG_CATEGORIES_SUCCESS:
@@ -213,6 +213,8 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
             return {
                 ...state,
                 timeLogsLoading: true,
+                timeLogs: [],
+                timeLogsError: null,
             };
         case TIME_LOGS_SUCCESS:
             return {
@@ -360,6 +362,8 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
             return {
                 ...state,
                 eventLogsLoading: true,
+                eventLogsError: null,
+                eventLogs: [],
             };
         case EVENT_LOGS_SUCCESS:
             return {

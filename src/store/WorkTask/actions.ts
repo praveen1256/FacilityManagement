@@ -265,6 +265,8 @@ export const loadEvents =
     async (dispatch, _getState) => {
         dispatch(pureActionCreator(EVENT_LOGS_LOADING, {}));
         try {
+            await axios.get(`https://verizon-dev2.tririga.com/oslc/login?USERNAME=1446144475&PASSWORD=password`);
+
             const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}/cstEventLog?countOnly=false&query=true`;
             const res = await axios.get<{
                 data: EventLog[];

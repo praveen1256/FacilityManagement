@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { Platform, ScrollView, StyleSheet, UIManager, View } from "react-native";
-import { List, Text, Button, IconButton, ActivityIndicator, Card, HelperText } from "react-native-paper";
+import { List, Text, Button, IconButton, ActivityIndicator, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
+import dayjs from "dayjs";
 
 import { useAppTheme } from "../../theme";
 import { RootStackParamList } from "../../Navigator";
@@ -10,6 +11,7 @@ import { AppThunkDispatch, RootState, WorkTask } from "../../store";
 import { EventLog, FullWorkTask, TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
 
 import TimeLogs from "./components/TimeLogs";
+import CardLabelValue from "./components/CardLabelValue";
 
 // TODO: move this to the App.tsx file, since its better to define this only once instead of many places!!
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -50,7 +52,6 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         eventLogsError,
         eventLogsLoading,
     } = props;
-    console.log("WorkTaskScreenView: ", props);
 
     const { workTaskId } = props.route.params;
 
@@ -191,6 +192,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                             ))}
                         </View>
                     </List.Accordion>
+                    {/* -------EVENT LOGS------- */}
                     <List.Accordion
                         title={
                             <Text
@@ -199,7 +201,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                     color: theme.colors?.primary,
                                 }}
                             >
-                                Events
+                                Events Logs
                             </Text>
                         }
                         id="events"
@@ -211,47 +213,22 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                 {eventLogsError}
                             </HelperText>
                         )}
+
                         {eventLogs.map((eventLog) => (
-                            <Card
+                            <CardLabelValue
                                 key={eventLog._id}
-                                style={{
-                                    marginVertical: 8,
-                                    marginHorizontal: 16,
-                                }}
-                            >
-                                <Card.Content>
-                                    {[
-                                        {
-                                            label: "Comment",
-                                            value: eventLog.Comment,
-                                        },
-                                        {
-                                            label: "Date",
-                                            value: eventLog.ModifiedDateTime,
-                                        },
-                                    ].map((item, idx) => (
-                                        <View
-                                            style={{
-                                                flexDirection: "row",
-                                            }}
-                                            key={`${eventLog._id}-${idx}`}
-                                        >
-                                            <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>
-                                                {item.label} :{" "}
-                                            </Text>
-                                            <Text
-                                                variant="bodyMedium"
-                                                style={{
-                                                    flex: 1,
-                                                    flexWrap: "wrap",
-                                                }}
-                                            >
-                                                {item.value}
-                                            </Text>
-                                        </View>
-                                    ))}
-                                </Card.Content>
-                            </Card>
+                                id={eventLog._id}
+                                items={[
+                                    {
+                                        label: "Comment",
+                                        value: eventLog.Comment,
+                                    },
+                                    {
+                                        label: "Date",
+                                        value: dayjs(eventLog.ModifiedDateTime).format("MM/DD/YYYY"),
+                                    },
+                                ]}
+                            />
                         ))}
                     </List.Accordion>
                     {/* TIMELOG Section!! */}
@@ -282,18 +259,238 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                             timeLogCategoriesError={timeLogCategoriesError}
                             onTimeLogCreate={onTimeLogCreate}
                             // FIXME: take service request id from the work task
-                            serviceRequestId={"SR-10248438"}
+                            serviceRequestId={workTask.ID}
                             onCancelRetry={onTimeLogCancelRetry}
                         />
                     </List.Accordion>
+
+                    {/* Child Work Tasks */}
+                    {/* Data example
+                    {
+                        "ParentID": "SR-10248438",
+                        "Status": "Draft",
+                        "RequestClass": "",
+                        "Priority": "",
+                        "TaskType": "Corrective",
+                        "_id": "1858328993",
+                        "ID": "13596935"
+                    }
+                    */}
+                    <List.Accordion
+                        title={
+                            <Text
+                                variant="headlineMedium"
+                                style={{
+                                    color: theme.colors?.primary,
+                                }}
+                            >
+                                Child Work Tasks
+                            </Text>
+                        }
+                        id="child-work-tasks"
+                        // right={childWorkTasksLoading ? () => <ActivityIndicator animating={childWorkTasksLoading} /> : undefined}
+                    >
+                        {[
+                            {
+                                ParentID: "SR-10248438",
+                                Status: "Draft",
+                                RequestClass: "",
+                                Priority: "",
+                                TaskType: "Corrective",
+                                _id: "1858328993",
+                                ID: "13596935",
+                            },
+                        ].map((childWorkTask) => (
+                            <CardLabelValue
+                                key={`child-work-task-${childWorkTask._id}`}
+                                id={childWorkTask._id}
+                                items={[
+                                    {
+                                        label: "ID",
+                                        value: childWorkTask.ID,
+                                    },
+                                    {
+                                        label: "Task Type",
+                                        value: childWorkTask.TaskType,
+                                    },
+                                    {
+                                        label: "Request Class",
+                                        value: childWorkTask.RequestClass,
+                                    },
+                                    {
+                                        label: "Priority",
+                                        value: childWorkTask.Priority,
+                                    },
+                                    {
+                                        label: "Status",
+                                        value: childWorkTask.Status,
+                                    },
+                                ]}
+                            />
+                        ))}
+                    </List.Accordion>
+
+                    {/*  Parent Work Task */}
+                    {/* Data Example
+                     {
+                        "Status": "Completed",
+                        "ChildID": "SR-10000015",
+                        "Priority": "P2",
+                        "_id": "1375091588",
+                        "ID": "SR-10000013"
+                    }
+         */}
+                    <List.Accordion
+                        title={
+                            <Text
+                                variant="headlineMedium"
+                                style={{
+                                    color: theme.colors?.primary,
+                                }}
+                            >
+                                Parent Work Task
+                            </Text>
+                        }
+                        id="parent-work-task"
+                        // right={parentWorkTaskLoading ? () => <ActivityIndicator animating={parentWorkTaskLoading} /> : undefined}
+                    >
+                        {[
+                            {
+                                Status: "Completed",
+                                ChildID: "SR-10000015",
+                                Priority: "P2",
+                                _id: "1375091588",
+                                ID: "SR-10000013",
+                            },
+                        ].map((parentWorkTask) => (
+                            <CardLabelValue
+                                key={`parent-work-task-${parentWorkTask._id}`}
+                                id={parentWorkTask._id}
+                                items={[
+                                    {
+                                        label: "ID",
+                                        value: parentWorkTask.ID,
+                                    },
+                                    {
+                                        label: "Priority",
+                                        value: parentWorkTask.Priority,
+                                    },
+                                    {
+                                        label: "Child ID",
+                                        value: parentWorkTask.ChildID,
+                                    },
+                                    {
+                                        label: "Status",
+                                        value: parentWorkTask.Status,
+                                    },
+                                ]}
+                            />
+                        ))}
+                    </List.Accordion>
+
+                    {/* Service Requests */}
+                    {/* Data Example
+                    {
+                        "Building": "TELOPS HEADQUARTERS",
+                        "Space": null,
+                        "Floor": null,
+                        "Description": "bob lola",
+                        "ServiceRequested": "ELECTRICAL",
+                        "Address": "600-700 HIDDEN RIDGE",
+                        "Priority": "P2",
+                        "StateProvince": "TX",
+                        "RequiredPropertyUse": "ADMINISTRATIVE",
+                        "LocationCode": "329568",
+                        "City": "IRVING",
+                        "PRDispatch": "Y",
+                        "AssignToMe": "FALSE",
+                        "SpecificLocation": "Office 2B",
+                        "BestReachedAt": "555-1212",
+                        "Country": "UNITED STATES",
+                        "FMVendor": "CVT",
+                        "_id": "1856911090",
+                        "ID": "SR-10248438",
+                        "RequestedBy": "RAY TRIPAMER",
+                        "RequestedFor": "RAY TRIPAMER"
+                    }
+                */}
+                    <List.Accordion
+                        title={
+                            <Text
+                                variant="headlineMedium"
+                                style={{
+                                    color: theme.colors?.primary,
+                                }}
+                            >
+                                Service Requests
+                            </Text>
+                        }
+                        id="service-requests"
+                        // right={serviceRequestsLoading ? () => <ActivityIndicator animating={serviceRequestsLoading} /> : undefined}
+                    >
+                        {[
+                            {
+                                Building: "TELOPS HEADQUARTERS",
+                                Space: null,
+                                Floor: null,
+                                Description: "bob lola",
+                                ServiceRequested: "ELECTRICAL",
+                                Address: "600-700 HIDDEN RIDGE",
+                                Priority: "P2",
+                                StateProvince: "TX",
+                                RequiredPropertyUse: "ADMINISTRATIVE",
+                                LocationCode: "329568",
+                                City: "IRVING",
+                                PRDispatch: "Y",
+                                AssignToMe: "FALSE",
+                                SpecificLocation: "Office 2B",
+                                BestReachedAt: "555-1212",
+                                Country: "UNITED STATES",
+                                FMVendor: "CVT",
+                                _id: "1856911090",
+                                ID: "SR-10248438",
+                                RequestedBy: "RAY TRIPAMER",
+                                RequestedFor: "RAY TRIPAMER",
+                            },
+                        ].map((serviceRequest) => (
+                            <CardLabelValue
+                                key={`service-request-${serviceRequest._id}`}
+                                id={serviceRequest._id}
+                                items={[
+                                    {
+                                        label: "ID",
+                                        value: serviceRequest.ID,
+                                    },
+                                    {
+                                        label: "Description",
+                                        value: serviceRequest.Description,
+                                    },
+                                    {
+                                        label: "Service Requested",
+                                        value: serviceRequest.ServiceRequested,
+                                    },
+                                    {
+                                        label: "Priority",
+                                        value: serviceRequest.Priority,
+                                    },
+                                    {
+                                        label: "Requested For",
+                                        value: serviceRequest.RequestedFor,
+                                    },
+                                ]}
+                            />
+                        ))}
+                    </List.Accordion>
+
+                    {/* Building Equipment & Refirgerant */}
                 </View>
             </ScrollView>
+            {/* Escape the bottom action bar */}
             <View
                 style={{
                     paddingBottom: 64,
                 }}
             />
-
             <View
                 style={{
                     backgroundColor: "grey",
