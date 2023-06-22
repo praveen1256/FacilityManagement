@@ -8,10 +8,11 @@ import Toast, { ErrorToast, ToastConfig } from "react-native-toast-message";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { View } from "react-native";
 
+import { App as AppState, AppThunkDispatch, Authentication, RootStore } from "./store";
 import { LightTheme } from "./theme";
 import Navigator, { RootStackParamList } from "./Navigator";
-import { RootStore } from "./store";
 import { NavigationService } from "./services/Navigation.Service";
+import { appInitialized } from "./store/App/actions";
 
 registerTranslation("en-GB", enGB);
 const toastConfig: ToastConfig = {
@@ -42,10 +43,18 @@ type AppProps = {
 
 const App: React.FunctionComponent<AppProps> = ({ store }) => {
     const intializeApp = async (navigationContainerRef: NavigationContainerRef<RootStackParamList>) => {
+        if (store.getState().app.initializationStarted) return;
+        const dispatch = store.dispatch as AppThunkDispatch;
+
+        dispatch(AppState.Actions.appInitializate());
+
         container.registerInstance(NavigationService, new NavigationService(navigationContainerRef));
-        // Invoke initialization states
-        // Check if the phone is rooted, if yes donot go forward.
-        // Check if all ther permissions available, else show app error screen
+        // Check if user details are stored in local storage
+        dispatch(Authentication.Actions.initializeAuthentication());
+        // if they are, then dispatch AUTH_LOGIN_ACTION and wait for it to complete
+        // if they are not, donot do anything
+
+        dispatch(appInitialized());
     };
 
     return (

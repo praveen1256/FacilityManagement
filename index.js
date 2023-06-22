@@ -1,5 +1,6 @@
 import React from "react";
 import "reflect-metadata";
+import "./polyfill";
 import { AppRegistry } from "react-native";
 
 import App from "./src/App";

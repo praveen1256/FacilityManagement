@@ -1,7 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { connect } from "react-redux";
 
 import { HomeScreen, LoginScreen, WorkTaskScreen, WorkTasksScreen } from "./screens";
+import { RootState } from "./store";
+import SplashScreen from "./screens/SplashScreen";
 
 export type RootStackParamList = {
     [HomeScreen.HomeScreenName]: undefined;
@@ -10,18 +13,26 @@ export type RootStackParamList = {
     [WorkTaskScreen.WorkTaskScreenName]: {
         workTaskId: string;
     };
+    ["SplashScreen"]: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 interface NavigatorProps {
-    isAuthStateInitialized?: boolean;
+    isAppInitialized?: boolean;
     isAuthenticated?: boolean;
     initializationError?: unknown;
 }
 
-const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
+const Navigator: React.FunctionComponent<NavigatorProps> = ({ isAuthenticated, isAppInitialized }) => {
     const renderStackScreens = () => {
+        if (!isAppInitialized)
+            return (
+                <>
+                    <Stack.Screen name={"SplashScreen"} options={{ headerShown: false }} component={SplashScreen} />
+                </>
+            );
+
         // if (initializationError)
         //     return (
         //         <Stack.Screen
@@ -31,58 +42,43 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
         //         />
         //     );
 
-        // //authenticated show login screens
-        // if (isAuthenticated) {
-        //     return (
-        //         <>
-        //             <Stack.Screen name={HomeScreenName} options={HomeScreenHeaderOptions} component={HomeScreen} />
-        //         </>
-        //     );
-        // }
+        //authenticated show login screens
+        if (isAuthenticated) {
+            return (
+                <>
+                    <Stack.Screen
+                        name={HomeScreen.HomeScreenName}
+                        options={HomeScreen.HomeScreenHeaderOptions}
+                        component={HomeScreen.HomeScreen}
+                    />
+                    <Stack.Screen
+                        name={WorkTasksScreen.WorkTasksScreenName}
+                        options={WorkTasksScreen.WorkTasksScreenHeaderOptions}
+                        component={WorkTasksScreen.WorkTasksScreen}
+                    />
+                    <Stack.Screen
+                        name={WorkTaskScreen.WorkTaskScreenName}
+                        options={WorkTaskScreen.WorkTaskScreenHeaderOptions}
+                        component={WorkTaskScreen.WorkTaskScreen}
+                        initialParams={{
+                            workTaskId: "1856911114",
+                        }}
+                    />
+                </>
+            );
+        }
 
         //Unauthenticated show login screens
         return (
             <>
+                <Stack.Screen name={"SplashScreen"} options={{ headerShown: false }} component={SplashScreen} />
+
                 {/* <Stack.Screen name={SplashScreenName} options={SplashScreenHeaderOptions} component={SplashScreen} /> */}
                 <Stack.Screen
                     name={LoginScreen.LoginScreenName}
                     options={LoginScreen.LoginScreenHeaderOptions}
                     component={LoginScreen.LoginScreen}
                 />
-                <Stack.Screen
-                    name={HomeScreen.HomeScreenName}
-                    options={HomeScreen.HomeScreenHeaderOptions}
-                    component={HomeScreen.HomeScreen}
-                />
-                <Stack.Screen
-                    name={WorkTasksScreen.WorkTasksScreenName}
-                    options={WorkTasksScreen.WorkTasksScreenHeaderOptions}
-                    component={WorkTasksScreen.WorkTasksScreen}
-                />
-                <Stack.Screen
-                    name={WorkTaskScreen.WorkTaskScreenName}
-                    options={WorkTaskScreen.WorkTaskScreenHeaderOptions}
-                    component={WorkTaskScreen.WorkTaskScreen}
-                    initialParams={{
-                        workTaskId: "1856911114",
-                    }}
-                />
-                {/* <Stack.Screen name={SplashScreenName} options={SplashScreenHeaderOptions} component={SplashScreen} /> */}
-                {/* <Stack.Screen
-                    name={OnboardingInitial.name}
-                    component={OnboardingInitial.view}
-                    options={OnboardingInitial.options}
-                />
-                <Stack.Screen
-                    name={OnboardingConfirmation.name}
-                    component={OnboardingConfirmation.view}
-                    options={OnboardingConfirmation.options}
-                />
-                <Stack.Screen
-                    name={OnBoardingUserDetails.name}
-                    component={OnBoardingUserDetails.view}
-                    options={OnBoardingUserDetails.options}
-                /> */}
             </>
         );
     };
@@ -106,4 +102,12 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
     );
 };
 
-export default Navigator;
+const mapState = (state: RootState) => ({
+    isAppInitialized: state.app.isInitialized,
+    isAuthenticated: !!state.auth.isAuthenticated,
+    initializationError: state.app.initializationError,
+});
+
+const connector = connect(mapState);
+
+export default connector(Navigator);

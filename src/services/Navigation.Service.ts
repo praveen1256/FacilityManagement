@@ -38,4 +38,9 @@ export class NavigationService<ParamList extends Record<string, unknown> = RootS
     public replace(name: string, state?: Record<never, never>) {
         this.container.dispatch(StackActions.replace(name, state));
     }
+
+    public currentScreenName() {
+        const route = this.container.getCurrentRoute();
+        return route?.name;
+    }
 }

@@ -1,25 +1,62 @@
 import axios, { AxiosError } from "axios";
 import { container } from "tsyringe";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { AppThunkAction, Authentication } from "../index";
 import { NavigationService } from "../../services/Navigation.Service";
 import { HomeScreenName } from "../../screens/Home";
-import { LoginScreenName } from "../../screens/Login";
+import { LoginScreen } from "../../screens";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import { AUTH_LOGIN_START, AUTH_LOGIN_ERROR, AUTH_LOGIN_SUCCESS, AUTH_LOGOUT } from "./actionTypes";
 
-export function login(username: string, password: string): AppThunkAction<ActionInterfaces> {
+export function initializeAuthentication(): AppThunkAction<ActionInterfaces> {
+    return async (dispatch) => {
+        // get the username and password, try to login
+        const username = await AsyncStorage.getItem("username");
+        const password = await AsyncStorage.getItem("password");
+
+        if (username && password) {
+            dispatch(login(username, password, true));
+            return;
+        }
+
+        const navigationContainer = container.resolve(NavigationService);
+        navigationContainer.navigate(LoginScreen.LoginScreenName, undefined);
+
+        return;
+    };
+}
+
+export function login(
+    username: string,
+    password: string,
+    isInitialization?: boolean,
+): AppThunkAction<ActionInterfaces> {
     return async (dispatch) => {
         // get the username and password,
         dispatch(pureActionCreator(AUTH_LOGIN_START, {}));
+        const navigationContainer = container.resolve(NavigationService);
+
         // let the store know we are checking the crentials, by dispatching loading state
         const url = `https://verizon-dev2.tririga.com/oslc/login?USERNAME=${username}&PASSWORD=${password}`;
         try {
             const response = await axios.get(url);
             // if the credentials are correct, dispatch the success state
             if (response.status === 200) {
+                // TODO: Save the username and password in the a secure storage
+                await AsyncStorage.setItem("username", username);
+                await AsyncStorage.setItem("password", password);
+
+                // dispatch(
+                //     pureActionCreator(AUTH_LOGIN_SUCCESS, {
+                //         username,
+                //         password,
+                //     }),
+                // );
                 dispatch(Authentication.Actions.loggedInUser(username, password, false));
+
+                navigationContainer.navigate(HomeScreenName, undefined);
                 return;
             }
 
@@ -29,6 +66,20 @@ export function login(username: string, password: string): AppThunkAction<Action
                 }),
             );
         } catch (error) {
+            // check for current screen, if it is not login, then do not dispatch the error state, just navigate to login
+            if (isInitialization) {
+                // erase the username and password
+                await AsyncStorage.removeItem("username");
+                await AsyncStorage.removeItem("password");
+                dispatch(
+                    pureActionCreator(AUTH_LOGIN_ERROR, {
+                        error: "You have been logged out, please login again",
+                    }),
+                );
+                navigationContainer.navigate(LoginScreen.LoginScreenName, undefined);
+                return;
+            }
+
             // if the credentials are incorrect, dispatch the error state
             const err = error as AxiosError;
 
@@ -111,12 +162,13 @@ export function loggedInUser(username: string, password: string, countOnly: bool
 export function logout(): AppThunkAction<ActionInterfaces> {
     return async (dispatch) => {
         try {
+            await AsyncStorage.clear();
             console.log("Storage cleared successfully.");
         } catch (error) {
             console.log("Error clearing storage:", error);
         }
         dispatch(pureActionCreator(AUTH_LOGOUT, {}));
         const navigationContainer = container.resolve(NavigationService);
-        navigationContainer.navigate(LoginScreenName, "");
+        navigationContainer.navigate(LoginScreen.LoginScreenName, "");
     };
 }
