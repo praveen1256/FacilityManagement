@@ -25,6 +25,8 @@ interface WorkTasksScreenProps {
     countOverDueTasks: WorkTask[];
     countDueTodayTasks: WorkTask[];
     countCompletedTasks: WorkTask[];
+    tasks: IWorkTask[];
+    // onPressWorkTaks: (isOnlyCount: boolean) => void;
     onSelectWorkTask: (task: IWorkTask) => void;
 }
 
@@ -407,7 +409,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
                             />
                         </Pressable>
                     )}
-                    // keyExtractor={(item) => item.ID}
+                    keyExtractor={(item, idx) => `${item._id}-${item.SRID}-${idx}`}
                 />
             </View>
         </View>
