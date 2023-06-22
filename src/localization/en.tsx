@@ -28,9 +28,9 @@ export const en = {
         card2_message: "Select this option to search Buildings & Assets",
         card3_title: "Alarm Check",
         card3_message: "Select this option to access Alarm Check application",
-        card4_title: "Service Request",
+        card4_title: "Service \nRequest",
         card4_message: "Submit a new Service Request",
-        critical_request: "For all critical requests, please contact the GRE CUstomer Experience Team at",
+        critical_request: "For all critical requests, please contact \nthe GRE Customer Experience Team at",
         customercare_call: "+1-(888) 696-3973",
         ivr_message: "You will need to select the correct line of business from the IVR.",
         local_assistance:

@@ -39,10 +39,11 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
     });
 
     const secondInputRef = useRef<RNTextInput | null>(null);
+    const isLoginPage = true;
 
     return (
         <View style={styles.loginContainer}>
-            <Header />
+            <Header loginPage={isLoginPage} />
             <FM_Header />
             <View style={styles.form}>
                 <Controller
