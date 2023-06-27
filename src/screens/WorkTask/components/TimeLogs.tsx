@@ -149,11 +149,23 @@ const TimeLogCard: React.FunctionComponent<TimeLogCardProps> = ({
     const appTheme = useAppTheme();
 
     return (
-        <View
+        <Card
             style={{
                 marginVertical: 8,
                 overflow: "hidden",
                 borderRadius: 8,
+                padding: 0,
+                paddingTop: 0,
+                paddingBottom: 0,
+                position: "relative",
+            }}
+            contentStyle={{
+                padding: 0,
+                paddingTop: 0,
+                paddingBottom: 0,
+                margin: 0,
+                marginTop: 0,
+                marginBottom: 0,
             }}
         >
             <View
@@ -257,6 +269,6 @@ const TimeLogCard: React.FunctionComponent<TimeLogCardProps> = ({
                     </Button>
                 </Card.Actions>
             </Card>
-        </View>
+        </Card>
     );
 };

@@ -3,7 +3,6 @@ import { LayoutAnimation, Platform, ScrollView, StyleSheet, UIManager, View } fr
 import { List, Text, Button, IconButton, ActivityIndicator, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
-import dayjs from "dayjs";
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
 
 import { useAppTheme } from "../../theme";
@@ -13,7 +12,8 @@ import { EventLog, FullWorkTask, TimeLogCategory, TimeLogExtended } from "../../
 
 import TimeLogs from "./components/TimeLogs";
 import CardLabelValue from "./components/CardLabelValue";
-import GeneralCard from "./GeneralCard";
+import GeneralCard from "./components/GeneralCard";
+import EventLogCard from "./components/EventLog";
 
 // TODO: move this to the App.tsx file, since its better to define this only once instead of many places!!
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -116,7 +116,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     <List.Accordion
                         title={
                             <Text
-                                variant="headlineMedium"
+                                variant="headlineSmall"
                                 style={{
                                     color: theme.colors?.primary,
                                 }}
@@ -127,6 +127,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         id="events"
                         right={eventLogsLoading ? () => <ActivityIndicator animating={eventLogsLoading} /> : undefined}
                         expanded={expandedAccordians.includes("events")}
+                        // expanded
                         onPress={() => handleAccordianPress("events")}
                     >
                         <View>
@@ -137,20 +138,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                 </HelperText>
                             )}
                             {eventLogs.map((eventLog) => (
-                                <CardLabelValue
-                                    key={eventLog._id}
-                                    id={eventLog._id}
-                                    items={[
-                                        {
-                                            label: "Comment",
-                                            value: eventLog.Comment,
-                                        },
-                                        {
-                                            label: "Date",
-                                            value: dayjs(eventLog.ModifiedDateTime).format("MM/DD/YYYY"),
-                                        },
-                                    ]}
-                                />
+                                <EventLogCard eventLog={eventLog} key={eventLog._id} />
                             ))}
                         </View>
                     </List.Accordion>
@@ -158,7 +146,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     <List.Accordion
                         title={
                             <Text
-                                variant="headlineMedium"
+                                variant="headlineSmall"
                                 style={{
                                     color: theme.colors?.primary,
                                 }}
@@ -202,7 +190,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     <List.Accordion
                         title={
                             <Text
-                                variant="headlineMedium"
+                                variant="headlineSmall"
                                 style={{
                                     color: theme.colors?.primary,
                                 }}
@@ -268,7 +256,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     <List.Accordion
                         title={
                             <Text
-                                variant="headlineMedium"
+                                variant="headlineSmall"
                                 style={{
                                     color: theme.colors?.primary,
                                 }}
@@ -344,7 +332,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     <List.Accordion
                         title={
                             <Text
-                                variant="headlineMedium"
+                                variant="headlineSmall"
                                 style={{
                                     color: theme.colors?.primary,
                                 }}
@@ -480,14 +468,13 @@ const styles = StyleSheet.create({
     layoutContainer: {
         width: "100%",
         height: "100%",
-        backgroundColor: "#f8f8f8",
+        backgroundColor: "#f6f6f6",
         paddingVertical: 20,
         flex: 1,
     },
     form: {
         flex: 1,
         marginTop: 0,
-        backgroundColor: "#FFFFFF",
     },
 });
 
