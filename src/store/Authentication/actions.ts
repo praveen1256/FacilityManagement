@@ -1,6 +1,5 @@
 import axios, { AxiosError } from "axios";
 import { container } from "tsyringe";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { AppThunkAction, Authentication } from "../index";
 import { NavigationService } from "../../services/Navigation.Service";
@@ -112,7 +111,6 @@ export function loggedInUser(username: string, password: string, countOnly: bool
 export function logout(): AppThunkAction<ActionInterfaces> {
     return async (dispatch) => {
         try {
-            await AsyncStorage.clear();
             console.log("Storage cleared successfully.");
         } catch (error) {
             console.log("Error clearing storage:", error);
