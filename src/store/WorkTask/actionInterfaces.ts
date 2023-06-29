@@ -18,10 +18,17 @@ import {
     EVENT_LOGS_ERROR,
     EVENT_LOGS_LOADING,
     EVENT_LOGS_SUCCESS,
+    CHILD_WORK_TASKS_ERROR,
+    CHILD_WORK_TASKS_LOADING,
+    CHILD_WORK_TASKS_SUCCESS,
+    SERVICE_REQUEST_ERROR,
+    SERVICE_REQUEST_LOADING,
+    SERVICE_REQUEST_SUCCESS,
 } from "./actionTypes";
-import { EventLog, FullWorkTask, TimeLog, TimeLogCategory } from "./reducer";
+import { ChildTask, EventLog, FullWorkTask, ServiceRequest, TimeLog, TimeLogCategory } from "./reducer";
 export interface WorkTaskLoading {
     type: typeof WORK_TASK_LOADING;
+    refresh?: boolean;
 }
 
 export interface WorkTaskSuccess {
@@ -127,6 +134,36 @@ export interface EventLogError {
     error: string;
 }
 
+// Child work task actions
+export interface ChildWorkTasksLoading {
+    type: typeof CHILD_WORK_TASKS_LOADING;
+}
+
+export interface ChildWorkTasksSuccess {
+    type: typeof CHILD_WORK_TASKS_SUCCESS;
+    tasks: ChildTask[]; // TODO: need to check!!
+}
+
+export interface ChildWorkTasksError {
+    type: typeof CHILD_WORK_TASKS_ERROR;
+    error: string;
+}
+
+// Service Request Actions
+export interface ServiceRequestLoading {
+    type: typeof SERVICE_REQUEST_LOADING;
+}
+
+export interface ServiceRequestSuccess {
+    type: typeof SERVICE_REQUEST_SUCCESS;
+    serviceRequest: ServiceRequest | null;
+}
+
+export interface ServiceRequestError {
+    type: typeof SERVICE_REQUEST_ERROR;
+    error: string;
+}
+
 export type ActionInterfaces =
     | WorkTaskLoading
     | WorkTaskSuccess
@@ -146,7 +183,13 @@ export type ActionInterfaces =
     | TimeLogReset
     | EventLogLoading
     | EventLogSuccess
-    | EventLogError;
+    | EventLogError
+    | ChildWorkTasksLoading
+    | ChildWorkTasksSuccess
+    | ChildWorkTasksError
+    | ServiceRequestLoading
+    | ServiceRequestSuccess
+    | ServiceRequestError;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,

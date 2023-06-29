@@ -1,6 +1,6 @@
 import { StyleProp, View, ViewStyle } from "react-native";
 import React from "react";
-import { Badge, Card, Text } from "react-native-paper";
+import { Badge, Card, IconButton, Text } from "react-native-paper";
 import dayjs from "dayjs";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -12,6 +12,13 @@ type GeneralCardProps = {
 };
 
 const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
+    const _generateRandomCharacters = (length: number) => {
+        let result = "";
+        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const charactersLength = characters.length;
+        for (let i = 0; i < length; i++) result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        return result;
+    };
     const theme = useAppTheme();
     return (
         <View style={style}>
@@ -32,6 +39,14 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                             <Text variant="headlineSmall">
                                 <Icon name="wrench" size={24} color={theme.colors?.primary} /> {workTask.ID}
                             </Text>
+                        </>
+                    }
+                    subtitleStyle={{
+                        marginLeft: 32,
+                    }}
+                    subtitle={
+                        <>
+                            <Text variant="labelSmall">{workTask.RequestClass.value}</Text>
                         </>
                     }
                     style={{
@@ -97,45 +112,49 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                         paddingVertical: 4,
                     }}
                 >
-                    <View>
-                        {[
-                            {
-                                label: "Request Class",
-                                value: workTask.RequestClass?.value || "Unknown",
-                            },
-                            {
-                                label: "Description",
-                                value: workTask.Description || "No Description",
-                            },
-                            {
-                                label: "Building Name",
-                                value: workTask.Building,
-                            },
-                            {
-                                label: "Address",
-                                value: `${workTask.Address}\n${workTask.City} ${workTask.StateProvince} ${workTask.Zip}`,
-                            },
-                        ].map((item, idx) => (
-                            <View
-                                style={{
-                                    flexDirection: "row",
+                    <View
+                        style={{
+                            paddingVertical: 4,
+                            paddingBottom: 8,
+                        }}
+                    >
+                        <Text variant="bodyMedium">
+                            {workTask.Description || "No Description Provided!"}
+                            {/* lorem ipsum dolor sit amet, consectetur adipiscing elit. sed euismod, diam sit amet
+                            consectetur consectetur adipiscing elit. sed euismod, diam sit amet consectetur adipiscing
+                            elit. sed euismod, diam sit amet consectetur adipiscing elit. sed euismod, diam sit amet
+                            consectetur adipiscing elit. sed euismod, diam sit amet consectetur adipiscing */}
+                            {/* 1000  random characters */}
+                            {/* {generateRandomCharacters(1000)} */}
+                            {/* {`lorem ipsum dolor sit amet, consectetur adipiscing elit. sed euismod, diam sit amet consectetur consectetur adipiscing elit. sed euismod, diam sit amet consectetur adipiscing...`} */}
+                        </Text>
+                    </View>
+                    {/* Full address */}
+                    <View
+                        style={{
+                            flexDirection: "row",
+                        }}
+                    >
+                        <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>
+                            {`${workTask.Building}\n${workTask.Address}\n${workTask.City} ${workTask.StateProvince} ${workTask.Zip}`}{" "}
+                            <Icon
+                                name="map-marker"
+                                color={theme.colors?.primary}
+                                size={18}
+                                onPress={() => {
+                                    // map-link
+                                    console.log("pressed-MAP");
                                 }}
-                                key={`${workTask._id}-${idx}`}
-                            >
-                                <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>
-                                    {item.label} :{" "}
-                                </Text>
-                                <Text
-                                    variant="bodyMedium"
-                                    style={{
-                                        flex: 1,
-                                        flexWrap: "wrap",
-                                    }}
-                                >
-                                    {item.value}
-                                </Text>
-                            </View>
-                        ))}
+                            />
+                        </Text>
+
+                        {/* <IconButton
+                            icon="map-marker"
+                            size={24}
+                            onPress={() => {
+                                console.log("pressed");
+                            }}
+                        /> */}
                     </View>
                     <View
                         style={{
@@ -245,7 +264,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                     marginTop: 4,
                                 }}
                             >
-                                <Icon
+                                {/* <Icon
                                     name="phone"
                                     // color={theme.colors?.primary}
                                     color={"white"}
@@ -258,11 +277,22 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                         borderRadius: 100,
                                         padding: 4,
                                     }}
+                                /> */}
+                                <IconButton
+                                    icon={() => <Icon name="phone" color={"white"} size={16} />}
+                                    size={12}
+                                    onPress={() => {
+                                        console.log("Phone Pressed");
+                                    }}
+                                    style={{
+                                        backgroundColor: theme.colors?.primary,
+                                        borderRadius: 100,
+                                        padding: 4,
+                                    }}
                                 />
-                                <Icon
-                                    name="email"
-                                    color={"white"}
-                                    size={16}
+                                <IconButton
+                                    icon={() => <Icon name="email" color={"white"} size={16} />}
+                                    size={12}
                                     onPress={() => {
                                         console.log("Phone Pressed");
                                     }}
@@ -309,6 +339,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                 variant="labelMedium"
                                 style={{
                                     textAlign: "center",
+                                    fontWeight: "bold",
                                 }}
                             >
                                 {dayjs(workTask.PlannedEnd).format("MM/DD/YYYY, HH:mm")}
@@ -324,7 +355,8 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                 variant="labelMedium"
                                 style={{
                                     textAlign: "center",
-                                    color: "red", // This would indicate that the task is overdue
+                                    // The color would be red if the task is overdue
+                                    color: dayjs(workTask.PlannedEnd).isBefore(dayjs()) ? "red" : "black",
                                 }}
                             >
                                 Due Date
@@ -333,7 +365,9 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                 variant="labelMedium"
                                 style={{
                                     textAlign: "center",
-                                    color: "red", // This would indicate that the task is overdue
+                                    // The color would be red if the task is overdue
+                                    color: dayjs(workTask.PlannedEnd).isBefore(dayjs()) ? "red" : "black",
+                                    fontWeight: "bold",
                                 }}
                             >
                                 {dayjs(workTask.PlannedEnd).format("MM/DD/YYYY, HH:mm")}
