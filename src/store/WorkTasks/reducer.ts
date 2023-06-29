@@ -1,4 +1,11 @@
-import { WORK_TASKS_LOADING, WORK_TASKS_SUCCESS, WORK_TASKS_ERROR } from "./actionTypes";
+import {
+    WORK_TASKS_LOADING,
+    WORK_TASKS_SUCCESS,
+    WORK_TASKS_ERROR,
+    COUNT_LOADING,
+    COUNT_SUCCESS,
+    COUNT_ERROR,
+} from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
 export interface WorkTask {
@@ -39,14 +46,32 @@ export interface AppState {
     loading: boolean;
     isAuthenticated: boolean;
     error: string | null;
-    tasks: WorkTask[];
+    countP1Tasks: WorkTask[];
+    countP2P7Tasks: WorkTask[];
+    countOverDueTasks: WorkTask[];
+    countDueTodayTasks: WorkTask[];
+    countCompletedTasks: WorkTask[];
+    countP1: number;
+    countP2P7: number;
+    countOverDue: number;
+    countDueToday: number;
+    countCompleted: number;
 }
 
 const initialState: AppState = {
     loading: false,
     error: null,
     isAuthenticated: false,
-    tasks: [],
+    countP1Tasks: [],
+    countP2P7Tasks: [],
+    countOverDueTasks: [],
+    countDueTodayTasks: [],
+    countCompletedTasks: [],
+    countP1: 0,
+    countP2P7: 0,
+    countOverDue: 0,
+    countDueToday: 0,
+    countCompleted: 0,
 };
 
 export const workTasksReducer = (state: AppState = initialState, action: ActionInterfaces): AppState => {
@@ -62,9 +87,35 @@ export const workTasksReducer = (state: AppState = initialState, action: ActionI
                 ...state,
                 loading: false,
                 isAuthenticated: true,
-                tasks: action.tasks,
+                countP1Tasks: action.countP1Tasks,
+                countP2P7Tasks: action.countP2P7Tasks,
+                countOverDueTasks: action.countOverDueTasks,
+                countDueTodayTasks: action.countDueTodayTasks,
+                countCompletedTasks: action.countCompletedTasks,
             };
         case WORK_TASKS_ERROR:
+            return {
+                ...state,
+                loading: false,
+                error: action.error,
+            };
+        case COUNT_LOADING:
+            return {
+                ...state,
+                loading: true,
+                error: "",
+            };
+        case COUNT_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                countP1: action.countP1,
+                countP2P7: action.countP2P7,
+                countOverDue: action.countOverDue,
+                countDueToday: action.countDueToday,
+                countCompleted: action.countCompleted,
+            };
+        case COUNT_ERROR:
             return {
                 ...state,
                 loading: false,

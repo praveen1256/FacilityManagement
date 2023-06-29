@@ -1,4 +1,12 @@
-import { AUTH_LOGIN_START, AUTH_LOGOUT, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_ERROR } from "./actionTypes";
+import {
+    AUTH_LOGIN_START,
+    AUTH_LOGOUT,
+    AUTH_LOGIN_SUCCESS,
+    AUTH_LOGIN_ERROR,
+    AUTH_LOGIN_USER_START,
+    AUTH_LOGIN_USER_SUCCESS,
+    AUTH_LOGIN_USER_ERROR,
+} from "./actionTypes";
 
 export interface AuthLogin {
     type: typeof AUTH_LOGIN_START;
@@ -19,7 +27,29 @@ export interface AuthLogout {
     type: typeof AUTH_LOGOUT;
 }
 
-export type ActionInterfaces = AuthLogin | AuthLogout | AuthLoginSuccess | AuthLoginError;
+export interface AuthLoginUser {
+    type: typeof AUTH_LOGIN_USER_START;
+}
+
+export interface AuthLoginUserSuccess {
+    type: typeof AUTH_LOGIN_USER_SUCCESS;
+    loginUserName: string;
+    role: string;
+}
+
+export interface AuthLoginUserError {
+    type: typeof AUTH_LOGIN_USER_ERROR;
+    error: string;
+}
+
+export type ActionInterfaces =
+    | AuthLogin
+    | AuthLogout
+    | AuthLoginSuccess
+    | AuthLoginError
+    | AuthLoginUser
+    | AuthLoginUserSuccess
+    | AuthLoginUserError;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,
