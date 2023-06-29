@@ -10,70 +10,13 @@ interface MyComponentProps {
 }
 
 const Header: React.FunctionComponent<MyComponentProps> = () => {
-    // const [visible, setVisible] = useState(false);
-    // const options = [
-    //     {
-    //         title: "Help",
-    //         action: () => console.log("Help"),
-    //     },
-    //     {
-    //         title: "LogOut",
-    //         action: () => console.log("LogOut"),
-    //     },
-    // ];
     return (
         <View style={styles.flexColumn}>
             <View style={styles.flexRowDirection}>
-                {/* {loginPage ? <View style={styles.view1} /> : <></>} */}
                 <View style={styles.view2}>
                     <Text style={styles.textCenter}>{locationzedStrings.header.headerVerizon}</Text>
                     <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
-                    {/* {!loginPage ? (
-                        <>
-                            <View>
-                                <Text style={styles.loggedInUserName}>{locationzedStrings.header.headerWelcome}</Text>
-                                <Text style={styles.loggedInUserName}>{loggedInUserName}</Text>
-                            </View>
-                        </>
-                    ) : (
-                        <>
-                            <Text style={styles.textCenter}>{locationzedStrings.header.headerVerizon}</Text>
-                            <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
-                        </>
-                    )} */}
                 </View>
-                {/* <View style={styles.view3}>
-                    {!loginPage ? (
-                        <TouchableOpacity onPress={() => setVisible(true)}>
-                            <FontAwesome5 style={styles.ellipsisIcon} name="ellipsis-v" size={25} />
-                        </TouchableOpacity>
-                    ) : (
-                        <></>
-                    )}
-                    {!loginPage ? (
-                        <Modal transparent visible={visible}>
-                            <SafeAreaView style={{ flex: 1 }} onTouchStart={() => setVisible(false)}>
-                                <View style={styles.popup}>
-                                    {options.map((option, i) => (
-                                        <Pressable
-                                            key={i}
-                                            style={styles.flexRow}
-                                            onPress={() => {
-                                                console.log("Menu Option Clicked");
-                                                option.action;
-                                            }}
-                                        >
-                                            <FontAwesome5 style={styles.popUpIcon} name="check" size={20} />
-                                            <Text>{option.title}</Text>
-                                        </Pressable>
-                                    ))}
-                                </View>
-                            </SafeAreaView>
-                        </Modal>
-                    ) : (
-                        <></>
-                    )}
-                </View> */}
             </View>
             <View style={styles.greyLine} />
         </View>
