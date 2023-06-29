@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { LayoutAnimation, Platform, ScrollView, StyleSheet, UIManager, View } from "react-native";
-import { List, Text, Button, IconButton, ActivityIndicator, HelperText } from "react-native-paper";
+import { LayoutAnimation, Platform, RefreshControl, ScrollView, StyleSheet, UIManager, View } from "react-native";
+import { List, Text, IconButton, ActivityIndicator, HelperText, Avatar, Card } from "react-native-paper";
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
+import FlipCard from "react-native-flip-card";
 
 import { useAppTheme } from "../../theme";
 import { RootStackParamList } from "../../Navigator";
@@ -21,7 +22,8 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 type WorkTaskScreenViewProps = {
-    initializeState: (workTaskId: string) => void;
+    initializeState: (workTaskId: string, refresh?: boolean) => void;
+    initializeSRDependentState: (workTaskId: string, serviceRequestID: string) => void;
     timeLogs: TimeLogExtended[];
     timeLogsLoading: boolean;
     timeLogsError: string | null;
@@ -36,6 +38,7 @@ type WorkTaskScreenViewProps = {
     eventLogsLoading: boolean;
     eventLogsError: string | null;
     workTask: FullWorkTask | null;
+    isRefreshing: boolean;
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -53,14 +56,28 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         eventLogs,
         eventLogsError,
         eventLogsLoading,
+        isRefreshing,
+        initializeState,
+        initializeSRDependentState,
     } = props;
 
     const { workTaskId } = props.route.params;
 
-    const { initializeState } = props;
     useEffect(() => {
         initializeState(workTaskId);
     }, [initializeState]);
+
+    useEffect(() => {
+        if (workTask) {
+            props.navigation.setOptions({
+                headerTitle: workTask.ID,
+            });
+
+            if (workTask.ID) {
+                initializeSRDependentState(workTask.ID, workTask.ID);
+            }
+        }
+    }, [workTask]);
 
     const [expandedAccordians, setExpandedAccordians] = React.useState<(string | number)[]>([]);
 
@@ -101,16 +118,65 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
 
     return (
         <View style={styles.layoutContainer}>
-            <ScrollView>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isRefreshing}
+                        onRefresh={() => {
+                            initializeState(workTaskId, true);
+                        }}
+                    />
+                }
+            >
                 {/* <Header /> */}
                 <View style={styles.form}>
                     {/* Header */}
-                    <GeneralCard
-                        workTask={workTask}
-                        style={{
-                            marginBottom: 8,
-                        }}
-                    />
+                    <FlipCard flipHorizontal={true} flipVertical={false}>
+                        {/* Frontside */}
+                        <GeneralCard
+                            workTask={workTask}
+                            style={{
+                                marginBottom: 8,
+                            }}
+                        />
+                        {/* Backside */}
+                        <View style={{ padding: 8 }}>
+                            <View
+                                style={
+                                    {
+                                        // opacity: 0,
+                                    }
+                                }
+                            >
+                                {/* <GeneralCard
+                                    workTask={workTask}
+                                    style={{
+                                        marginBottom: 8,
+                                    }}
+                                />
+                            </View>
+                            <View
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    bottom: 0,
+                                    // justifyContent: "center",
+                                    // alignItems: "center",
+                                }}
+                            > */}
+                                <Card>
+                                    <Card.Title title="Gary Bray" left={() => <Avatar.Text size={24} label="GB" />} />
+                                    <Card.Content>
+                                        <Text variant="labelMedium">Service Request</Text>
+                                        <Text variant="bodySmall">SR123456</Text>
+                                    </Card.Content>
+                                </Card>
+                            </View>
+                        </View>
+                    </FlipCard>
+
                     {/* </List.Accordion> */}
                     {/* -------EVENT LOGS------- */}
                     <List.Accordion
@@ -303,102 +369,6 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         ))}
                     </List.Accordion>
 
-                    {/* Service Requests */}
-                    {/* Data Example
-                    {
-                        "Building": "TELOPS HEADQUARTERS",
-                        "Space": null,
-                        "Floor": null,
-                        "Description": "bob lola",
-                        "ServiceRequested": "ELECTRICAL",
-                        "Address": "600-700 HIDDEN RIDGE",
-                        "Priority": "P2",
-                        "StateProvince": "TX",
-                        "RequiredPropertyUse": "ADMINISTRATIVE",
-                        "LocationCode": "329568",
-                        "City": "IRVING",
-                        "PRDispatch": "Y",
-                        "AssignToMe": "FALSE",
-                        "SpecificLocation": "Office 2B",
-                        "BestReachedAt": "555-1212",
-                        "Country": "UNITED STATES",
-                        "FMVendor": "CVT",
-                        "_id": "1856911090",
-                        "ID": "SR-10248438",
-                        "RequestedBy": "RAY TRIPAMER",
-                        "RequestedFor": "RAY TRIPAMER"
-                    }
-                */}
-                    <List.Accordion
-                        title={
-                            <Text
-                                variant="headlineSmall"
-                                style={{
-                                    color: theme.colors?.primary,
-                                }}
-                            >
-                                Service Requests
-                            </Text>
-                        }
-                        id="service-requests"
-                        // right={serviceRequestsLoading ? () => <ActivityIndicator animating={serviceRequestsLoading} /> : undefined}
-                        onPress={() => handleAccordianPress("service-requests")}
-                        expanded={expandedAccordians.includes("service-requests")}
-                    >
-                        {[
-                            {
-                                Building: "TELOPS HEADQUARTERS",
-                                Space: null,
-                                Floor: null,
-                                Description: "bob lola",
-                                ServiceRequested: "ELECTRICAL",
-                                Address: "600-700 HIDDEN RIDGE",
-                                Priority: "P2",
-                                StateProvince: "TX",
-                                RequiredPropertyUse: "ADMINISTRATIVE",
-                                LocationCode: "329568",
-                                City: "IRVING",
-                                PRDispatch: "Y",
-                                AssignToMe: "FALSE",
-                                SpecificLocation: "Office 2B",
-                                BestReachedAt: "555-1212",
-                                Country: "UNITED STATES",
-                                FMVendor: "CVT",
-                                _id: "1856911090",
-                                ID: "SR-10248438",
-                                RequestedBy: "RAY TRIPAMER",
-                                RequestedFor: "RAY TRIPAMER",
-                            },
-                        ].map((serviceRequest) => (
-                            <CardLabelValue
-                                key={`service-request-${serviceRequest._id}`}
-                                id={serviceRequest._id}
-                                items={[
-                                    {
-                                        label: "ID",
-                                        value: serviceRequest.ID,
-                                    },
-                                    {
-                                        label: "Description",
-                                        value: serviceRequest.Description,
-                                    },
-                                    {
-                                        label: "Service Requested",
-                                        value: serviceRequest.ServiceRequested,
-                                    },
-                                    {
-                                        label: "Priority",
-                                        value: serviceRequest.Priority,
-                                    },
-                                    {
-                                        label: "Requested For",
-                                        value: serviceRequest.RequestedFor,
-                                    },
-                                ]}
-                            />
-                        ))}
-                    </List.Accordion>
-
                     {/* Building Equipment & Refirgerant */}
                 </View>
             </ScrollView>
@@ -410,7 +380,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
             />
             <View
                 style={{
-                    backgroundColor: "grey",
+                    // backgroundColor: "grey",
                     position: "absolute",
                     bottom: 0,
                     left: 0,
@@ -424,41 +394,59 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     flex: 1,
                     flexDirection: "row",
                     display: "flex",
-                    justifyContent: "flex-end",
+                    // justifyContent: "flex-end",
+                    justifyContent: "center",
                     alignItems: "center",
                 }}
             >
-                {/* Comment Icon */}
-                <IconButton
-                    icon={"comment"}
-                    // size={20}
-                    onPress={() => console.log("Pressed")}
-                    iconColor="white"
+                <View
                     style={{
-                        backgroundColor: theme.colors?.primary,
+                        flexDirection: "row",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "grey",
+                        // borderRadius: 20,
+                        paddingVertical: 10,
+                        paddingHorizontal: 20,
+                        //
+                        borderTopLeftRadius: 20,
+                        borderTopRightRadius: 20,
+                        flex: 1,
                     }}
-                />
-
-                {/* TimeSlot icon */}
-                <IconButton
-                    icon={"account-clock"}
-                    // size={20}
-                    onPress={() => console.log("Pressed")}
-                    iconColor="white"
-                    style={{
-                        backgroundColor: theme.colors?.primary,
-                    }}
-                />
-                <Button
-                    icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
-                    mode="contained"
-                    onPress={() => {
-                        console.log("Pressed");
-                    }}
-                    textColor="white"
                 >
-                    Complete
-                </Button>
+                    {/* Comment Icon */}
+                    <IconButton
+                        icon={"comment"}
+                        // size={20}
+                        onPress={() => console.log("Pressed")}
+                        iconColor="white"
+                        style={{
+                            backgroundColor: theme.colors?.primary,
+                        }}
+                    />
+                    <IconButton
+                        // icon={"account-clock"}
+                        icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
+                        // size={20}
+                        onPress={() => console.log("Pressed")}
+                        iconColor="white"
+                        style={{
+                            backgroundColor: theme.colors?.primary,
+                        }}
+                    />
+
+                    {/* TimeSlot icon */}
+                    <IconButton
+                        icon={"account-clock"}
+                        // size={20}
+                        onPress={() => console.log("Pressed")}
+                        iconColor="white"
+                        style={{
+                            backgroundColor: theme.colors?.primary,
+                        }}
+                    />
+                </View>
             </View>
         </View>
     );
@@ -469,12 +457,12 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         backgroundColor: "#f6f6f6",
-        paddingVertical: 20,
+        // paddingVertical: 20,
         flex: 1,
     },
     form: {
         flex: 1,
-        marginTop: 0,
+        marginTop: 20,
     },
 });
 
@@ -484,11 +472,15 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => ({
-    initializeState: (workTaskId: string) => {
-        dispatch(WorkTask.Actions.loadWorkTask(workTaskId));
+    initializeState: (workTaskId: string, refresh?: boolean) => {
+        dispatch(WorkTask.Actions.loadWorkTask(workTaskId, refresh));
         dispatch(WorkTask.Actions.loadEvents(workTaskId));
         dispatch(WorkTask.Actions.loadTimeLogs(workTaskId));
+        dispatch(WorkTask.Actions.loadServiceRequest(workTaskId));
         dispatch(WorkTask.Actions.loadTimeLogCategories());
+    },
+    initializeSRDependentState: (workTaskId: string, serviceRequestId: string) => {
+        dispatch(WorkTask.Actions.loadChildWorkTasks(serviceRequestId, workTaskId));
     },
     onTimeLogDelete: (workTaskId: string, timeLogId: string) =>
         dispatch(WorkTask.Actions.deleteTimeLog(workTaskId, timeLogId)),
@@ -514,6 +506,7 @@ const mapState = (state: RootState) => ({
     eventLogs: state.workTask.eventLogs,
     eventLogsLoading: state.workTask.eventLogsLoading,
     eventLogsError: state.workTask.eventLogsError,
+    isRefreshing: !!state.workTask.refreshing,
 });
 
 const connector = connect(mapState, mapDispatch);

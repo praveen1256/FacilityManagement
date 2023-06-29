@@ -18,6 +18,12 @@ import {
     EVENT_LOGS_LOADING,
     EVENT_LOGS_ERROR,
     EVENT_LOGS_SUCCESS,
+    CHILD_WORK_TASKS_ERROR,
+    CHILD_WORK_TASKS_LOADING,
+    CHILD_WORK_TASKS_SUCCESS,
+    SERVICE_REQUEST_ERROR,
+    SERVICE_REQUEST_LOADING,
+    SERVICE_REQUEST_SUCCESS,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -128,6 +134,40 @@ export interface FullWorkTask {
     RequestedByLookup: string;
 }
 
+export interface ChildTask {
+    ParentID: string;
+    Status: string;
+    RequestClass: string;
+    Priority: string;
+    TaskType: string;
+    _id: string;
+    ID: string;
+}
+
+export interface ServiceRequest {
+    Building: string;
+    Space: string;
+    Floor: string;
+    Description: string;
+    ServiceRequested: string;
+    Address: string;
+    Priority: string;
+    StateProvince: string;
+    RequiredPropertyUse: string;
+    LocationCode: string;
+    City: string;
+    PRDispatch: string;
+    AssignToMe: string;
+    SpecificLocation: string;
+    BestReachedAt: string;
+    Country: string;
+    FMVendor: string;
+    _id: string;
+    ID: string;
+    RequestedBy: string;
+    RequestedFor: string;
+}
+
 export interface WorkTaskState {
     loading: boolean;
     error: string | null;
@@ -144,6 +184,15 @@ export interface WorkTaskState {
     eventLogsLoading: boolean;
     eventLogsError: string | null;
     eventLogs: EventLog[];
+    refreshing?: boolean;
+    // child tasks
+    childTasksLoading: boolean;
+    childTasksError: string | null;
+    childTasks: ChildTask[];
+    // Service Request
+    serviceRequestLoading: boolean;
+    serviceRequestError: string | null;
+    serviceRequest: ServiceRequest | null;
 }
 
 const initialState: WorkTaskState = {
@@ -162,14 +211,30 @@ const initialState: WorkTaskState = {
     eventLogsLoading: false,
     eventLogsError: null,
     eventLogs: [],
+    refreshing: false,
+    // child tasks
+    childTasksLoading: false,
+    childTasksError: null,
+    childTasks: [],
+    // Service Request
+    serviceRequestLoading: false,
+    serviceRequestError: null,
+    serviceRequest: null,
 };
 
 export const workTaskReducer = (state: WorkTaskState = initialState, action: ActionInterfaces): WorkTaskState => {
     switch (action.type) {
         case WORK_TASK_LOADING:
+            if (action.refresh)
+                return {
+                    ...state,
+                    loading: action.refresh ? false : true,
+                    refreshing: action.refresh,
+                };
             return {
                 ...initialState,
-                loading: true,
+                loading: action.refresh ? false : true,
+                refreshing: action.refresh,
             };
         case WORK_TASK_SUCCESS:
             return {
@@ -177,6 +242,7 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 loading: false,
                 error: null,
                 workTask: action.workTask,
+                refreshing: false,
                 // Removing existing state
                 // TODO: Move to a separate action
             };
@@ -184,6 +250,7 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
             return {
                 ...state,
                 loading: false,
+                refreshing: false,
                 error: action.error,
             };
         // TimeLog Categories
@@ -378,6 +445,50 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 ...state,
                 eventLogsLoading: false,
                 eventLogsError: action.error,
+            };
+
+        case CHILD_WORK_TASKS_LOADING:
+            return {
+                ...state,
+                childTasksLoading: true,
+                childTasksError: null,
+                childTasks: [],
+            };
+        case CHILD_WORK_TASKS_SUCCESS:
+            return {
+                ...state,
+                childTasksLoading: false,
+                childTasksError: null,
+                childTasks: action.tasks,
+            };
+
+        case CHILD_WORK_TASKS_ERROR:
+            return {
+                ...state,
+                childTasksLoading: false,
+                childTasksError: action.error,
+            };
+
+        case SERVICE_REQUEST_LOADING:
+            return {
+                ...state,
+                serviceRequestLoading: true,
+                serviceRequestError: null,
+                serviceRequest: null,
+            };
+
+        case SERVICE_REQUEST_SUCCESS:
+            return {
+                ...state,
+                serviceRequestLoading: false,
+                serviceRequestError: null,
+                serviceRequest: action.serviceRequest,
+            };
+        case SERVICE_REQUEST_ERROR:
+            return {
+                ...state,
+                serviceRequestLoading: false,
+                serviceRequestError: action.error,
             };
 
         default:

@@ -27,13 +27,23 @@ import {
     EVENT_LOGS_LOADING,
     EVENT_LOGS_SUCCESS,
     WORK_TASK_LOADING,
+    CHILD_WORK_TASKS_LOADING,
+    CHILD_WORK_TASKS_SUCCESS,
+    CHILD_WORK_TASKS_ERROR,
+    SERVICE_REQUEST_LOADING,
+    SERVICE_REQUEST_SUCCESS,
+    SERVICE_REQUEST_ERROR,
 } from "./actionTypes";
-import { EventLog, FullWorkTask, TimeLog } from "./reducer";
+import { ChildTask, EventLog, FullWorkTask, ServiceRequest, TimeLog } from "./reducer";
 
 export const loadWorkTask =
-    (workTaskId: WorkTask["_id"]): AppThunkAction<ActionInterfaces> =>
+    (workTaskId: WorkTask["_id"], refresh?: boolean): AppThunkAction<ActionInterfaces> =>
     async (dispatch, _getState) => {
-        dispatch(pureActionCreator(WORK_TASK_LOADING, {}));
+        dispatch(
+            pureActionCreator(WORK_TASK_LOADING, {
+                refresh,
+            }),
+        );
 
         try {
             // const state = getState();
@@ -283,6 +293,96 @@ export const loadEvents =
             const err = error as AxiosError;
             dispatch(
                 pureActionCreator(EVENT_LOGS_ERROR, {
+                    error: err.message || "Something went wrong",
+                }),
+            );
+        }
+    };
+
+// Load the child work tasks for the work task
+export const loadChildWorkTasks =
+    (workTaskId: string, serviceId: string): AppThunkAction<ActionInterfaces> =>
+    async (dispatch, _getState) => {
+        dispatch(pureActionCreator(CHILD_WORK_TASKS_LOADING, {}));
+        try {
+            await axios.get(`https://verizon-dev2.tririga.com/oslc/login?USERNAME=1446144475&PASSWORD=password`);
+
+            const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstChildTask?countOnly=false&query=true`;
+            const res = await axios.post<{
+                data: ChildTask[];
+                totalSize: number;
+                size: number;
+                hasMoreResults: boolean;
+                from: number;
+            }>(url, {
+                page: {
+                    from: 0,
+                    size: 10,
+                },
+                filters: [
+                    {
+                        name: "ParentID",
+                        operator: "contains",
+                        value: `${serviceId}`,
+                        ignoreIfBlank: false,
+                        type: "",
+                    },
+                ],
+                sorts: [
+                    {
+                        name: "Address",
+                        desc: false,
+                        type: "",
+                    },
+                ],
+                calendar: null,
+            });
+
+            await testingDelay(ANIMATION_DELAY_MS * 2);
+
+            dispatch(
+                pureActionCreator(CHILD_WORK_TASKS_SUCCESS, {
+                    tasks: res.data.data,
+                }),
+            );
+        } catch (error) {
+            const err = error as AxiosError;
+            dispatch(
+                pureActionCreator(CHILD_WORK_TASKS_ERROR, {
+                    error: err.message || "Something went wrong",
+                }),
+            );
+        }
+    };
+
+// load service request
+export const loadServiceRequest =
+    (workTaskId: string): AppThunkAction<ActionInterfaces> =>
+    async (dispatch, _getState) => {
+        dispatch(pureActionCreator(SERVICE_REQUEST_LOADING, {}));
+        try {
+            await axios.get(`https://verizon-dev2.tririga.com/oslc/login?USERNAME=1446144475&PASSWORD=password`);
+
+            const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}/cstSerReqAssociated?countOnly=false`;
+            const res = await axios.get<{
+                data: ServiceRequest[];
+                totalSize: number;
+                size: number;
+                hasMoreResults: boolean;
+                from: number;
+            }>(url);
+
+            await testingDelay(ANIMATION_DELAY_MS * 2);
+
+            dispatch(
+                pureActionCreator(SERVICE_REQUEST_SUCCESS, {
+                    serviceRequest: res.data.data[0] || null,
+                }),
+            );
+        } catch (error) {
+            const err = error as AxiosError;
+            dispatch(
+                pureActionCreator(SERVICE_REQUEST_ERROR, {
                     error: err.message || "Something went wrong",
                 }),
             );

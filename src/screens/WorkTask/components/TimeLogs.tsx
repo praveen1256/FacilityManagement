@@ -32,8 +32,6 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
     onTimeLogDelete,
     workTaskId,
     timeLogCategories,
-    timeLogCategoriesError,
-    timeLogCategoriesLoading,
     onTimeLogCreate,
     serviceRequestId,
     onCancelRetry,
@@ -96,18 +94,6 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
                             }}
                         />
                     ))}
-                <Button
-                    mode="contained"
-                    icon={"clock"}
-                    style={{
-                        marginTop: 20,
-                    }}
-                    disabled={timeLogCategoriesLoading || timeLogCategoriesError !== null}
-                    onPress={() => setIsAddTimeLogModalOpen(true)}
-                    loading={timeLogCategoriesLoading}
-                >
-                    Add Time Log
-                </Button>
             </View>
         </>
     );
