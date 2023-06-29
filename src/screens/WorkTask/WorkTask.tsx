@@ -4,17 +4,19 @@ import { List, Text, IconButton, ActivityIndicator, HelperText, Avatar, Card } f
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FlipCard from "react-native-flip-card";
 
 import { useAppTheme } from "../../theme";
 import { RootStackParamList } from "../../Navigator";
 import { AppThunkDispatch, RootState, WorkTask } from "../../store";
-import { EventLog, FullWorkTask, TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
+import { ChildTask, EventLog, FullWorkTask, TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
 
 import TimeLogs from "./components/TimeLogs";
 import CardLabelValue from "./components/CardLabelValue";
 import GeneralCard from "./components/GeneralCard";
 import EventLogCard from "./components/EventLog";
+import CompletitionForm from "./components/CompletitionForm";
 
 // TODO: move this to the App.tsx file, since its better to define this only once instead of many places!!
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -39,6 +41,14 @@ type WorkTaskScreenViewProps = {
     eventLogsError: string | null;
     workTask: FullWorkTask | null;
     isRefreshing: boolean;
+    // Child work tasks
+    childWorkTasks: ChildTask[];
+    childWorkTasksLoading: boolean;
+    childWorkTasksError: string | null;
+    // Completion Form
+    onCompleteFormSubmit: (...args: Parameters<typeof WorkTask.Actions.workTaskComplete>) => void;
+    isCompleteWorkTaskLoading: boolean;
+    completeWorkTaskError: string | null;
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -59,6 +69,11 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         isRefreshing,
         initializeState,
         initializeSRDependentState,
+        completeWorkTaskError,
+        isCompleteWorkTaskLoading,
+        onCompleteFormSubmit,
+        childWorkTasks,
+        childWorkTasksLoading,
     } = props;
 
     const { workTaskId } = props.route.params;
@@ -80,6 +95,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
     }, [workTask]);
 
     const [expandedAccordians, setExpandedAccordians] = React.useState<(string | number)[]>([]);
+    const [completitionFormOpen, setCompletitionFormOpen] = React.useState(false);
 
     const theme = useAppTheme();
 
@@ -117,38 +133,32 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
     }
 
     return (
-        <View style={styles.layoutContainer}>
-            <ScrollView
-                refreshControl={
-                    <RefreshControl
-                        refreshing={isRefreshing}
-                        onRefresh={() => {
-                            initializeState(workTaskId, true);
-                        }}
-                    />
-                }
-            >
-                {/* <Header /> */}
-                <View style={styles.form}>
-                    {/* Header */}
-                    <FlipCard flipHorizontal={true} flipVertical={false}>
-                        {/* Frontside */}
-                        <GeneralCard
-                            workTask={workTask}
-                            style={{
-                                marginBottom: 8,
+        <>
+            <View style={styles.layoutContainer}>
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={() => {
+                                initializeState(workTaskId, true);
                             }}
                         />
-                        {/* Backside */}
-                        <View style={{ padding: 8 }}>
-                            <View
-                                style={
-                                    {
-                                        // opacity: 0,
+                    }
+                >
+                    {/* <Header /> */}
+                    <View style={styles.form}>
+                        {/* Header */}
+                        <FlipCard flipHorizontal={true} flipVertical={false}>
+                            {/* Backside */}
+                            <View style={{ padding: 8 }}>
+                                <View
+                                    style={
+                                        {
+                                            // opacity: 0,
+                                        }
                                     }
-                                }
-                            >
-                                {/* <GeneralCard
+                                >
+                                    {/* <GeneralCard
                                     workTask={workTask}
                                     style={{
                                         marginBottom: 8,
@@ -166,83 +176,148 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                     // alignItems: "center",
                                 }}
                             > */}
-                                <Card>
-                                    <Card.Title title="Gary Bray" left={() => <Avatar.Text size={24} label="GB" />} />
-                                    <Card.Content>
-                                        <Text variant="labelMedium">Service Request</Text>
-                                        <Text variant="bodySmall">SR123456</Text>
-                                    </Card.Content>
-                                </Card>
+                                    <Card>
+                                        <Card.Content>
+                                            <Text variant="labelMedium">Resources</Text>
+                                            <View
+                                                style={{
+                                                    flexDirection: "row",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    // backgroundColor: "lightgrey",
+                                                }}
+                                            >
+                                                {[{ name: "Gary Bray" }, { name: "Gary Bray" }].map(
+                                                    (person, idx, arr) => {
+                                                        return (
+                                                            <View
+                                                                key={`${person.name}-${idx}`}
+                                                                style={{
+                                                                    // backgroundColor: "aqua",
+                                                                    justifyContent: "center",
+                                                                    alignItems: "center",
+                                                                    marginRight: idx === arr.length - 1 ? 0 : 8,
+                                                                }}
+                                                            >
+                                                                <Avatar.Text size={24} label={person.name[0]} />
+                                                                <Text variant="bodySmall">{person.name}</Text>
+                                                            </View>
+                                                        );
+                                                    },
+                                                )}
+                                            </View>
+                                            <Text variant="labelMedium">Responsible:</Text>
+                                            <View
+                                                style={{
+                                                    flexDirection: "row",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    // backgroundColor: "lightgrey",
+                                                }}
+                                            >
+                                                <View
+                                                    style={{
+                                                        // backgroundColor: "aqua",
+                                                        justifyContent: "center",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <Avatar.Text size={24} label={workTask.respperson[0]} />
+                                                    <Text variant="bodySmall">{workTask.respperson}</Text>
+                                                </View>
+                                            </View>
+                                            <View>
+                                                <Text variant="labelMedium">Service Request</Text>
+                                                <Text variant="bodySmall">SR123456 | Electrical | Ray White</Text>
+                                            </View>
+                                            <View>
+                                                <Text variant="labelMedium">Parent Task</Text>
+                                                <Text variant="bodySmall">SR123456 | Electrical | Ray White</Text>
+                                            </View>
+                                        </Card.Content>
+                                    </Card>
+                                </View>
                             </View>
-                        </View>
-                    </FlipCard>
 
-                    {/* </List.Accordion> */}
-                    {/* -------EVENT LOGS------- */}
-                    <List.Accordion
-                        title={
-                            <Text
-                                variant="headlineSmall"
+                            {/* Frontside */}
+                            <GeneralCard
+                                workTask={workTask}
                                 style={{
-                                    color: theme.colors?.primary,
+                                    marginBottom: 8,
                                 }}
-                            >
-                                Events Logs
-                            </Text>
-                        }
-                        id="events"
-                        right={eventLogsLoading ? () => <ActivityIndicator animating={eventLogsLoading} /> : undefined}
-                        expanded={expandedAccordians.includes("events")}
-                        // expanded
-                        onPress={() => handleAccordianPress("events")}
-                    >
-                        <View>
-                            {eventLogsLoading && <ActivityIndicator animating={true} />}
-                            {eventLogsError && (
-                                <HelperText type="error" visible={true}>
-                                    {eventLogsError}
-                                </HelperText>
-                            )}
-                            {eventLogs.map((eventLog) => (
-                                <EventLogCard eventLog={eventLog} key={eventLog._id} />
-                            ))}
-                        </View>
-                    </List.Accordion>
-                    {/* TIMELOG Section!! */}
-                    <List.Accordion
-                        title={
-                            <Text
-                                variant="headlineSmall"
-                                style={{
-                                    color: theme.colors?.primary,
-                                }}
-                            >
-                                Time Log
-                            </Text>
-                        }
-                        id="timelog"
-                        onPress={() => handleAccordianPress("timelog")}
-                        expanded={expandedAccordians.includes("timelog")}
-                        right={timeLogsLoading ? () => <ActivityIndicator animating={timeLogsLoading} /> : undefined}
-                    >
-                        <TimeLogs
-                            timeLogs={timeLogs}
-                            timeLogsLoading={timeLogsLoading}
-                            timeLogsError={timeLogsError}
-                            onTimeLogDelete={onTimeLogDelete}
-                            workTaskId={workTaskId}
-                            timeLogCategories={timeLogCategories}
-                            timeLogCategoriesLoading={timeLogCategoriesLoading}
-                            timeLogCategoriesError={timeLogCategoriesError}
-                            onTimeLogCreate={onTimeLogCreate}
-                            // FIXME: take service request id from the work task
-                            serviceRequestId={workTask.ID}
-                            onCancelRetry={onTimeLogCancelRetry}
-                        />
-                    </List.Accordion>
+                            />
+                        </FlipCard>
 
-                    {/* Child Work Tasks */}
-                    {/* Data example
+                        {/* </List.Accordion> */}
+                        {/* -------EVENT LOGS------- */}
+                        <List.Accordion
+                            title={
+                                <Text
+                                    variant="headlineSmall"
+                                    style={{
+                                        color: theme.colors?.primary,
+                                    }}
+                                >
+                                    Events Logs
+                                </Text>
+                            }
+                            id="events"
+                            right={
+                                eventLogsLoading ? () => <ActivityIndicator animating={eventLogsLoading} /> : undefined
+                            }
+                            expanded={expandedAccordians.includes("events")}
+                            // expanded
+                            onPress={() => handleAccordianPress("events")}
+                        >
+                            <View>
+                                {eventLogsLoading && <ActivityIndicator animating={true} />}
+                                {eventLogsError && (
+                                    <HelperText type="error" visible={true}>
+                                        {eventLogsError}
+                                    </HelperText>
+                                )}
+                                {eventLogs.map((eventLog) => (
+                                    <EventLogCard eventLog={eventLog} key={eventLog._id} />
+                                ))}
+                            </View>
+                        </List.Accordion>
+                        {/* TIMELOG Section!! */}
+                        <List.Accordion
+                            title={
+                                <Text
+                                    variant="headlineSmall"
+                                    style={{
+                                        color: theme.colors?.primary,
+                                    }}
+                                >
+                                    Time Log
+                                </Text>
+                            }
+                            id="timelog"
+                            onPress={() => handleAccordianPress("timelog")}
+                            expanded={expandedAccordians.includes("timelog")}
+                            right={
+                                timeLogsLoading ? () => <ActivityIndicator animating={timeLogsLoading} /> : undefined
+                            }
+                        >
+                            <TimeLogs
+                                timeLogs={timeLogs}
+                                timeLogsLoading={timeLogsLoading}
+                                timeLogsError={timeLogsError}
+                                onTimeLogDelete={onTimeLogDelete}
+                                workTaskId={workTaskId}
+                                timeLogCategories={timeLogCategories}
+                                timeLogCategoriesLoading={timeLogCategoriesLoading}
+                                timeLogCategoriesError={timeLogCategoriesError}
+                                onTimeLogCreate={onTimeLogCreate}
+                                // FIXME: take service request id from the work task
+                                serviceRequestId={workTask.ID}
+                                onCancelRetry={onTimeLogCancelRetry}
+                            />
+                        </List.Accordion>
+
+                        {/* Child Work Tasks */}
+                        {/* Data example
                     {
                         "ParentID": "SR-10248438",
                         "Status": "Draft",
@@ -253,202 +328,162 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         "ID": "13596935"
                     }
                     */}
-                    <List.Accordion
-                        title={
-                            <Text
-                                variant="headlineSmall"
-                                style={{
-                                    color: theme.colors?.primary,
-                                }}
-                            >
-                                Child Work Tasks
-                            </Text>
-                        }
-                        id="child-work-tasks"
-                        // right={childWorkTasksLoading ? () => <ActivityIndicator animating={childWorkTasksLoading} /> : undefined}
-                        onPress={() => handleAccordianPress("child-work-tasks")}
-                        expanded={expandedAccordians.includes("child-work-tasks")}
-                    >
-                        {[
-                            {
-                                ParentID: "SR-10248438",
-                                Status: "Draft",
-                                RequestClass: "",
-                                Priority: "",
-                                TaskType: "Corrective",
-                                _id: "1858328993",
-                                ID: "13596935",
-                            },
-                        ].map((childWorkTask) => (
-                            <CardLabelValue
-                                key={`child-work-task-${childWorkTask._id}`}
-                                id={childWorkTask._id}
-                                items={[
-                                    {
-                                        label: "ID",
-                                        value: childWorkTask.ID,
-                                    },
-                                    {
-                                        label: "Task Type",
-                                        value: childWorkTask.TaskType,
-                                    },
-                                    {
-                                        label: "Request Class",
-                                        value: childWorkTask.RequestClass,
-                                    },
-                                    {
-                                        label: "Priority",
-                                        value: childWorkTask.Priority,
-                                    },
-                                    {
-                                        label: "Status",
-                                        value: childWorkTask.Status,
-                                    },
-                                ]}
-                            />
-                        ))}
-                    </List.Accordion>
+                        <List.Accordion
+                            title={
+                                <Text
+                                    variant="headlineSmall"
+                                    style={{
+                                        // color: theme.colors?.primary,
+                                        // disabled color
+                                        color:
+                                            childWorkTasksLoading || childWorkTasks.length > 0
+                                                ? theme.colors?.primary
+                                                : "#999999",
+                                    }}
+                                >
+                                    Child Work Tasks
+                                </Text>
+                            }
+                            id="child-work-tasks"
+                            right={
+                                childWorkTasksLoading
+                                    ? () => <ActivityIndicator animating={childWorkTasksLoading} />
+                                    : childWorkTasks.length > 0
+                                    ? undefined
+                                    : () => <Icon name="cancel" />
+                            }
+                            onPress={() =>
+                                (!childWorkTasksLoading || childWorkTasks.length > 0) &&
+                                handleAccordianPress("child-work-tasks")
+                            }
+                            expanded={expandedAccordians.includes("child-work-tasks")}
+                        >
+                            {childWorkTasks.map((childWorkTask) => (
+                                <CardLabelValue
+                                    key={`child-work-task-${childWorkTask._id}`}
+                                    id={childWorkTask._id}
+                                    items={[
+                                        {
+                                            label: "ID",
+                                            value: childWorkTask.ID,
+                                        },
+                                        {
+                                            label: "Task Type",
+                                            value: childWorkTask.TaskType,
+                                        },
+                                        {
+                                            label: "Request Class",
+                                            value: childWorkTask.RequestClass,
+                                        },
+                                        {
+                                            label: "Priority",
+                                            value: childWorkTask.Priority,
+                                        },
+                                        {
+                                            label: "Status",
+                                            value: childWorkTask.Status,
+                                        },
+                                    ]}
+                                />
+                            ))}
+                        </List.Accordion>
 
-                    {/*  Parent Work Task */}
-                    {/* Data Example
-                     {
-                        "Status": "Completed",
-                        "ChildID": "SR-10000015",
-                        "Priority": "P2",
-                        "_id": "1375091588",
-                        "ID": "SR-10000013"
-                    }
-         */}
-                    <List.Accordion
-                        title={
-                            <Text
-                                variant="headlineSmall"
-                                style={{
-                                    color: theme.colors?.primary,
-                                }}
-                            >
-                                Parent Work Task
-                            </Text>
-                        }
-                        id="parent-work-task"
-                        // right={parentWorkTaskLoading ? () => <ActivityIndicator animating={parentWorkTaskLoading} /> : undefined}
-                        onPress={() => handleAccordianPress("parent-work-task")}
-                        expanded={expandedAccordians.includes("parent-work-task")}
-                    >
-                        {[
-                            {
-                                Status: "Completed",
-                                ChildID: "SR-10000015",
-                                Priority: "P2",
-                                _id: "1375091588",
-                                ID: "SR-10000013",
-                            },
-                        ].map((parentWorkTask) => (
-                            <CardLabelValue
-                                key={`parent-work-task-${parentWorkTask._id}`}
-                                id={parentWorkTask._id}
-                                items={[
-                                    {
-                                        label: "ID",
-                                        value: parentWorkTask.ID,
-                                    },
-                                    {
-                                        label: "Priority",
-                                        value: parentWorkTask.Priority,
-                                    },
-                                    {
-                                        label: "Child ID",
-                                        value: parentWorkTask.ChildID,
-                                    },
-                                    {
-                                        label: "Status",
-                                        value: parentWorkTask.Status,
-                                    },
-                                ]}
-                            />
-                        ))}
-                    </List.Accordion>
-
-                    {/* Building Equipment & Refirgerant */}
-                </View>
-            </ScrollView>
-            {/* Escape the bottom action bar */}
-            <View
-                style={{
-                    paddingBottom: 64,
-                }}
-            />
-            <View
-                style={{
-                    // backgroundColor: "grey",
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    borderRadius: 20,
-                    height: 64,
-                    padding: 10,
-                    marginHorizontal: 10,
-                    marginBottom: 10,
-                    // Flexbox
-                    flex: 1,
-                    flexDirection: "row",
-                    display: "flex",
-                    // justifyContent: "flex-end",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
+                        {/* Building Equipment & Refirgerant */}
+                    </View>
+                </ScrollView>
+                {/* Escape the bottom action bar */}
                 <View
                     style={{
+                        paddingBottom: 64,
+                    }}
+                />
+                <View
+                    style={{
+                        // backgroundColor: "grey",
+                        position: "absolute",
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        borderRadius: 20,
+                        height: 64,
+                        padding: 10,
+                        marginHorizontal: 10,
+                        marginBottom: 10,
+                        // Flexbox
+                        flex: 1,
                         flexDirection: "row",
                         display: "flex",
+                        // justifyContent: "flex-end",
                         justifyContent: "center",
                         alignItems: "center",
-                        backgroundColor: "grey",
-                        // borderRadius: 20,
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        //
-                        borderTopLeftRadius: 20,
-                        borderTopRightRadius: 20,
-                        flex: 1,
                     }}
                 >
-                    {/* Comment Icon */}
-                    <IconButton
-                        icon={"comment"}
-                        // size={20}
-                        onPress={() => console.log("Pressed")}
-                        iconColor="white"
+                    <View
                         style={{
-                            backgroundColor: theme.colors?.primary,
+                            flexDirection: "row",
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "grey",
+                            // borderRadius: 20,
+                            paddingVertical: 10,
+                            paddingHorizontal: 20,
+                            //
+                            borderTopLeftRadius: 20,
+                            borderTopRightRadius: 20,
+                            flex: 1,
                         }}
-                    />
-                    <IconButton
-                        // icon={"account-clock"}
-                        icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
-                        // size={20}
-                        onPress={() => console.log("Pressed")}
-                        iconColor="white"
-                        style={{
-                            backgroundColor: theme.colors?.primary,
-                        }}
-                    />
+                    >
+                        {/* Comment Icon */}
+                        <IconButton
+                            icon={"comment"}
+                            // size={20}
+                            onPress={() => console.log("Pressed")}
+                            iconColor="white"
+                            style={{
+                                backgroundColor: theme.colors?.primary,
+                            }}
+                        />
+                        <IconButton
+                            // icon={"account-clock"}
+                            icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
+                            // size={20}
+                            onPress={() => {
+                                console.log("Pressed - Completition Form");
+                                setCompletitionFormOpen(true);
+                            }}
+                            iconColor="white"
+                            style={{
+                                backgroundColor: theme.colors?.primary,
+                            }}
+                        />
 
-                    {/* TimeSlot icon */}
-                    <IconButton
-                        icon={"account-clock"}
-                        // size={20}
-                        onPress={() => console.log("Pressed")}
-                        iconColor="white"
-                        style={{
-                            backgroundColor: theme.colors?.primary,
-                        }}
-                    />
+                        {/* TimeSlot icon */}
+                        <IconButton
+                            icon={"account-clock"}
+                            // size={20}
+                            onPress={() => console.log("Pressed")}
+                            iconColor="white"
+                            style={{
+                                backgroundColor: theme.colors?.primary,
+                            }}
+                        />
+                    </View>
                 </View>
             </View>
-        </View>
+            <CompletitionForm
+                isOpen={completitionFormOpen}
+                onCancel={() => setCompletitionFormOpen(false)}
+                onSubmit={(data) => {
+                    onCompleteFormSubmit(workTaskId, {
+                        ...data,
+                        serviceRequestNumber: workTask.ID,
+                    });
+                }}
+                error={completeWorkTaskError}
+                isLoading={isCompleteWorkTaskLoading}
+            />
+        </>
     );
 };
 
@@ -488,6 +523,8 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => (
         dispatch(WorkTask.Actions.createTimeLog(...args)),
     onTimeLogCancelRetry: (...args: Parameters<typeof WorkTask.Actions.onTimeLogCancelRetry>) =>
         dispatch(WorkTask.Actions.onTimeLogCancelRetry(...args)),
+    onCompleteFormSubmit: (...args: Parameters<typeof WorkTask.Actions.workTaskComplete>) =>
+        dispatch(WorkTask.Actions.workTaskComplete(...args)),
 });
 
 const mapState = (state: RootState) => ({
@@ -507,6 +544,13 @@ const mapState = (state: RootState) => ({
     eventLogsLoading: state.workTask.eventLogsLoading,
     eventLogsError: state.workTask.eventLogsError,
     isRefreshing: !!state.workTask.refreshing,
+    // Child Work Tasks
+    childWorkTasks: state.workTask.childTasks,
+    childWorkTasksLoading: state.workTask.childTasksLoading,
+    childWorkTasksError: state.workTask.childTasksError,
+    // Completion form
+    completionFormLoading: true,
+    completionFormError: null,
 });
 
 const connector = connect(mapState, mapDispatch);
