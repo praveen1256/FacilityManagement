@@ -8,6 +8,8 @@ export interface AuthLoginSuccess {
     type: typeof AUTH_LOGIN_SUCCESS;
     username: string;
     password: string;
+    loginUserName: string;
+    role: string;
 }
 
 export interface AuthLoginError {

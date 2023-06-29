@@ -1,6 +1,15 @@
-import { StyleSheet, View, Dimensions, ScrollView } from "react-native";
+import {
+    StyleSheet,
+    View,
+    Dimensions,
+    ScrollView,
+    Modal,
+    SafeAreaView,
+    TouchableOpacity,
+    Animated,
+} from "react-native";
 import { Card, Text } from "react-native-paper";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -8,8 +17,8 @@ import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import ColorfulCard from "react-native-colorful-card";
 
 import FM_Header from "../../components/FM_Header";
-import Header from "../../components/Header";
-import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
+// import Header from "../../components/Header";
+import { AppThunkDispatch, Authentication, RootState, WorkTasks } from "../../store";
 import { locationzedStrings } from "../../localization/Localizaton";
 
 const windowWidth = Dimensions.get("window").width / 4.5;
@@ -19,39 +28,108 @@ interface HomeScreenProps {
     isAuthStateInitialized?: boolean;
     isLoading?: boolean;
     error: string | null;
+    userName: string;
+    countP1: number;
+    countP2P7: number;
+    countOverDue: number;
+    countDueToday: number;
+    countCompleted: number;
     // tasks: {
     //     _id: number;
     // }[];
     onPressWorkTaks: (isOnlyCount: boolean) => void;
+    onPressLogout: () => void;
+    getCounts: (isOnlyCount: boolean) => void;
 }
 
-const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkTaks }) => {
-    const isLoginPage = false;
+const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
+    onPressWorkTaks,
+    onPressLogout,
+    getCounts,
+    userName,
+    countP1,
+    countP2P7,
+    countOverDue,
+    countDueToday,
+}) => {
+    // const isLoginPage = false;
+    const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+
+    const [visible, setVisible] = useState(false);
+    const options = [
+        {
+            title: "Help",
+        },
+        {
+            title: "LogOut",
+        },
+    ];
+
+    useEffect(() => {
+        console.log("Get Counts");
+        getCounts(true);
+    }, []);
+
     return (
         <View style={styles.homeContainer}>
-            <Header loginPage={isLoginPage} />
+            <View style={styles.flexRow}>
+                <View style={styles.flexRowPaddingVertical}>
+                    <Text style={styles.textLeft}>V</Text>
+                    <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
+                </View>
+                <View style={styles.userName}>
+                    <Text style={styles.loggedInUserName}>{userName}</Text>
+                </View>
+                <TouchableOpacity style={styles.optionIcon} onPress={() => setVisible(true)}>
+                    <FontAwesome5 style={styles.ellipsisIcon} name="ellipsis-v" size={25} />
+                </TouchableOpacity>
+            </View>
+            <View style={styles.greyLine} />
             <ScrollView>
                 <View>
                     <FM_Header />
                     <View style={styles.container}>
                         <View style={styles.view1}>
-                            <Card style={[styles.cardStyle, styles.card1_Bg]}>
-                                <Text style={styles.paragraph}>{locationzedStrings.home.card1_count_title}</Text>
-                                <Text style={styles.paragraph}>0</Text>
-                            </Card>
-                            <Card style={[styles.cardStyle, styles.card2_Bg]}>
-                                <Text style={styles.paragraph}>{locationzedStrings.home.card2_count_title}</Text>
-                                <Text style={styles.paragraph}>0</Text>
-                            </Card>
-                            <Card style={[styles.cardStyle, styles.card3_Bg]}>
-                                <Text style={styles.paragraph}>{locationzedStrings.home.card3_count_title}</Text>
-                                <Text style={styles.paragraph}>0</Text>
-                            </Card>
-
-                            <Card style={[styles.cardStyle, styles.card4_Bg]}>
-                                <Text style={styles.paragraph}>{locationzedStrings.home.card4_count_title}</Text>
-                                <Text style={styles.paragraph}>0</Text>
-                            </Card>
+                            <AnimatedTouchable
+                                onPress={() => {
+                                    // console.log("Card 1 Touched");
+                                }}
+                            >
+                                <Card style={[styles.cardStyle, styles.card1_Bg]}>
+                                    <Text style={styles.paragraph}>{locationzedStrings.home.card1_count_title}</Text>
+                                    <Text style={styles.paragraph}>{countP1}</Text>
+                                </Card>
+                            </AnimatedTouchable>
+                            <AnimatedTouchable
+                                onPress={() => {
+                                    // console.log("Card 2 Touched");
+                                }}
+                            >
+                                <Card style={[styles.cardStyle, styles.card2_Bg]}>
+                                    <Text style={styles.paragraph}>{locationzedStrings.home.card2_count_title}</Text>
+                                    <Text style={styles.paragraph}>{countP2P7}</Text>
+                                </Card>
+                            </AnimatedTouchable>
+                            <AnimatedTouchable
+                                onPress={() => {
+                                    // console.log("Card 3 Touched");
+                                }}
+                            >
+                                <Card style={[styles.cardStyle, styles.card3_Bg]}>
+                                    <Text style={styles.paragraph}>{locationzedStrings.home.card3_count_title}</Text>
+                                    <Text style={styles.paragraph}>{countDueToday}</Text>
+                                </Card>
+                            </AnimatedTouchable>
+                            <AnimatedTouchable
+                                onPress={() => {
+                                    // console.log("Card 4 Touched");
+                                }}
+                            >
+                                <Card style={[styles.cardStyle, styles.card4_Bg]}>
+                                    <Text style={styles.paragraph}>{locationzedStrings.home.card4_count_title}</Text>
+                                    <Text style={styles.paragraph}>{countOverDue}</Text>
+                                </Card>
+                            </AnimatedTouchable>
                         </View>
                     </View>
                     <View style={styles.taskContainer}>
@@ -125,6 +203,26 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({ onPressWorkT
                     </Card>
                 </View>
             </ScrollView>
+            <Modal transparent visible={visible}>
+                <SafeAreaView style={{ flex: 1 }}>
+                    <View style={styles.popup}>
+                        {options.map((option, i) => (
+                            <TouchableOpacity
+                                key={i}
+                                style={styles.flexRow}
+                                onPress={() => {
+                                    if (option.title == "Help") console.log("Menu Option Clicked 1");
+                                    else onPressLogout();
+                                    setVisible(false);
+                                }}
+                            >
+                                <FontAwesome5 style={styles.popUpIcon} name="check" size={20} />
+                                <Text>{option.title}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </SafeAreaView>
+            </Modal>
         </View>
     );
 };
@@ -240,13 +338,13 @@ const styles = StyleSheet.create({
         backgroundColor: "#D52818",
     },
     card2_Bg: {
-        backgroundColor: "#ED7000",
-    },
-    card3_Bg: {
         backgroundColor: "#1FA09E",
     },
-    card4_Bg: {
+    card3_Bg: {
         backgroundColor: "#0277B4",
+    },
+    card4_Bg: {
+        backgroundColor: "#ED7000",
     },
     customerCardBg: {
         backgroundColor: "#384247",
@@ -286,6 +384,64 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         borderWidth: 2,
     },
+    popup: {
+        borderRadius: 8,
+        borderColor: "#333",
+        borderWidth: 1,
+        backgroundColor: "#FFF",
+        paddingHorizontal: 10,
+        position: "absolute",
+        top: 50,
+        right: 15,
+    },
+    popUpIcon: {
+        alignSelf: "center",
+        marginHorizontal: 5,
+        color: "#D52818",
+    },
+    flexRow: {
+        flexDirection: "row",
+        padding: 15,
+    },
+    ellipsisIcon: {
+        color: "#D52818",
+        marginEnd: 15,
+    },
+    textLeft: {
+        color: "#FFFFFF",
+        fontSize: 25,
+        width: "28%",
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+    },
+    checkIcon: {
+        marginStart: 5,
+        color: "#D52818",
+    },
+    flexRowPaddingVertical: {
+        flexDirection: "row",
+        width: "15%",
+    },
+    userName: {
+        width: "75%",
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    optionIcon: {
+        justifyContent: "center",
+        alignItems: "center",
+        width: "25%",
+    },
+    greyLine: {
+        borderWidth: 0.5,
+        borderColor: "grey",
+        width: "100%",
+        marginBottom: 5,
+    },
+    loggedInUserName: {
+        color: "#FFFFFF",
+        fontSize: 15,
+    },
 });
 
 const HeaderOptions: NativeStackHeaderProps["options"] = {
@@ -293,13 +449,20 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
-    onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.workTasksAndCount(isOnlyCount)),
+    onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount)),
+    onPressLogout: () => dispatch(Authentication.Actions.logout()),
+    getCounts: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount)),
 });
 
 const mapState = (state: RootState) => ({
     isLoading: state.worktasks.loading,
     error: state.worktasks.error,
-    // tasks: state.tasks.tasks,
+    userName: state.auth.loginUserName,
+    countP1: state.worktasks.countP1,
+    countP2P7: state.worktasks.countP2P7,
+    countOverDue: state.worktasks.countOverDue,
+    countDueToday: state.worktasks.countDueToday,
+    countCompleted: state.worktasks.countCompleted,
 });
 
 const connector = connect(mapState, mapDispatch);

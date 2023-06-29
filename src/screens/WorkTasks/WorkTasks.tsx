@@ -1,6 +1,6 @@
-import { StyleSheet, View, Dimensions, TextInput, FlatList, Pressable } from "react-native";
+import { StyleSheet, View, Dimensions, TextInput, FlatList, Pressable, Animated, TouchableOpacity } from "react-native";
 import { Card, Text } from "react-native-paper";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Dropdown } from "react-native-element-dropdown";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
@@ -8,93 +8,75 @@ import { connect } from "react-redux";
 import SwitchSelector from "react-native-switch-selector";
 
 import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
-import { WorkTask as IWorkTask } from "../../store/WorkTasks/reducer";
+import { WorkTask as IWorkTask, WorkTask } from "../../store/WorkTasks/reducer";
 
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
 
-interface WorkTaskInterface {
-    Building: string;
-    Description: string;
-    Address: string;
-    TaskPriority: string;
-    ModifiedDateTime: string;
-    SRCreatedDateTime: string;
-    LegacyGLC: null;
-    ServiceClass: string;
-    ResourceAssignmentStatus: string;
-    PlannedEnd: string;
-    TaskReIssueReason: string;
-    Currency: string;
-    TaskType: string;
-    SRRecordID: string;
-    ID: string;
-    SRDescription: string;
-    SRID: string;
-    EquipmentAlias: null;
-    Status: string;
-    CreatedFromMobile: string;
-    RequestClass: string;
-    PlannedStart: string;
-    LocationCode: string;
-    SRServiceRequested: string;
-    ResolutionType: string;
-    City: string;
-    TaskName: string;
-    State: string;
-    _id: string;
-    PrimaryWorkLocation: string;
-    CreatedDateTime: string;
-}
-
 interface WorkTasksScreenProps {
-    tasks: {
-        Building: string;
-        Description: string;
-        Address: string;
-        TaskPriority: string;
-        ModifiedDateTime: string;
-        SRCreatedDateTime: string;
-        LegacyGLC: null;
-        ServiceClass: string;
-        ResourceAssignmentStatus: string;
-        PlannedEnd: string;
-        TaskReIssueReason: string;
-        Currency: string;
-        TaskType: string;
-        SRRecordID: string;
-        ID: string;
-        SRDescription: string;
-        SRID: string;
-        EquipmentAlias: null;
-        Status: string;
-        CreatedFromMobile: string;
-        RequestClass: string;
-        PlannedStart: string;
-        LocationCode: string;
-        SRServiceRequested: string;
-        ResolutionType: string;
-        City: string;
-        TaskName: string;
-        State: string;
-        _id: string;
-        PrimaryWorkLocation: string;
-        CreatedDateTime: string;
-    }[];
-    // onPressWorkTaks: (isOnlyCount: boolean) => void;
+    isLoading: boolean;
+    countP1: number;
+    countP2P7: number;
+    countOverDue: number;
+    countDueToday: number;
+    countCompleted: number;
+    countP1Tasks: WorkTask[];
+    countP2P7Tasks: WorkTask[];
+    countOverDueTasks: WorkTask[];
+    countDueTodayTasks: WorkTask[];
+    countCompletedTasks: WorkTask[];
     onSelectWorkTask: (task: IWorkTask) => void;
 }
 
-const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ tasks, onSelectWorkTask }) => {
-    const [tasksList, _setTasksList] = useState(tasks);
-    const [switchSelectorList, setSwitchSelectorList] = useState(tasks);
-    const [filteredList, setFilteredList] = useState(tasks);
+const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
+    onSelectWorkTask,
+    isLoading,
+    countP1,
+    countP2P7,
+    countOverDue,
+    countDueToday,
+    countCompleted,
+    countP1Tasks,
+    countP2P7Tasks,
+    countCompletedTasks,
+    countOverDueTasks,
+    countDueTodayTasks,
+}) => {
+    const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+
+    const [tasksList, setTasksList] = useState([
+        countP1Tasks,
+        countP2P7Tasks,
+        countCompletedTasks,
+        countOverDueTasks,
+        countDueTodayTasks,
+    ]);
+
+    const [flatListData, setFlatListData] = useState([
+        countP1Tasks,
+        countP2P7Tasks,
+        countCompletedTasks,
+        countOverDueTasks,
+        countDueTodayTasks,
+    ]);
+
+    const filteredUseRef = useRef([
+        countP1Tasks,
+        countP2P7Tasks,
+        countCompletedTasks,
+        countOverDueTasks,
+        countDueTodayTasks,
+    ]);
 
     const [filter, setFilter] = useState("all");
-    const [value, setValue] = useState("");
+    const [sortValue, setSortValue] = useState("");
+    const [searchText, setSearchText] = useState("");
 
     const [isFocus, setIsFocus] = useState(false);
-    const [searchText, setSearchText] = useState("");
+
+    const [selectedTab, setSelectedTab] = useState(0);
+
+    const [forceRender, setForceRender] = useState(false);
 
     const switchoptions = [
         { label: "All", value: "all" },
@@ -110,14 +92,31 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
     ];
 
     useEffect(() => {
+        setTasksList([countP1Tasks, countP2P7Tasks, countCompletedTasks, countOverDueTasks, countDueTodayTasks]);
+        filteredUseRef.current = [
+            countP1Tasks,
+            countP2P7Tasks,
+            countCompletedTasks,
+            countOverDueTasks,
+            countDueTodayTasks,
+        ];
+    }, [countP1Tasks, countP2P7Tasks, countOverDueTasks, countDueTodayTasks, countCompletedTasks]);
+
+    useEffect(() => {
         filterTasks();
         sortData();
         handleTextChange();
-    }, [filter, value, searchText]);
+    }, [filter, sortValue, searchText, selectedTab]);
 
-    useEffect(() => {
-        setFilteredList(switchSelectorList);
-    }, [switchSelectorList]);
+    const updateFilteredList = (arrayIndex: number, newArray: WorkTask[], updateUI: boolean) => {
+        const updatedArrays = filteredUseRef.current;
+        updatedArrays[arrayIndex] = newArray;
+        filteredUseRef.current = updatedArrays;
+        if (updateUI) {
+            setFlatListData(filteredUseRef.current);
+            setForceRender(!forceRender);
+        }
+    };
 
     type ItemProps = {
         srid: string;
@@ -146,7 +145,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
         plannedEnd,
         taskType,
     }: ItemProps) => (
-        <Card style={[styles.itemCardStyle]}>
+        <Card style={[styles.itemCardStyle, getCardBackgroundStyles()]}>
             <View style={styles.flexRow}>
                 <MaterialIcon style={styles.settingIcon} name="settings" size={30} />
                 <View style={styles.paramsView}>
@@ -183,26 +182,31 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
         return a.localeCompare(b);
     };
 
+    const getCardBackgroundStyles = () => {
+        if (selectedTab == 0) return styles.item1_Bg;
+        else if (selectedTab == 1) return styles.item2_Bg;
+        else if (selectedTab == 2) return styles.item3_Bg;
+        else if (selectedTab == 3) return styles.item4_Bg;
+        else return styles.item5_Bg;
+    };
+
     /*
         filterTaks function is to filter based on All, CM, PM
     */
     function filterTasks() {
         if (filter == "cm") {
-            const cmArray: WorkTaskInterface[] = tasksList.filter((item) => {
+            const cm = tasksList[selectedTab].filter((item) => {
                 return item.TaskType == "Corrective";
             });
-            setSwitchSelectorList(cmArray);
-            setFilteredList(cmArray);
+            updateFilteredList(selectedTab, cm, false);
         } else if (filter == "pm") {
-            const pmArray: WorkTaskInterface[] = tasksList.filter((item) => {
+            const pm = tasksList[selectedTab].filter((item) => {
                 return item.TaskType == "Preventive";
             });
-            setSwitchSelectorList(pmArray);
-            setFilteredList(pmArray);
+            updateFilteredList(selectedTab, pm, false);
         } else {
-            const allArray = tasksList;
-            setSwitchSelectorList(allArray);
-            setFilteredList(allArray);
+            const all = tasksList[selectedTab];
+            updateFilteredList(selectedTab, all, false);
         }
     }
 
@@ -210,39 +214,43 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
         sortData function is to sort based on the DropDown
     */
     function sortData() {
-        switch (value) {
+        switch (sortValue) {
             case "sortByLocation":
-                const sortByLocation: WorkTaskInterface[] = switchSelectorList.sort((location1, location2) =>
-                    location1.Address.localeCompare(location2.Address),
+                updateFilteredList(
+                    selectedTab,
+                    filteredUseRef.current[selectedTab].sort((location1, location2) =>
+                        location1.Address.localeCompare(location2.Address),
+                    ),
+                    false,
                 );
-                setSwitchSelectorList(sortByLocation);
-                setFilteredList(sortByLocation);
                 break;
             case "sortById":
-                const sortById: WorkTaskInterface[] = switchSelectorList.sort((id1, id2) =>
-                    id1.ID.localeCompare(id2.ID),
+                updateFilteredList(
+                    selectedTab,
+                    filteredUseRef.current[selectedTab].sort((id1, id2) => id1.ID.localeCompare(id2.ID)),
+                    false,
                 );
-                setSwitchSelectorList(sortById);
-                setFilteredList(sortById);
                 break;
             case "sortByPriority":
-                const sortByPriority: WorkTaskInterface[] = switchSelectorList.sort((priority1, priority2) =>
-                    alphanumericComparator(priority1.TaskPriority, priority2.TaskPriority),
+                updateFilteredList(
+                    selectedTab,
+                    filteredUseRef.current[selectedTab].sort((priority1, priority2) =>
+                        alphanumericComparator(priority1.TaskPriority, priority2.TaskPriority),
+                    ),
+                    false,
                 );
-                setSwitchSelectorList(sortByPriority);
-                setFilteredList(sortByPriority);
                 break;
             case "sortByDueDate":
-                const sortByDueDate: WorkTaskInterface[] = switchSelectorList.sort((plannedEnd1, plannedEnd2) => {
-                    const dateA = new Date(plannedEnd1.PlannedEnd);
-                    const dateB = new Date(plannedEnd2.PlannedEnd);
-                    return dateA.getTime() - dateB.getTime();
-                });
-                setSwitchSelectorList(sortByDueDate);
-                setFilteredList(sortByDueDate);
+                updateFilteredList(
+                    selectedTab,
+                    filteredUseRef.current[selectedTab].sort((plannedEnd1, plannedEnd2) => {
+                        const dateA = new Date(plannedEnd1.PlannedEnd);
+                        const dateB = new Date(plannedEnd2.PlannedEnd);
+                        return dateA.getTime() - dateB.getTime();
+                    }),
+                    false,
+                );
                 break;
-            default:
-            // setSwitchSelectorList(tasks.tasks);
         }
     }
 
@@ -251,13 +259,16 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
     */
     const handleTextChange = () => {
         if (searchText.length == 0) {
-            setFilteredList(switchSelectorList);
+            updateFilteredList(selectedTab, filteredUseRef.current[selectedTab], true);
             return;
         }
-        const filteredResults = switchSelectorList.filter((obj) => {
-            return obj.Address.includes(searchText) || obj.SRID?.includes(searchText);
-        });
-        setFilteredList(filteredResults);
+        updateFilteredList(
+            selectedTab,
+            filteredUseRef.current[selectedTab].filter((obj) => {
+                return obj.Address.includes(searchText) || obj.SRID?.includes(searchText);
+            }),
+            true,
+        );
     };
 
     const renderEmptyList = () => {
@@ -268,8 +279,12 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
         );
     };
 
+    if (isLoading) return <Text style={styles.noDataAvailable}>Loading....</Text>;
+
     return (
         <View style={styles.workTaskContainer}>
+            {/* <Text>{selectedTab}</Text>
+            <Text>{flatListData[selectedTab].length}</Text> */}
             <SwitchSelector
                 buttonColor="#384247"
                 selectedColor="#FFFFFF"
@@ -298,11 +313,11 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
                     valueField="value"
                     placeholder={!isFocus ? "Select item" : "..."}
                     searchPlaceholder="Search..."
-                    value={value}
+                    value={sortValue}
                     onFocus={() => setIsFocus(true)}
                     onBlur={() => setIsFocus(false)}
                     onChange={(item) => {
-                        setValue(item.value);
+                        setSortValue(item.value);
                     }}
                 />
                 <TextInput
@@ -315,32 +330,62 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
             </View>
             <View style={styles.container}>
                 <View style={styles.view1}>
-                    <Card style={[styles.cardStyle, styles.card1_Bg]}>
-                        <Text style={styles.paragraph}>Active P1</Text>
-                        <Text style={styles.paragraph}>0</Text>
-                    </Card>
-                    <Card style={[styles.cardStyle, styles.card2_Bg]}>
-                        <Text style={styles.paragraph}>Active P2-P7</Text>
-                        <Text style={styles.paragraph}>0</Text>
-                    </Card>
-                    <Card style={[styles.cardStyle, styles.card3_Bg]}>
-                        <Text style={styles.paragraph}>Completed</Text>
-                        <Text style={styles.paragraph}>0</Text>
-                    </Card>
-                    <Card style={[styles.cardStyle, styles.card4_Bg]}>
-                        <Text style={styles.paragraph}>OverDue</Text>
-                        <Text style={styles.paragraph}>0</Text>
-                    </Card>
-                    <Card style={[styles.cardStyle, styles.card5_Bg]}>
-                        <Text style={styles.paragraph}>Due Today</Text>
-                        <Text style={styles.paragraph}>0</Text>
-                    </Card>
+                    <AnimatedTouchable
+                        onPress={() => {
+                            setSelectedTab(0);
+                        }}
+                    >
+                        <Card style={[styles.cardStyle, styles.card1_Bg]}>
+                            <Text style={styles.paragraph}>Active P1</Text>
+                            <Text style={styles.paragraph}>{countP1}</Text>
+                        </Card>
+                    </AnimatedTouchable>
+                    <AnimatedTouchable
+                        onPress={() => {
+                            setSelectedTab(1);
+                        }}
+                    >
+                        <Card style={[styles.cardStyle, styles.card2_Bg]}>
+                            <Text style={styles.paragraph}>Active P2-P7</Text>
+                            <Text style={styles.paragraph}>{countP2P7}</Text>
+                        </Card>
+                    </AnimatedTouchable>
+                    <AnimatedTouchable
+                        onPress={() => {
+                            setSelectedTab(2);
+                        }}
+                    >
+                        <Card style={[styles.cardStyle, styles.card3_Bg]}>
+                            <Text style={styles.paragraph}>Completed</Text>
+                            <Text style={styles.paragraph}>{countCompleted}</Text>
+                        </Card>
+                    </AnimatedTouchable>
+                    <AnimatedTouchable
+                        onPress={() => {
+                            setSelectedTab(3);
+                        }}
+                    >
+                        <Card style={[styles.cardStyle, styles.card4_Bg]}>
+                            <Text style={styles.paragraph}>OverDue</Text>
+                            <Text style={styles.paragraph}>{countOverDue}</Text>
+                        </Card>
+                    </AnimatedTouchable>
+                    <AnimatedTouchable
+                        onPress={() => {
+                            setSelectedTab(4);
+                        }}
+                    >
+                        <Card style={[styles.cardStyle, styles.card5_Bg]}>
+                            <Text style={styles.paragraph}>Due Today</Text>
+                            <Text style={styles.paragraph}>{countDueToday}</Text>
+                        </Card>
+                    </AnimatedTouchable>
                 </View>
             </View>
             <View style={styles.taskContainer}>
                 <FlatList
-                    data={filteredList}
-                    extraData={filteredList}
+                    data={flatListData[selectedTab]}
+                    extraData={flatListData[selectedTab]}
                     ListEmptyComponent={renderEmptyList}
                     renderItem={({ item }) => (
                         <Pressable
@@ -362,7 +407,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
                             />
                         </Pressable>
                     )}
-                    keyExtractor={(item) => item.ID}
+                    // keyExtractor={(item) => item.ID}
                 />
             </View>
         </View>
@@ -370,17 +415,9 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({ ta
 };
 
 const styles = StyleSheet.create({
-    // container: {
-    //     flex: 1,
-    //     alignItems: "center",
-    //     justifyContent: "center",
-    //     paddingTop: 50,
-    //     backgroundColor: "#ecf0f1",
-    // },
     workTaskContainer: {
         width: "100%",
         height: "100%",
-        // backgroundColor: "#222D32",
     },
     tasks: {
         flex: 1,
@@ -473,7 +510,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         paddingTop: 15,
         paddingBottom: 1,
-        backgroundColor: "#FFFFFF",
     },
     settingIcon: {
         alignSelf: "center",
@@ -510,6 +546,21 @@ const styles = StyleSheet.create({
     },
     card5_Bg: {
         backgroundColor: "#0277B4",
+    },
+    item1_Bg: {
+        backgroundColor: "#f7bcb7",
+    },
+    item2_Bg: {
+        backgroundColor: "#abedec",
+    },
+    item3_Bg: {
+        backgroundColor: "#aaf2aa",
+    },
+    item4_Bg: {
+        backgroundColor: "#f0c7a3",
+    },
+    item5_Bg: {
+        backgroundColor: "#a7d9f2",
     },
     customerCardBg: {
         backgroundColor: "#384247",
@@ -723,12 +774,21 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
-    onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.workTasksAndCount(isOnlyCount)),
     onSelectWorkTask: (workTask: IWorkTask) => dispatch(WorkTasks.Actions.navigateToWorkTask(workTask._id)),
 });
 
 const mapState = (state: RootState) => ({
-    tasks: state.worktasks.tasks,
+    isLoading: state.worktasks.loading,
+    countP1: state.worktasks.countP1,
+    countP2P7: state.worktasks.countP2P7,
+    countOverDue: state.worktasks.countOverDue,
+    countDueToday: state.worktasks.countDueToday,
+    countCompleted: state.worktasks.countCompleted,
+    countP1Tasks: state.worktasks.countP1Tasks,
+    countP2P7Tasks: state.worktasks.countP2P7Tasks,
+    countOverDueTasks: state.worktasks.countOverDueTasks,
+    countDueTodayTasks: state.worktasks.countDueTodayTasks,
+    countCompletedTasks: state.worktasks.countCompletedTasks,
 });
 
 const connector = connect(mapState, mapDispatch);

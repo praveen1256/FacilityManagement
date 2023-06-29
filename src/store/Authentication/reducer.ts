@@ -7,6 +7,8 @@ export interface AppState {
     error: string | null;
     username: string;
     password: string;
+    loginUserName: string;
+    role: string;
 }
 
 const initialState: AppState = {
@@ -15,6 +17,8 @@ const initialState: AppState = {
     isAuthenticated: false,
     password: "",
     username: "",
+    loginUserName: "",
+    role: "",
 };
 
 export const authReducer = (state: AppState = initialState, action: ActionInterfaces): AppState => {
@@ -32,6 +36,8 @@ export const authReducer = (state: AppState = initialState, action: ActionInterf
                 isAuthenticated: true,
                 username: action.username,
                 password: action.password,
+                loginUserName: action.loginUserName,
+                role: action.role,
             };
         case AUTH_LOGIN_ERROR:
             return {

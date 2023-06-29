@@ -1,20 +1,20 @@
 import React, { useRef, useState } from "react";
-import { StyleSheet, TextInput as RNTextInput, View } from "react-native";
+import { StyleSheet, TextInput as RNTextInput, View, Text } from "react-native";
 import { Button, TextInput, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 import FM_Header from "../../components/FM_Header";
-import Header from "../../components/Header";
 import { AppThunkDispatch, Authentication, RootState } from "../../store";
 import { locationzedStrings } from "../../localization/Localizaton";
-
 interface LoginScreenProps {
     isLoading?: boolean;
     error: string | null;
+    username: string | null;
     onPressLogin: (username: string, password: string) => void;
 }
 
@@ -39,11 +39,17 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
     });
 
     const secondInputRef = useRef<RNTextInput | null>(null);
-    const isLoginPage = true;
 
     return (
         <View style={styles.loginContainer}>
-            <Header loginPage={isLoginPage} />
+            {/* <Text style={styles.textCenter}>{username}</Text> */}
+            <View style={styles.heading}>
+                <View style={styles.flexRow}>
+                    <Text style={styles.textCenter}>{locationzedStrings.header.headerVerizon}</Text>
+                    <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
+                </View>
+            </View>
+            <View style={styles.greyLine} />
             <FM_Header />
             <View style={styles.form}>
                 <Controller
@@ -155,6 +161,31 @@ const styles = StyleSheet.create({
         fontSize: 16,
         padding: 4,
     },
+    textCenter: {
+        color: "#FFFFFF",
+        fontSize: 25,
+    },
+    checkIcon: {
+        alignSelf: "center",
+        marginHorizontal: 5,
+        marginBottom: 10,
+        color: "#D52818",
+    },
+    heading: {
+        height: "7%",
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "row",
+    },
+    greyLine: {
+        borderWidth: 0.5,
+        borderColor: "grey",
+        width: "100%",
+        marginBottom: 5,
+    },
+    flexRow: {
+        flexDirection: "row",
+    },
 });
 
 const HeaderOptions: NativeStackHeaderProps["options"] = {
@@ -168,6 +199,7 @@ const mapDispatch = (dispatch: AppThunkDispatch<Authentication.ActionInterfaces>
 const mapState = (state: RootState) => ({
     isLoading: state.auth.loading,
     error: state.auth.error,
+    username: state.auth.username,
 });
 
 const connector = connect(mapState, mapDispatch);
