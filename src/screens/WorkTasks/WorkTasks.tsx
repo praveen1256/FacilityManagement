@@ -283,8 +283,8 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
 
     return (
         <View style={styles.workTaskContainer}>
-            <Text>{selectedTab}</Text>
-            <Text>{flatListData[selectedTab].length}</Text>
+            {/* <Text>{selectedTab}</Text>
+            <Text>{flatListData[selectedTab].length}</Text> */}
             <SwitchSelector
                 buttonColor="#384247"
                 selectedColor="#FFFFFF"
