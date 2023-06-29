@@ -33,6 +33,9 @@ import {
     SERVICE_REQUEST_LOADING,
     SERVICE_REQUEST_SUCCESS,
     SERVICE_REQUEST_ERROR,
+    WORK_TASK_COMPLETE_LOADING,
+    WORK_TASK_COMPLETE_ERROR,
+    WORK_TASK_COMPLETE_SUCCESS,
 } from "./actionTypes";
 import { ChildTask, EventLog, FullWorkTask, ServiceRequest, TimeLog } from "./reducer";
 
@@ -383,6 +386,53 @@ export const loadServiceRequest =
             const err = error as AxiosError;
             dispatch(
                 pureActionCreator(SERVICE_REQUEST_ERROR, {
+                    error: err.message || "Something went wrong",
+                }),
+            );
+        }
+    };
+
+// worktask complete
+export const workTaskComplete =
+    (
+        workTaskId: string,
+        data: {
+            serviceRequestNumber: string;
+            comment: string;
+            causeType: string;
+            repairDefinition: string;
+            initiativeCode?: string;
+            lateCompletionReason?: string; // only if late completion
+        },
+    ): AppThunkAction<ActionInterfaces> =>
+    async (dispatch, _getState) => {
+        console.log("workTaskComplete");
+        console.log(data);
+        /**
+         * Data Example
+         * {
+                "data": {
+                    "triInput1TX": "workTaskComplete", // Action
+                    "triInput2TX": "SR-10248420", // Service Request Number
+                    "triInput3TX": "Mobile - Test - Comment", // Comment - Needs to be collected from the user
+                    "triInput4TX": "Network Card Failure - CauseType", // Cause Type - Needs to be collected from the user
+                    "triInput5TX": "Replaced Device - RepairDefinition", // Repair Definition - Needs to be collected from the user
+                    "triInput6TX": "- Initiative Code", // Initiative Code - Needs to be collected from the user
+                    "triInput7TX": "New supplier sent out - LateCompletion Reason" // Late Completion Reason - Needs to be collected from the user
+                }
+            }
+         */
+        dispatch(pureActionCreator(WORK_TASK_COMPLETE_LOADING, {}));
+
+        try {
+            // TODO: add api call
+            await testingDelay(ANIMATION_DELAY_MS);
+
+            dispatch(pureActionCreator(WORK_TASK_COMPLETE_SUCCESS, {}));
+        } catch (error) {
+            const err = error as AxiosError;
+            dispatch(
+                pureActionCreator(WORK_TASK_COMPLETE_ERROR, {
                     error: err.message || "Something went wrong",
                 }),
             );

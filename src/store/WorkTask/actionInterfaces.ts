@@ -24,6 +24,9 @@ import {
     SERVICE_REQUEST_ERROR,
     SERVICE_REQUEST_LOADING,
     SERVICE_REQUEST_SUCCESS,
+    WORK_TASK_COMPLETE_ERROR,
+    WORK_TASK_COMPLETE_LOADING,
+    WORK_TASK_COMPLETE_SUCCESS,
 } from "./actionTypes";
 import { ChildTask, EventLog, FullWorkTask, ServiceRequest, TimeLog, TimeLogCategory } from "./reducer";
 export interface WorkTaskLoading {
@@ -164,6 +167,21 @@ export interface ServiceRequestError {
     error: string;
 }
 
+// Work Task Complete Actions
+export interface WorkTaskCompleteLoading {
+    type: typeof WORK_TASK_COMPLETE_LOADING;
+}
+
+export interface WorkTaskCompleteSuccess {
+    type: typeof WORK_TASK_COMPLETE_SUCCESS;
+    // TODO: think if we need to add something here
+}
+
+export interface WorkTaskCompleteError {
+    type: typeof WORK_TASK_COMPLETE_ERROR;
+    error: string;
+}
+
 export type ActionInterfaces =
     | WorkTaskLoading
     | WorkTaskSuccess
@@ -189,7 +207,10 @@ export type ActionInterfaces =
     | ChildWorkTasksError
     | ServiceRequestLoading
     | ServiceRequestSuccess
-    | ServiceRequestError;
+    | ServiceRequestError
+    | WorkTaskCompleteLoading
+    | WorkTaskCompleteSuccess
+    | WorkTaskCompleteError;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,

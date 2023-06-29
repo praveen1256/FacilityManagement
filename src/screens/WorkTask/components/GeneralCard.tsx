@@ -1,4 +1,4 @@
-import { StyleProp, View, ViewStyle } from "react-native";
+import { StyleProp, View, ViewStyle, Linking, Platform } from "react-native";
 import React from "react";
 import { Badge, Card, IconButton, Text } from "react-native-paper";
 import dayjs from "dayjs";
@@ -144,6 +144,18 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                 onPress={() => {
                                     // map-link
                                     console.log("pressed-MAP");
+                                    console.log(workTask);
+                                    const scheme = Platform.select({ ios: "maps://0,0?q=", android: "geo:0,0?q=" });
+                                    const lat = "37.484847";
+                                    const lng = "-122.084";
+                                    const latLng = `${lat},${lng}`;
+                                    const label = "Telops Building";
+                                    const url = Platform.select({
+                                        ios: `${scheme}${label}@${latLng}`,
+                                        android: `${scheme}${latLng}(${label})`,
+                                    });
+
+                                    Linking.openURL(url!);
                                 }}
                             />
                         </Text>
@@ -201,13 +213,11 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                     marginTop: 4,
                                 }}
                             >
-                                <Icon
-                                    name="phone"
-                                    // color={theme.colors?.primary}
-                                    color={"white"}
-                                    size={16}
+                                <IconButton
+                                    icon={() => <Icon name="phone" color={"white"} size={16} />}
+                                    size={12}
                                     onPress={() => {
-                                        console.log("Phone Pressed");
+                                        Linking.openURL(`tel:347-241-6715`);
                                     }}
                                     style={{
                                         backgroundColor: theme.colors?.primary,
@@ -215,12 +225,12 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                         padding: 4,
                                     }}
                                 />
-                                <Icon
-                                    name="email"
-                                    color={"white"}
-                                    size={16}
+                                <IconButton
+                                    icon={() => <Icon name="email" color={"white"} size={16} />}
+                                    size={12}
                                     onPress={() => {
                                         console.log("Phone Pressed");
+                                        Linking.openURL(`mailto:auston.barboza@verizon.com`);
                                     }}
                                     style={{
                                         backgroundColor: theme.colors?.primary,
@@ -264,25 +274,12 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                     marginTop: 4,
                                 }}
                             >
-                                {/* <Icon
-                                    name="phone"
-                                    // color={theme.colors?.primary}
-                                    color={"white"}
-                                    size={16}
-                                    onPress={() => {
-                                        console.log("Phone Pressed");
-                                    }}
-                                    style={{
-                                        backgroundColor: theme.colors?.primary,
-                                        borderRadius: 100,
-                                        padding: 4,
-                                    }}
-                                /> */}
                                 <IconButton
                                     icon={() => <Icon name="phone" color={"white"} size={16} />}
                                     size={12}
                                     onPress={() => {
                                         console.log("Phone Pressed");
+                                        Linking.openURL(`tel:347-241-6715`);
                                     }}
                                     style={{
                                         backgroundColor: theme.colors?.primary,
@@ -295,6 +292,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                     size={12}
                                     onPress={() => {
                                         console.log("Phone Pressed");
+                                        Linking.openURL(`mailto:auston.barboza@verizon.com`);
                                     }}
                                     style={{
                                         backgroundColor: theme.colors?.primary,

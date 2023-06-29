@@ -24,6 +24,7 @@ import {
     SERVICE_REQUEST_ERROR,
     SERVICE_REQUEST_LOADING,
     SERVICE_REQUEST_SUCCESS,
+    WORK_TASK_COMPLETE_LOADING,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -193,6 +194,10 @@ export interface WorkTaskState {
     serviceRequestLoading: boolean;
     serviceRequestError: string | null;
     serviceRequest: ServiceRequest | null;
+    // worktask complete
+    workTaskCompleteLoading: boolean;
+    workTaskCompleteError: string | null;
+    workTaskCompleteSuccess: boolean;
 }
 
 const initialState: WorkTaskState = {
@@ -220,6 +225,10 @@ const initialState: WorkTaskState = {
     serviceRequestLoading: false,
     serviceRequestError: null,
     serviceRequest: null,
+    // worktask complete
+    workTaskCompleteLoading: false,
+    workTaskCompleteError: null,
+    workTaskCompleteSuccess: false,
 };
 
 export const workTaskReducer = (state: WorkTaskState = initialState, action: ActionInterfaces): WorkTaskState => {
@@ -459,7 +468,7 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 ...state,
                 childTasksLoading: false,
                 childTasksError: null,
-                childTasks: action.tasks,
+                childTasks: [],
             };
 
         case CHILD_WORK_TASKS_ERROR:
@@ -489,6 +498,13 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 ...state,
                 serviceRequestLoading: false,
                 serviceRequestError: action.error,
+            };
+        // Complete worktask
+        case WORK_TASK_COMPLETE_LOADING:
+            return {
+                ...state,
+                workTaskCompleteLoading: true,
+                workTaskCompleteError: null,
             };
 
         default:

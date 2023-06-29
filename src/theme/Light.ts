@@ -12,7 +12,7 @@ export const theme = {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore - these are custom properties
         p1: "#990000",
-        onP1Container: "#000000",
+        onP1Container: "teal",
         p2: "#FF6600",
         onP2Container: "#000000",
         corrective: "#800000",
