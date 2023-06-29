@@ -8,15 +8,7 @@ import { HomeScreenName } from "../../screens/Home";
 import { LoginScreenName } from "../../screens/Login";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
-import {
-    AUTH_LOGIN_START,
-    AUTH_LOGIN_ERROR,
-    AUTH_LOGIN_SUCCESS,
-    AUTH_LOGOUT,
-    AUTH_LOGIN_USER_START,
-    AUTH_LOGIN_USER_ERROR,
-    AUTH_LOGIN_USER_SUCCESS,
-} from "./actionTypes";
+import { AUTH_LOGIN_START, AUTH_LOGIN_ERROR, AUTH_LOGIN_SUCCESS, AUTH_LOGOUT } from "./actionTypes";
 
 export function login(username: string, password: string): AppThunkAction<ActionInterfaces> {
     return async (dispatch) => {
@@ -28,13 +20,7 @@ export function login(username: string, password: string): AppThunkAction<Action
             const response = await axios.get(url);
             // if the credentials are correct, dispatch the success state
             if (response.status === 200) {
-                dispatch(
-                    pureActionCreator(AUTH_LOGIN_SUCCESS, {
-                        username,
-                        password,
-                    }),
-                );
-                dispatch(Authentication.Actions.loggedInUser(false));
+                dispatch(Authentication.Actions.loggedInUser(username, password, false));
                 return;
             }
 
@@ -64,9 +50,9 @@ export function login(username: string, password: string): AppThunkAction<Action
     };
 }
 
-export function loggedInUser(countOnly: boolean): AppThunkAction<ActionInterfaces> {
+export function loggedInUser(username: string, password: string, countOnly: boolean): AppThunkAction<ActionInterfaces> {
     return async (dispatch) => {
-        dispatch(pureActionCreator(AUTH_LOGIN_USER_START, {}));
+        dispatch(pureActionCreator(AUTH_LOGIN_START, {}));
         // let the store know we are checking the crentials, by dispatching loading state
         const url = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/LoggedInUser?countOnly=${countOnly}`;
         try {
@@ -79,7 +65,9 @@ export function loggedInUser(countOnly: boolean): AppThunkAction<ActionInterface
                 // Restricting to login only Technician
                 if (role == "Technician") {
                     dispatch(
-                        pureActionCreator(AUTH_LOGIN_USER_SUCCESS, {
+                        pureActionCreator(AUTH_LOGIN_SUCCESS, {
+                            username,
+                            password,
                             loginUserName,
                             role,
                         }),
@@ -88,7 +76,7 @@ export function loggedInUser(countOnly: boolean): AppThunkAction<ActionInterface
                     navigationContainer.navigate(HomeScreenName, loginUserName);
                 } else {
                     dispatch(
-                        pureActionCreator(AUTH_LOGIN_USER_ERROR, {
+                        pureActionCreator(AUTH_LOGIN_ERROR, {
                             error: "Not Technician", // LoggedIn User is Not technician
                         }),
                     );
@@ -97,13 +85,11 @@ export function loggedInUser(countOnly: boolean): AppThunkAction<ActionInterface
             }
 
             dispatch(
-                pureActionCreator(AUTH_LOGIN_USER_ERROR, {
+                pureActionCreator(AUTH_LOGIN_ERROR, {
                     error: "Something Went Wrong", // Unknown error
                 }),
             );
         } catch (error) {
-            console.log("url : ", url);
-            console.log(error);
             const err = error as AxiosError;
 
             if (err.code === "Unauthorized") {
@@ -120,7 +106,6 @@ export function loggedInUser(countOnly: boolean): AppThunkAction<ActionInterface
                 }),
             );
         }
-        console.log("loggedInUser 118 ");
     };
 }
 

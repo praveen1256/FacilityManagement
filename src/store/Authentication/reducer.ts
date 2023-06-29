@@ -1,13 +1,5 @@
 import { ActionInterfaces } from "./actionInterfaces";
-import {
-    AUTH_LOGIN_START,
-    AUTH_LOGIN_SUCCESS,
-    AUTH_LOGIN_ERROR,
-    AUTH_LOGOUT,
-    AUTH_LOGIN_USER_START,
-    AUTH_LOGIN_USER_SUCCESS,
-    AUTH_LOGIN_USER_ERROR,
-} from "./actionTypes";
+import { AUTH_LOGIN_START, AUTH_LOGIN_SUCCESS, AUTH_LOGIN_ERROR, AUTH_LOGOUT } from "./actionTypes";
 
 export interface AppState {
     loading: boolean;
@@ -44,27 +36,13 @@ export const authReducer = (state: AppState = initialState, action: ActionInterf
                 isAuthenticated: true,
                 username: action.username,
                 password: action.password,
+                loginUserName: action.loginUserName,
+                role: action.role,
             };
         case AUTH_LOGIN_ERROR:
             return {
                 ...state,
                 loading: false,
-                error: action.error,
-            };
-        case AUTH_LOGIN_USER_START:
-            return {
-                ...state,
-                error: "",
-            };
-        case AUTH_LOGIN_USER_SUCCESS:
-            return {
-                ...state,
-                loginUserName: action.loginUserName,
-                role: action.role,
-            };
-        case AUTH_LOGIN_USER_ERROR:
-            return {
-                ...state,
                 error: action.error,
             };
         case AUTH_LOGOUT:
