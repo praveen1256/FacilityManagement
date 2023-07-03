@@ -59,6 +59,7 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
                         <>
                             <TextInput
                                 mode="outlined"
+                                theme={{ roundness: 15 }}
                                 style={styles.inputContainerStyle}
                                 placeholder={locationzedStrings.login.placeHolderId}
                                 onBlur={onBlur}
@@ -87,6 +88,7 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
                                     style={styles.inputContainerStyle}
                                     placeholder={locationzedStrings.login.placeHolderPassword}
                                     onBlur={onBlur}
+                                    theme={{ roundness: 15 }}
                                     onChangeText={onChange}
                                     value={value}
                                     error={!!fieldState.error}
@@ -156,6 +158,8 @@ const styles = StyleSheet.create({
         marginTop: 36,
         margin: 4,
         padding: 6,
+        width: 200,
+        alignSelf: "center",
     },
     buttonLabel: {
         fontSize: 16,

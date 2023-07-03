@@ -1,4 +1,13 @@
-import { StyleSheet, View, Dimensions, TextInput, FlatList, Pressable, Animated, TouchableOpacity } from "react-native";
+import {
+    StyleSheet,
+    View,
+    Dimensions,
+    TextInput,
+    FlatList,
+    Pressable,
+    TouchableOpacity,
+    ViewStyle,
+} from "react-native";
 import { Card, Text } from "react-native-paper";
 import React, { useEffect, useState, useRef } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
@@ -15,6 +24,7 @@ const windowHeight = Dimensions.get("window").height / 12;
 
 interface WorkTasksScreenProps {
     isLoading: boolean;
+    selectedCard: number;
     countP1: number;
     countP2P7: number;
     countOverDue: number;
@@ -27,6 +37,16 @@ interface WorkTasksScreenProps {
     countCompletedTasks: WorkTask[];
     // onPressWorkTaks: (isOnlyCount: boolean) => void;
     onSelectWorkTask: (task: WorkTask) => void;
+}
+
+interface TaskCardProps {
+    id: number;
+    title: string;
+    value: number;
+    isSelected: boolean;
+    onPress: (id: number) => void;
+    cardStyle?: ViewStyle; // Add the style prop
+    cardBdStyle?: ViewStyle;
 }
 
 const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
@@ -42,9 +62,8 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
     countCompletedTasks,
     countOverDueTasks,
     countDueTodayTasks,
+    selectedCard,
 }) => {
-    const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
-
     const [tasksList, setTasksList] = useState([
         countP1Tasks,
         countP2P7Tasks,
@@ -75,7 +94,8 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
 
     const [isFocus, setIsFocus] = useState(false);
 
-    const [selectedTab, setSelectedTab] = useState(0);
+    const [selectedTab, setSelectedTab] = useState(selectedCard);
+    console.log("selectedCard : ", selectedCard);
 
     const [forceRender, setForceRender] = useState(false);
 
@@ -94,6 +114,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
 
     useEffect(() => {
         setTasksList([countP1Tasks, countP2P7Tasks, countCompletedTasks, countOverDueTasks, countDueTodayTasks]);
+        setSelectedTab(selectedCard);
         filteredUseRef.current = [
             countP1Tasks,
             countP2P7Tasks,
@@ -101,7 +122,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
             countOverDueTasks,
             countDueTodayTasks,
         ];
-    }, [countP1Tasks, countP2P7Tasks, countOverDueTasks, countDueTodayTasks, countCompletedTasks]);
+    }, [countP1Tasks, countP2P7Tasks, countOverDueTasks, countDueTodayTasks, countCompletedTasks, selectedCard]);
 
     useEffect(() => {
         filterTasks();
@@ -280,12 +301,33 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
         );
     };
 
+    const TaskCardView: React.FC<TaskCardProps> = ({
+        id,
+        title,
+        value,
+        cardStyle,
+        cardBdStyle,
+        isSelected,
+        onPress,
+    }) => {
+        return (
+            <TouchableOpacity onPress={() => onPress(id)}>
+                <Card style={[cardStyle, cardBdStyle, isSelected && styles.selectedCard]}>
+                    <Text style={styles.paragraph}>{title}</Text>
+                    <Text style={styles.paragraph}>{value}</Text>
+                </Card>
+            </TouchableOpacity>
+        );
+    };
+
+    const handleCardPress = (cardId: number) => {
+        setSelectedTab(cardId);
+    };
+
     if (isLoading) return <Text style={styles.noDataAvailable}>Loading....</Text>;
 
     return (
         <View style={styles.workTaskContainer}>
-            {/* <Text>{selectedTab}</Text>
-            <Text>{flatListData[selectedTab].length}</Text> */}
             <SwitchSelector
                 buttonColor="#384247"
                 selectedColor="#FFFFFF"
@@ -331,56 +373,51 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
             </View>
             <View style={styles.container}>
                 <View style={styles.view1}>
-                    <AnimatedTouchable
-                        onPress={() => {
-                            setSelectedTab(0);
-                        }}
-                    >
-                        <Card style={[styles.cardStyle, styles.card1_Bg]}>
-                            <Text style={styles.paragraph}>Active P1</Text>
-                            <Text style={styles.paragraph}>{countP1}</Text>
-                        </Card>
-                    </AnimatedTouchable>
-                    <AnimatedTouchable
-                        onPress={() => {
-                            setSelectedTab(1);
-                        }}
-                    >
-                        <Card style={[styles.cardStyle, styles.card2_Bg]}>
-                            <Text style={styles.paragraph}>Active P2-P7</Text>
-                            <Text style={styles.paragraph}>{countP2P7}</Text>
-                        </Card>
-                    </AnimatedTouchable>
-                    <AnimatedTouchable
-                        onPress={() => {
-                            setSelectedTab(2);
-                        }}
-                    >
-                        <Card style={[styles.cardStyle, styles.card3_Bg]}>
-                            <Text style={styles.paragraph}>Completed</Text>
-                            <Text style={styles.paragraph}>{countCompleted}</Text>
-                        </Card>
-                    </AnimatedTouchable>
-                    <AnimatedTouchable
-                        onPress={() => {
-                            setSelectedTab(3);
-                        }}
-                    >
-                        <Card style={[styles.cardStyle, styles.card4_Bg]}>
-                            <Text style={styles.paragraph}>OverDue</Text>
-                            <Text style={styles.paragraph}>{countOverDue}</Text>
-                        </Card>
-                    </AnimatedTouchable>
-                    <AnimatedTouchable
-                        onPress={() => {
-                            setSelectedTab(4);
-                        }}
-                    >
-                        <Card style={[styles.cardStyle, styles.card5_Bg]}>
-                            <Text style={styles.paragraph}>Due Today</Text>
-                            <Text style={styles.paragraph}>{countDueToday}</Text>
-                        </Card>
-                    </AnimatedTouchable>
+                    <TaskCardView
+                        id={0}
+                        title="Active P1"
+                        value={countP1}
+                        isSelected={selectedTab === 0}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card1_Bg}
+                    />
+                    <TaskCardView
+                        id={1}
+                        title="Active P2-P7"
+                        value={countP2P7}
+                        isSelected={selectedTab === 1}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card2_Bg}
+                    />
+                    <TaskCardView
+                        id={2}
+                        title="Completed"
+                        value={countCompleted}
+                        isSelected={selectedTab === 2}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card3_Bg}
+                    />
+                    <TaskCardView
+                        id={3}
+                        title="OverDue"
+                        value={countOverDue}
+                        isSelected={selectedTab === 3}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card4_Bg}
+                    />
+                    <TaskCardView
+                        id={4}
+                        title="Due Today"
+                        value={countDueToday}
+                        isSelected={selectedTab === 4}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card5_Bg}
+                    />
                 </View>
             </View>
             <View style={styles.taskContainer}>
@@ -389,10 +426,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
                     extraData={flatListData[selectedTab]}
                     ListEmptyComponent={renderEmptyList}
                     renderItem={({ item }) => (
-                        <Pressable
-                            // onPress={props.onPress}
-                            onPress={() => onSelectWorkTask(item)}
-                        >
+                        <Pressable onPress={() => onSelectWorkTask(item)}>
                             <Item
                                 srid={item.SRID}
                                 priority={item.TaskPriority}
@@ -467,6 +501,9 @@ const styles = StyleSheet.create({
         width: windowWidth,
         height: windowHeight,
         margin: 6,
+    },
+    selectedCard: {
+        transform: [{ scale: 1.2 }], // Apply zoom effect to the selected card
     },
     allStyle: {
         backgroundColor: "#D52818",
@@ -780,6 +817,7 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => 
 
 const mapState = (state: RootState) => ({
     isLoading: state.worktasks.loading,
+    selectedCard: state.worktasks.selectedCard,
     countP1: state.worktasks.countP1,
     countP2P7: state.worktasks.countP2P7,
     countOverDue: state.worktasks.countOverDue,

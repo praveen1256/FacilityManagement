@@ -37,9 +37,9 @@ interface HomeScreenProps {
     // tasks: {
     //     _id: number;
     // }[];
-    onPressWorkTaks: (isOnlyCount: boolean) => void;
+    onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) => void;
     onPressLogout: () => void;
-    getCounts: (isOnlyCount: boolean) => void;
+    getCounts: (isOnlyCount: boolean, selectedCard: number) => void;
 }
 
 const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
@@ -66,8 +66,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
     ];
 
     useEffect(() => {
-        console.log("Get Counts");
-        getCounts(true);
+        getCounts(true, 0);
     }, []);
 
     return (
@@ -92,7 +91,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                         <View style={styles.view1}>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    // console.log("Card 1 Touched");
+                                    onPressWorkTaks(false, 0);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card1_Bg]}>
@@ -102,7 +101,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                             </AnimatedTouchable>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    // console.log("Card 2 Touched");
+                                    onPressWorkTaks(false, 1);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card2_Bg]}>
@@ -112,7 +111,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                             </AnimatedTouchable>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    // console.log("Card 3 Touched");
+                                    onPressWorkTaks(false, 4);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card3_Bg]}>
@@ -122,7 +121,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                             </AnimatedTouchable>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    // console.log("Card 4 Touched");
+                                    onPressWorkTaks(false, 3);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card4_Bg]}>
@@ -144,7 +143,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                                 iconImageSource={require("../../assets/images/tasks.png")}
                                 style={{ backgroundColor: "#e48058" }}
                                 onPress={() => {
-                                    onPressWorkTaks(false);
+                                    onPressWorkTaks(false, 0);
                                 }}
                             />
 
@@ -157,7 +156,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                                 iconImageSource={require("../../assets/images/porfolios.png")}
                                 style={{ backgroundColor: "#26AFE5", marginVertical: 10 }}
                                 onPress={() => {
-                                    // onPressWorkTaks(false);
+                                    console.log("Card 2 Selected");
                                 }}
                             />
                         </View>
@@ -171,7 +170,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                                 iconImageSource={require("../../assets/images/alarm-clock.png")}
                                 style={{ backgroundColor: "#515ae5" }}
                                 onPress={() => {
-                                    // onPressWorkTaks(false);
+                                    console.log("Card 3 Selected");
                                 }}
                             />
 
@@ -184,7 +183,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                                 iconImageSource={require("../../assets/images/repair-tool.png")}
                                 style={{ backgroundColor: "#87c43e", marginVertical: 10 }}
                                 onPress={() => {
-                                    // onPressWorkTaks(false);
+                                    console.log("Card 4 Selected");
                                 }}
                             />
                         </View>
@@ -449,9 +448,11 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
-    onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount)),
+    onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) =>
+        dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
     onPressLogout: () => dispatch(Authentication.Actions.logout()),
-    getCounts: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount)),
+    getCounts: (isOnlyCount: boolean, selectedCard: number) =>
+        dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
 });
 
 const mapState = (state: RootState) => ({
