@@ -19,6 +19,7 @@ import GeneralCard from "./components/GeneralCard";
 import EventLogCard from "./components/EventLog";
 import CompletitionForm from "./components/CompletitionForm";
 import CreateCommentForm from "./components/CreateCommentForm";
+import CreateTimeLogModal from "./components/CreateTimeLogModal";
 
 // TODO: move this to the App.tsx file, since its better to define this only once instead of many places!!
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -69,8 +70,6 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         timeLogsError,
         onTimeLogDelete,
         timeLogCategories,
-        timeLogCategoriesLoading,
-        timeLogCategoriesError,
         onTimeLogCreate,
         onTimeLogCancelRetry,
         workTask,
@@ -121,6 +120,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
     const [expandedAccordians, setExpandedAccordians] = React.useState<(string | number)[]>([]);
     const [completitionFormOpen, setCompletitionFormOpen] = React.useState(false);
     const [createCommentFormOpen, setCreateCommentFormOpen] = React.useState(false);
+    const [createTimeLogModalOpen, setCreateTimeLogModalOpen] = React.useState(false);
 
     const theme = useAppTheme();
 
@@ -330,9 +330,6 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                 timeLogsError={timeLogsError}
                                 onTimeLogDelete={onTimeLogDelete}
                                 workTaskId={workTaskId}
-                                timeLogCategories={timeLogCategories}
-                                timeLogCategoriesLoading={timeLogCategoriesLoading}
-                                timeLogCategoriesError={timeLogCategoriesError}
                                 onTimeLogCreate={onTimeLogCreate}
                                 // FIXME: take service request id from the work task
                                 serviceRequestId={workTask.ID}
@@ -495,7 +492,9 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         <IconButton
                             icon={"account-clock"}
                             // size={20}
-                            onPress={() => console.log("Pressed")}
+                            onPress={() => {
+                                setCreateTimeLogModalOpen(true);
+                            }}
                             iconColor="white"
                             style={{
                                 backgroundColor: theme.colors?.primary,
@@ -537,6 +536,18 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                 onCompleteDone={() => {
                     setCompletitionFormOpen(false);
                     onCompleteDone();
+                }}
+            />
+
+            <CreateTimeLogModal
+                isOpen={createTimeLogModalOpen}
+                onClose={() => setCreateTimeLogModalOpen(false)}
+                timeLogCategories={timeLogCategories}
+                onSubmit={(data) => {
+                    setCreateTimeLogModalOpen(false);
+                    onTimeLogCreate(workTaskId, workTask.ID, {
+                        ...data,
+                    });
                 }}
             />
         </>
