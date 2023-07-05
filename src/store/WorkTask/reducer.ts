@@ -30,6 +30,10 @@ import {
     WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS,
     WORK_TASK_COMPLETE_SUCCESS,
     WORK_TASK_COMPLETE_DONE,
+    WORK_TASK_COMMENT_POST_ERROR,
+    WORK_TASK_COMMENT_POST_LOADING,
+    WORK_TASK_COMMENT_POST_SUCCESS,
+    WORK_TASK_COMMENT_POST_DONE,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -241,6 +245,10 @@ export interface WorkTaskState {
         lateCompletionReasons: LateCompletionReason[];
     };
     completionDependenciesError: string | null;
+    // Comment Stuff
+    commentPostLoading: boolean;
+    commentPostError: string | null;
+    commentPostSuccess: boolean;
 }
 
 const initialState: WorkTaskState = {
@@ -280,6 +288,10 @@ const initialState: WorkTaskState = {
         lateCompletionReasons: [],
     },
     completionDependenciesError: null,
+    // Comment Stuff
+    commentPostLoading: false,
+    commentPostError: null,
+    commentPostSuccess: false,
 };
 
 export const workTaskReducer = (state: WorkTaskState = initialState, action: ActionInterfaces): WorkTaskState => {
@@ -583,6 +595,35 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 ...state,
                 completionDependenciesLoading: false,
                 completionDependenciesError: action.error,
+            };
+
+        case WORK_TASK_COMMENT_POST_LOADING:
+            return {
+                ...state,
+                commentPostLoading: true,
+                commentPostError: null,
+                commentPostSuccess: false,
+            };
+        case WORK_TASK_COMMENT_POST_SUCCESS:
+            return {
+                ...state,
+                commentPostLoading: false,
+                commentPostError: null,
+                commentPostSuccess: true,
+            };
+        case WORK_TASK_COMMENT_POST_ERROR:
+            return {
+                ...state,
+                commentPostLoading: false,
+                commentPostError: action.error,
+                commentPostSuccess: false,
+            };
+        case WORK_TASK_COMMENT_POST_DONE:
+            return {
+                ...state,
+                commentPostLoading: false,
+                commentPostError: null,
+                commentPostSuccess: false,
             };
         default:
             return {

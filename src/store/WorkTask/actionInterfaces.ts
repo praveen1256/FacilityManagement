@@ -31,6 +31,10 @@ import {
     WORK_TASK_COMPLETION_DEPENDENCIES_LOADING,
     WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS,
     WORK_TASK_COMPLETE_DONE,
+    WORK_TASK_COMMENT_POST_ERROR,
+    WORK_TASK_COMMENT_POST_LOADING,
+    WORK_TASK_COMMENT_POST_SUCCESS,
+    WORK_TASK_COMMENT_POST_DONE,
 } from "./actionTypes";
 import {
     CauseType,
@@ -222,6 +226,24 @@ export interface WorkTaskCompleteDone {
     type: typeof WORK_TASK_COMPLETE_DONE;
 }
 
+// Comment Stuff
+export interface WorkTaskCommentPostLoading {
+    type: typeof WORK_TASK_COMMENT_POST_LOADING;
+}
+
+export interface WorkTaskCommentPostSuccess {
+    type: typeof WORK_TASK_COMMENT_POST_SUCCESS;
+}
+
+export interface WorkTaskCommentPostError {
+    type: typeof WORK_TASK_COMMENT_POST_ERROR;
+    error: string;
+}
+
+export interface WorkTaskCommentPostDone {
+    type: typeof WORK_TASK_COMMENT_POST_DONE;
+}
+
 export type ActionInterfaces =
     | WorkTaskLoading
     | WorkTaskSuccess
@@ -254,7 +276,11 @@ export type ActionInterfaces =
     | WorkTaskCompletionDependenciesLoading
     | WorkTaskCompletionDependenciesSuccess
     | WorkTaskCompletionDependenciesError
-    | WorkTaskCompleteDone;
+    | WorkTaskCompleteDone
+    | WorkTaskCommentPostLoading
+    | WorkTaskCommentPostSuccess
+    | WorkTaskCommentPostError
+    | WorkTaskCommentPostDone;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,

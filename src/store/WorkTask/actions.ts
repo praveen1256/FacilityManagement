@@ -41,6 +41,10 @@ import {
     WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS,
     WORK_TASK_COMPLETION_DEPENDENCIES_ERROR,
     WORK_TASK_COMPLETE_DONE,
+    WORK_TASK_COMMENT_POST_DONE,
+    WORK_TASK_COMMENT_POST_ERROR,
+    WORK_TASK_COMMENT_POST_LOADING,
+    WORK_TASK_COMMENT_POST_SUCCESS,
 } from "./actionTypes";
 import { ChildTask, EventLog, FullWorkTask, ServiceRequest, TimeLog } from "./reducer";
 
@@ -431,8 +435,8 @@ export const workTaskComplete =
 
         try {
             // TODO: add api call
-            // await testingDelay(ANIMATION_DELAY_MS);
-            await testingDelay(3000);
+            await testingDelay(ANIMATION_DELAY_MS);
+            // await testingDelay(3000);
 
             const postData = {
                 data: {
@@ -539,4 +543,54 @@ export const onWorkTaskCompleteDone = (): AppThunkAction<ActionInterfaces> => as
     dispatch(pureActionCreator(WORK_TASK_COMPLETE_DONE, {}));
 
     // TODO: need to remove this worktask from the list, so that it doesn't show up again
+};
+
+// Comment Post
+export const postComment =
+    (
+        workTaskId: string,
+        data: {
+            comment: string;
+            image: string;
+        },
+    ): AppThunkAction<ActionInterfaces> =>
+    async (dispatch, _getState) => {
+        dispatch(pureActionCreator(WORK_TASK_COMMENT_POST_LOADING, {}));
+
+        try {
+            await testingDelay(ANIMATION_DELAY_MS);
+            const postData = {
+                data: {
+                    Comment: data.comment,
+                    Photo: data.image,
+                },
+            };
+
+            console.log("postData", postData);
+
+            const response = await axios.post(
+                `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}/workTaskComment?actionGroup=actionGroup&action=create&refresh=true`,
+                postData,
+            );
+
+            console.log(response);
+
+            dispatch(pureActionCreator(WORK_TASK_COMMENT_POST_SUCCESS, {}));
+
+            // Need a delay for server to update the data
+            setTimeout(() => {
+                dispatch(loadEvents(workTaskId));
+            }, 500);
+        } catch (error) {
+            const err = error as AxiosError;
+            dispatch(
+                pureActionCreator(WORK_TASK_COMMENT_POST_ERROR, {
+                    error: err.message || "Something went wrong",
+                }),
+            );
+        }
+    };
+
+export const commentPostDone = (): AppThunkAction<ActionInterfaces> => async (dispatch, _getState) => {
+    dispatch(pureActionCreator(WORK_TASK_COMMENT_POST_DONE, {}));
 };
