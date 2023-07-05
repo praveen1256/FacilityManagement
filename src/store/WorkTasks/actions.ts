@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
@@ -113,16 +113,17 @@ export function getCountsAndTasks(isOnlyCount: boolean, selectedCardIndex: numbe
                 );
             }
         } catch (error) {
+            const err = error as AxiosError;
             if (isOnlyCount) {
                 dispatch(
                     pureActionCreator(COUNT_ERROR, {
-                        error: "Something went wrong in fetching count...",
+                        error: err.message || "Something went wrong in fetching count...",
                     }),
                 );
             } else {
                 dispatch(
                     pureActionCreator(WORK_TASKS_ERROR, {
-                        error: "Something went wrong in fetching tasks...",
+                        error: err.message || "Something went wrong in fetching tasks...",
                     }),
                 );
             }

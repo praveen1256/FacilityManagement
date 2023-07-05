@@ -37,15 +37,15 @@ interface HomeScreenProps {
     // tasks: {
     //     _id: number;
     // }[];
-    onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) => void;
+    // onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) => void;
     onPressLogout: () => void;
-    getCounts: (isOnlyCount: boolean, selectedCard: number) => void;
+    getCountsOrTasks: (isOnlyCount: boolean, selectedCard: number) => void;
 }
 
 const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
-    onPressWorkTaks,
+    // onPressWorkTaks,
     onPressLogout,
-    getCounts,
+    getCountsOrTasks,
     userName,
     countP1,
     countP2P7,
@@ -66,7 +66,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
     ];
 
     useEffect(() => {
-        getCounts(true, 0);
+        getCountsOrTasks(true, 0);
     }, []);
 
     return (
@@ -91,7 +91,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                         <View style={styles.view1}>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    onPressWorkTaks(false, 0);
+                                    getCountsOrTasks(false, 0);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card1_Bg]}>
@@ -101,7 +101,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                             </AnimatedTouchable>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    onPressWorkTaks(false, 1);
+                                    getCountsOrTasks(false, 1);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card2_Bg]}>
@@ -111,7 +111,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                             </AnimatedTouchable>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    onPressWorkTaks(false, 4);
+                                    getCountsOrTasks(false, 4);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card3_Bg]}>
@@ -121,7 +121,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                             </AnimatedTouchable>
                             <AnimatedTouchable
                                 onPress={() => {
-                                    onPressWorkTaks(false, 3);
+                                    getCountsOrTasks(false, 3);
                                 }}
                             >
                                 <Card style={[styles.cardStyle, styles.card4_Bg]}>
@@ -143,7 +143,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                                 iconImageSource={require("../../assets/images/tasks.png")}
                                 style={{ backgroundColor: "#e48058" }}
                                 onPress={() => {
-                                    onPressWorkTaks(false, 0);
+                                    getCountsOrTasks(false, 0);
                                 }}
                             />
 
@@ -448,10 +448,10 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
-    onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) =>
-        dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
+    // onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) =>
+    //     dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
     onPressLogout: () => dispatch(Authentication.Actions.logout()),
-    getCounts: (isOnlyCount: boolean, selectedCard: number) =>
+    getCountsOrTasks: (isOnlyCount: boolean, selectedCard: number) =>
         dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
 });
 

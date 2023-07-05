@@ -7,8 +7,9 @@ import {
     Pressable,
     TouchableOpacity,
     ViewStyle,
+    RefreshControl,
 } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, ActivityIndicator, Button } from "react-native-paper";
 import React, { useEffect, useState, useRef } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { Dropdown } from "react-native-element-dropdown";
@@ -18,6 +19,7 @@ import SwitchSelector from "react-native-switch-selector";
 
 import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
 import { WorkTask } from "../../store/WorkTasks/reducer";
+import { locationzedStrings } from "../../localization/Localizaton";
 
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
@@ -25,6 +27,7 @@ const windowHeight = Dimensions.get("window").height / 12;
 interface WorkTasksScreenProps {
     isLoading: boolean;
     selectedCard: number;
+    error: string | null;
     countP1: number;
     countP2P7: number;
     countOverDue: number;
@@ -35,8 +38,8 @@ interface WorkTasksScreenProps {
     countOverDueTasks: WorkTask[];
     countDueTodayTasks: WorkTask[];
     countCompletedTasks: WorkTask[];
-    // onPressWorkTaks: (isOnlyCount: boolean) => void;
     onSelectWorkTask: (task: WorkTask) => void;
+    onRetry: (isOnlyCount: boolean, selectedCard: number) => void;
 }
 
 interface TaskCardProps {
@@ -49,21 +52,25 @@ interface TaskCardProps {
     cardBdStyle?: ViewStyle;
 }
 
-const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
-    onSelectWorkTask,
-    isLoading,
-    countP1,
-    countP2P7,
-    countOverDue,
-    countDueToday,
-    countCompleted,
-    countP1Tasks,
-    countP2P7Tasks,
-    countCompletedTasks,
-    countOverDueTasks,
-    countDueTodayTasks,
-    selectedCard,
-}) => {
+const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (props) => {
+    const {
+        onSelectWorkTask,
+        isLoading,
+        error,
+        countP1,
+        countP2P7,
+        countOverDue,
+        countDueToday,
+        countCompleted,
+        countP1Tasks,
+        countP2P7Tasks,
+        countCompletedTasks,
+        countOverDueTasks,
+        countDueTodayTasks,
+        selectedCard,
+        onRetry,
+    } = props;
+
     const [tasksList, setTasksList] = useState([
         countP1Tasks,
         countP2P7Tasks,
@@ -91,11 +98,12 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
     const [filter, setFilter] = useState("all");
     const [sortValue, setSortValue] = useState("");
     const [searchText, setSearchText] = useState("");
+    const [refreshing, setRefreshing] = React.useState(false);
 
     const [isFocus, setIsFocus] = useState(false);
 
     const [selectedTab, setSelectedTab] = useState(selectedCard);
-    console.log("selectedCard : ", selectedCard);
+    console.log("error : ", error);
 
     const [forceRender, setForceRender] = useState(false);
 
@@ -125,10 +133,57 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
     }, [countP1Tasks, countP2P7Tasks, countOverDueTasks, countDueTodayTasks, countCompletedTasks, selectedCard]);
 
     useEffect(() => {
+        if (isLoading) return;
+
+        setRefreshing(false);
         filterTasks();
         sortData();
         handleTextChange();
     }, [filter, sortValue, searchText, selectedTab]);
+
+    if (isLoading)
+        return (
+            <View
+                style={[
+                    styles.layoutContainer,
+                    {
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    },
+                ]}
+            >
+                <ActivityIndicator animating={true} />
+                <Text>Loading...</Text>
+            </View>
+        );
+    else if (error) {
+        return (
+            <View
+                style={[
+                    styles.layoutContainer,
+                    {
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    },
+                ]}
+            >
+                <Text>{error}</Text>
+                <Button
+                    mode="contained"
+                    onPress={() => onRetry(false, selectedCard)}
+                    style={{
+                        marginVertical: 10,
+                    }}
+                >
+                    Retry
+                </Button>
+            </View>
+        );
+    }
 
     const updateFilteredList = (arrayIndex: number, newArray: WorkTask[], updateUI: boolean) => {
         const updatedArrays = filteredUseRef.current;
@@ -210,6 +265,11 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
         else if (selectedTab == 2) return styles.item3_Bg;
         else if (selectedTab == 3) return styles.item4_Bg;
         else return styles.item5_Bg;
+    };
+
+    const onRefresh = () => {
+        setRefreshing(true);
+        onRetry(false, selectedCard);
     };
 
     /*
@@ -295,9 +355,16 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
 
     const renderEmptyList = () => {
         return (
-            <View>
-                <Text style={styles.noDataAvailable}>No data available</Text>
-            </View>
+            <Text
+                style={[
+                    styles.layoutContainer,
+                    {
+                        textAlign: "center",
+                    },
+                ]}
+            >
+                {locationzedStrings.workTasks.noDataAvailable}
+            </Text>
         );
     };
 
@@ -324,132 +391,139 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
         setSelectedTab(cardId);
     };
 
-    if (isLoading) return <Text style={styles.noDataAvailable}>Loading....</Text>;
-
     return (
-        <View style={styles.workTaskContainer}>
-            <SwitchSelector
-                buttonColor="#384247"
-                selectedColor="#FFFFFF"
-                borderColor="#384247"
-                textColor="#384247"
-                fontSize={16}
-                style={styles.switchSelectorStyle}
-                options={switchoptions}
-                initial={0}
-                onPress={(value: string) => {
-                    setFilter(value);
-                }}
-            />
-            <View style={styles.flexRow}>
-                <Dropdown
-                    style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={data}
-                    mode="modal"
-                    search
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={!isFocus ? "Select item" : "..."}
-                    searchPlaceholder="Search..."
-                    value={sortValue}
-                    onFocus={() => setIsFocus(true)}
-                    onBlur={() => setIsFocus(false)}
-                    onChange={(item) => {
-                        setSortValue(item.value);
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh}>
+            <View style={styles.workTaskContainer}>
+                <SwitchSelector
+                    buttonColor="#384247"
+                    selectedColor="#FFFFFF"
+                    borderColor="#384247"
+                    textColor="#384247"
+                    fontSize={16}
+                    style={styles.switchSelectorStyle}
+                    options={switchoptions}
+                    initial={0}
+                    onPress={(value: string) => {
+                        setFilter(value);
                     }}
                 />
-                <TextInput
-                    style={styles.textInputStyle}
-                    onChangeText={setSearchText}
-                    underlineColorAndroid="transparent"
-                    placeholder="Search Here"
-                    value={searchText}
-                />
-            </View>
-            <View style={styles.container}>
-                <View style={styles.view1}>
-                    <TaskCardView
-                        id={0}
-                        title="Active P1"
-                        value={countP1}
-                        isSelected={selectedTab === 0}
-                        onPress={handleCardPress}
-                        cardStyle={styles.cardStyle}
-                        cardBdStyle={styles.card1_Bg}
+                <View style={styles.flexRow}>
+                    <Dropdown
+                        style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+                        placeholderStyle={styles.placeholderStyle}
+                        selectedTextStyle={styles.selectedTextStyle}
+                        inputSearchStyle={styles.inputSearchStyle}
+                        iconStyle={styles.iconStyle}
+                        data={data}
+                        mode="modal"
+                        search
+                        maxHeight={300}
+                        labelField="label"
+                        valueField="value"
+                        placeholder={!isFocus ? "Select item" : "..."}
+                        searchPlaceholder="Search..."
+                        value={sortValue}
+                        onFocus={() => setIsFocus(true)}
+                        onBlur={() => setIsFocus(false)}
+                        onChange={(item) => {
+                            setSortValue(item.value);
+                        }}
                     />
-                    <TaskCardView
-                        id={1}
-                        title="Active P2-P7"
-                        value={countP2P7}
-                        isSelected={selectedTab === 1}
-                        onPress={handleCardPress}
-                        cardStyle={styles.cardStyle}
-                        cardBdStyle={styles.card2_Bg}
+                    <TextInput
+                        style={styles.textInputStyle}
+                        onChangeText={setSearchText}
+                        underlineColorAndroid="transparent"
+                        placeholder="Search Here"
+                        value={searchText}
                     />
-                    <TaskCardView
-                        id={2}
-                        title="Completed"
-                        value={countCompleted}
-                        isSelected={selectedTab === 2}
-                        onPress={handleCardPress}
-                        cardStyle={styles.cardStyle}
-                        cardBdStyle={styles.card3_Bg}
-                    />
-                    <TaskCardView
-                        id={3}
-                        title="OverDue"
-                        value={countOverDue}
-                        isSelected={selectedTab === 3}
-                        onPress={handleCardPress}
-                        cardStyle={styles.cardStyle}
-                        cardBdStyle={styles.card4_Bg}
-                    />
-                    <TaskCardView
-                        id={4}
-                        title="Due Today"
-                        value={countDueToday}
-                        isSelected={selectedTab === 4}
-                        onPress={handleCardPress}
-                        cardStyle={styles.cardStyle}
-                        cardBdStyle={styles.card5_Bg}
+                </View>
+                <View style={styles.container}>
+                    <View style={styles.view1}>
+                        <TaskCardView
+                            id={0}
+                            title="Active P1"
+                            value={countP1}
+                            isSelected={selectedTab === 0}
+                            onPress={handleCardPress}
+                            cardStyle={styles.cardStyle}
+                            cardBdStyle={styles.card1_Bg}
+                        />
+                        <TaskCardView
+                            id={1}
+                            title="Active P2-P7"
+                            value={countP2P7}
+                            isSelected={selectedTab === 1}
+                            onPress={handleCardPress}
+                            cardStyle={styles.cardStyle}
+                            cardBdStyle={styles.card2_Bg}
+                        />
+                        <TaskCardView
+                            id={2}
+                            title="Completed"
+                            value={countCompleted}
+                            isSelected={selectedTab === 2}
+                            onPress={handleCardPress}
+                            cardStyle={styles.cardStyle}
+                            cardBdStyle={styles.card3_Bg}
+                        />
+                        <TaskCardView
+                            id={3}
+                            title="OverDue"
+                            value={countOverDue}
+                            isSelected={selectedTab === 3}
+                            onPress={handleCardPress}
+                            cardStyle={styles.cardStyle}
+                            cardBdStyle={styles.card4_Bg}
+                        />
+                        <TaskCardView
+                            id={4}
+                            title="Due Today"
+                            value={countDueToday}
+                            isSelected={selectedTab === 4}
+                            onPress={handleCardPress}
+                            cardStyle={styles.cardStyle}
+                            cardBdStyle={styles.card5_Bg}
+                        />
+                    </View>
+                </View>
+                <View style={styles.taskContainer}>
+                    <FlatList
+                        data={flatListData[selectedTab]}
+                        extraData={flatListData[selectedTab]}
+                        ListEmptyComponent={renderEmptyList}
+                        renderItem={({ item }) => (
+                            <Pressable onPress={() => onSelectWorkTask(item)}>
+                                <Item
+                                    srid={item.SRID}
+                                    priority={item.TaskPriority}
+                                    requestClass={item.RequestClass}
+                                    address={item.Address}
+                                    building={item.Building}
+                                    locationCode={item.LocationCode}
+                                    city={item.City}
+                                    state={item.State}
+                                    description={item.Description}
+                                    plannedEnd={item.PlannedEnd}
+                                    taskType={item.TaskType}
+                                />
+                            </Pressable>
+                        )}
+                        keyExtractor={(item, idx) => `${item._id}-${item.SRID}-${idx}`}
                     />
                 </View>
             </View>
-            <View style={styles.taskContainer}>
-                <FlatList
-                    data={flatListData[selectedTab]}
-                    extraData={flatListData[selectedTab]}
-                    ListEmptyComponent={renderEmptyList}
-                    renderItem={({ item }) => (
-                        <Pressable onPress={() => onSelectWorkTask(item)}>
-                            <Item
-                                srid={item.SRID}
-                                priority={item.TaskPriority}
-                                requestClass={item.RequestClass}
-                                address={item.Address}
-                                building={item.Building}
-                                locationCode={item.LocationCode}
-                                city={item.City}
-                                state={item.State}
-                                description={item.Description}
-                                plannedEnd={item.PlannedEnd}
-                                taskType={item.TaskType}
-                            />
-                        </Pressable>
-                    )}
-                    keyExtractor={(item, idx) => `${item._id}-${item.SRID}-${idx}`}
-                />
-            </View>
-        </View>
+        </RefreshControl>
     );
 };
 
 const styles = StyleSheet.create({
+    layoutContainer: {
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#f8f8f8",
+        paddingVertical: 20,
+        flex: 1,
+    },
     workTaskContainer: {
         width: "100%",
         height: "100%",
@@ -813,11 +887,14 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
     onSelectWorkTask: (workTask: WorkTask) => dispatch(WorkTasks.Actions.navigateToWorkTask(workTask._id)),
+    onRetry: (isOnlyCount: boolean, selectedCard: number) =>
+        dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
 });
 
 const mapState = (state: RootState) => ({
     isLoading: state.worktasks.loading,
     selectedCard: state.worktasks.selectedCard,
+    error: state.worktasks.error,
     countP1: state.worktasks.countP1,
     countP2P7: state.worktasks.countP2P7,
     countOverDue: state.worktasks.countOverDue,
