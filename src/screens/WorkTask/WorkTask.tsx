@@ -40,6 +40,7 @@ type WorkTaskScreenViewProps = {
     eventLogsLoading: boolean;
     eventLogsError: string | null;
     workTask: FullWorkTask | null;
+    workTaskLoading: boolean;
     isRefreshing: boolean;
     // Child work tasks
     childWorkTasks: ChildTask[];
@@ -49,6 +50,9 @@ type WorkTaskScreenViewProps = {
     onCompleteFormSubmit: (...args: Parameters<typeof WorkTask.Actions.workTaskComplete>) => void;
     isCompleteWorkTaskLoading: boolean;
     completeWorkTaskError: string | null;
+    completionDependencies: RootState["workTask"]["completionDependencies"];
+    completeWorkTaskSuccess: boolean;
+    onCompleteDone: () => void;
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -74,13 +78,18 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         onCompleteFormSubmit,
         childWorkTasks,
         childWorkTasksLoading,
+        completionDependencies,
+        completeWorkTaskSuccess,
+        onCompleteDone,
+        workTaskLoading,
     } = props;
 
     const { workTaskId } = props.route.params;
 
     useEffect(() => {
-        initializeState(workTaskId);
-    }, [initializeState]);
+        // debounce the initializeState call
+        if (!workTaskLoading) initializeState(workTaskId);
+    }, [initializeState, workTaskId]);
 
     useEffect(() => {
         if (workTask) {
@@ -111,7 +120,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         });
     };
 
-    if (!workTask) {
+    if (workTaskLoading || !workTask) {
         // Loading
         return (
             <View
@@ -149,6 +158,13 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     <View style={styles.form}>
                         {/* Header */}
                         <FlipCard flipHorizontal={true} flipVertical={false}>
+                            {/* Frontside */}
+                            <GeneralCard
+                                workTask={workTask}
+                                style={{
+                                    marginBottom: 8,
+                                }}
+                            />
                             {/* Backside */}
                             <View style={{ padding: 8 }}>
                                 <View
@@ -238,14 +254,6 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                     </Card>
                                 </View>
                             </View>
-
-                            {/* Frontside */}
-                            <GeneralCard
-                                workTask={workTask}
-                                style={{
-                                    marginBottom: 8,
-                                }}
-                            />
                         </FlipCard>
 
                         {/* </List.Accordion> */}
@@ -482,6 +490,12 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                 }}
                 error={completeWorkTaskError}
                 isLoading={isCompleteWorkTaskLoading}
+                completionDependendies={completionDependencies}
+                completionSuccess={completeWorkTaskSuccess}
+                onCompleteDone={() => {
+                    setCompletitionFormOpen(false);
+                    onCompleteDone();
+                }}
             />
         </>
     );
@@ -513,6 +527,7 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => (
         dispatch(WorkTask.Actions.loadTimeLogs(workTaskId));
         dispatch(WorkTask.Actions.loadServiceRequest(workTaskId));
         dispatch(WorkTask.Actions.loadTimeLogCategories());
+        dispatch(WorkTask.Actions.loadWorkTaskCompletionDependencies());
     },
     initializeSRDependentState: (workTaskId: string, serviceRequestId: string) => {
         dispatch(WorkTask.Actions.loadChildWorkTasks(serviceRequestId, workTaskId));
@@ -525,6 +540,7 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => (
         dispatch(WorkTask.Actions.onTimeLogCancelRetry(...args)),
     onCompleteFormSubmit: (...args: Parameters<typeof WorkTask.Actions.workTaskComplete>) =>
         dispatch(WorkTask.Actions.workTaskComplete(...args)),
+    onCompleteDone: () => dispatch(WorkTask.Actions.onWorkTaskCompleteDone()),
 });
 
 const mapState = (state: RootState) => ({
@@ -549,8 +565,10 @@ const mapState = (state: RootState) => ({
     childWorkTasksLoading: state.workTask.childTasksLoading,
     childWorkTasksError: state.workTask.childTasksError,
     // Completion form
-    completionFormLoading: true,
-    completionFormError: null,
+    isCompleteWorkTaskLoading: state.workTask.workTaskCompleteLoading,
+    completeWorkTaskError: state.workTask.workTaskCompleteError,
+    completeWorkTaskSuccess: state.workTask.workTaskCompleteSuccess,
+    completionDependencies: state.workTask.completionDependencies,
 });
 
 const connector = connect(mapState, mapDispatch);

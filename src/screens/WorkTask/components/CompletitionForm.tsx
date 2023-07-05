@@ -1,6 +1,25 @@
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import React from "react";
-import { Button, Modal, Portal } from "react-native-paper";
+import { Button, HelperText, Modal, Portal, TextInput, Text } from "react-native-paper";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { z } from "zod";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Dropdown } from "react-native-element-dropdown";
+
+import { RootState } from "../../../store";
+import { useAppTheme } from "../../../theme";
+import { CauseType, InitiativeCode, LateCompletionReason, RepairDefinition } from "../../../store/WorkTask/reducer";
+
+const completeWorkTaskSchema = z.object({
+    comment: z.string().nonempty(),
+    causeType: z.string().nonempty(),
+    repairDefinition: z.string().nonempty(),
+    initiativeCode: z.string().optional(),
+    lateCompletionReason: z.string().optional(),
+});
+
+type CompleteWorkTaskFormValues = z.infer<typeof completeWorkTaskSchema>;
 
 type CompletitionFormProps = {
     isOpen: boolean;
@@ -14,6 +33,9 @@ type CompletitionFormProps = {
         lateCompletionReason?: string; // only if late completion
     }) => void;
     error: string | null;
+    completionDependendies: RootState["workTask"]["completionDependencies"];
+    completionSuccess: boolean;
+    onCompleteDone: () => void;
 };
 
 const CompletitionForm: React.FunctionComponent<CompletitionFormProps> = ({
@@ -22,37 +44,259 @@ const CompletitionForm: React.FunctionComponent<CompletitionFormProps> = ({
     error,
     isLoading,
     onSubmit,
+    completionSuccess,
+    onCompleteDone,
+    completionDependendies,
 }) => {
+    const { handleSubmit, control } = useForm<CompleteWorkTaskFormValues>({
+        mode: "onBlur",
+        reValidateMode: "onChange",
+        defaultValues: {
+            causeType: "",
+            comment: "",
+            repairDefinition: "",
+            initiativeCode: "",
+            lateCompletionReason: "",
+        },
+        resolver: zodResolver(completeWorkTaskSchema),
+    });
+
+    const theme = useAppTheme();
+
     return (
         <Portal>
             <Modal
                 visible={isOpen}
-                onDismiss={isLoading ? undefined : onCancel}
+                onDismiss={onCancel}
+                dismissable={!isLoading}
                 contentContainerStyle={{
                     backgroundColor: "white",
                     padding: 20,
                     margin: 20,
+                    borderRadius: 10,
                 }}
             >
-                <View>
-                    <Text>Example Modal</Text>
-                    <Button
-                        onPress={() => {
-                            console.log("Pressed");
-                            onSubmit({
-                                comment: "comment",
-                                causeType: "Network Card Failure",
-                                repairDefinition: "Replaced Device",
-                                initiativeCode: "",
-                                lateCompletionReason: "",
-                            });
-                        }}
-                        mode="contained"
-                    >
-                        Complete
-                    </Button>
-                    {error && <Text>{error}</Text>}
-                </View>
+                <Text
+                    variant="headlineSmall"
+                    style={{
+                        color: theme.colors?.primary,
+                        marginBottom: 10,
+                    }}
+                >
+                    Complete Work Task
+                </Text>
+                {completionSuccess ? (
+                    <>
+                        <View
+                            style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                padding: 20,
+                            }}
+                        >
+                            <Icon
+                                name="check-circle-outline"
+                                size={50}
+                                style={{
+                                    color: "green",
+                                }}
+                            />
+                            <Text
+                                style={{
+                                    marginVertical: 20,
+                                }}
+                            >
+                                Task Completed
+                            </Text>
+                            <Button mode="contained" onPress={onCompleteDone}>
+                                Done
+                            </Button>
+                        </View>
+                    </>
+                ) : (
+                    <>
+                        <View>
+                            <Controller
+                                control={control}
+                                name="comment"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                    return (
+                                        <>
+                                            <TextInput
+                                                mode="outlined"
+                                                label="Comment"
+                                                multiline
+                                                // style={styles.inputContainerStyle}
+                                                onBlur={onBlur}
+                                                // onChangeText={onChange}
+                                                value={value}
+                                                onChangeText={onChange}
+                                                error={!!fieldState.error}
+                                                autoCapitalize="none"
+                                                returnKeyType="next"
+                                            />
+                                            <HelperText type="error" visible={!!fieldState.error}>
+                                                {fieldState.error?.message}
+                                            </HelperText>
+                                        </>
+                                    );
+                                }}
+                            />
+
+                            <Controller
+                                control={control}
+                                name="causeType"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                    return (
+                                        <>
+                                            <Dropdown<CauseType>
+                                                style={{
+                                                    // TODO: Need to fix the border color
+                                                    borderColor: fieldState.error?.message
+                                                        ? theme.colors?.error
+                                                        : "black",
+                                                    borderWidth: 1,
+                                                    padding: 8,
+                                                }}
+                                                placeholder="Cause Type"
+                                                data={completionDependendies.causeTypes}
+                                                labelField="Name"
+                                                valueField="Name"
+                                                onChange={(item) => onChange(item.Name)}
+                                                value={value}
+                                                onBlur={onBlur}
+                                                // Need to handle the error color!!
+                                                mode="default"
+                                            />
+                                            <HelperText type="error" visible={!!fieldState.error}>
+                                                {fieldState.error?.message}
+                                            </HelperText>
+                                        </>
+                                    );
+                                }}
+                            />
+
+                            <Controller
+                                control={control}
+                                name="repairDefinition"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                    return (
+                                        <>
+                                            <Dropdown<RepairDefinition>
+                                                style={{
+                                                    // TODO: Need to fix the border color
+                                                    borderColor: fieldState.error?.message
+                                                        ? theme.colors?.error
+                                                        : "black",
+                                                    borderWidth: 1,
+                                                    padding: 8,
+                                                }}
+                                                placeholder="Repair Definition"
+                                                data={completionDependendies.repairDefinitions}
+                                                labelField="Name"
+                                                valueField="Name"
+                                                onChange={(item) => onChange(item.Name)}
+                                                value={value}
+                                                onBlur={onBlur}
+                                                // Need to handle the error color!!
+                                                mode="default"
+                                            />
+                                            <HelperText type="error" visible={!!fieldState.error}>
+                                                {fieldState.error?.message}
+                                            </HelperText>
+                                        </>
+                                    );
+                                }}
+                            />
+
+                            <Controller
+                                control={control}
+                                name="initiativeCode"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                    return (
+                                        <>
+                                            <Dropdown<InitiativeCode>
+                                                style={{
+                                                    // TODO: Need to fix the border color
+                                                    borderColor: fieldState.error?.message
+                                                        ? theme.colors?.error
+                                                        : "black",
+                                                    borderWidth: 1,
+                                                    padding: 8,
+                                                }}
+                                                placeholder="Initiative Code"
+                                                data={completionDependendies.initiativeCodes}
+                                                labelField="Name"
+                                                valueField="Name"
+                                                onChange={(item) => onChange(item.Name)}
+                                                value={value}
+                                                onBlur={onBlur}
+                                                // Need to handle the error color!!
+                                                mode="default"
+                                            />
+                                            <HelperText type="error" visible={!!fieldState.error}>
+                                                {fieldState.error?.message}
+                                            </HelperText>
+                                        </>
+                                    );
+                                }}
+                            />
+
+                            <Controller
+                                control={control}
+                                name="lateCompletionReason"
+                                render={({ field: { onChange, onBlur, value }, fieldState }) => {
+                                    return (
+                                        <>
+                                            <Dropdown<LateCompletionReason>
+                                                style={{
+                                                    // TODO: Need to fix the border color
+                                                    borderColor: fieldState.error?.message
+                                                        ? theme.colors?.error
+                                                        : "black",
+                                                    borderWidth: 1,
+                                                    padding: 8,
+                                                }}
+                                                placeholder="Late Completion Reason"
+                                                data={completionDependendies.lateCompletionReasons}
+                                                labelField="value"
+                                                valueField="value"
+                                                onChange={(item) => onChange(item.value)}
+                                                value={value}
+                                                onBlur={onBlur}
+                                                // Need to handle the error color!!
+                                                mode="default"
+                                            />
+                                            <HelperText type="error" visible={!!fieldState.error}>
+                                                {fieldState.error?.message}
+                                            </HelperText>
+                                        </>
+                                    );
+                                }}
+                            />
+
+                            <Button
+                                onPress={handleSubmit((d) =>
+                                    onSubmit({
+                                        causeType: d.causeType,
+                                        comment: d.comment,
+                                        initiativeCode: d.initiativeCode,
+                                        lateCompletionReason: d.lateCompletionReason,
+                                        repairDefinition: d.repairDefinition,
+                                    }),
+                                )}
+                                mode="contained"
+                                loading={isLoading}
+                                disabled={isLoading}
+                            >
+                                Complete
+                            </Button>
+                            <HelperText type="error" visible={!!error}>
+                                {error}
+                            </HelperText>
+                        </View>
+                    </>
+                )}
             </Modal>
         </Portal>
     );

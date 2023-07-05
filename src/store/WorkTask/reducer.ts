@@ -25,6 +25,11 @@ import {
     SERVICE_REQUEST_LOADING,
     SERVICE_REQUEST_SUCCESS,
     WORK_TASK_COMPLETE_LOADING,
+    WORK_TASK_COMPLETION_DEPENDENCIES_ERROR,
+    WORK_TASK_COMPLETION_DEPENDENCIES_LOADING,
+    WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS,
+    WORK_TASK_COMPLETE_SUCCESS,
+    WORK_TASK_COMPLETE_DONE,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -169,6 +174,36 @@ export interface ServiceRequest {
     RequestedFor: string;
 }
 
+export interface CauseType {
+    HierarchyPath: string;
+    _id: string;
+    ParentName: string;
+    Name: string;
+}
+
+export interface RepairDefinition {
+    HierarchyPath: string;
+    _id: string;
+    ParentName: string;
+    Name: string;
+}
+
+export interface InitiativeCode {
+    _id: string;
+    Name: string;
+}
+
+export interface LateCompletionReason {
+    parentListId: string | null;
+    typeId: number;
+    _id: string;
+    parentValue: string | null;
+    parentListValueId: string | null;
+    value: string;
+    internalValue: string;
+    internalParentValue: string | null;
+}
+
 export interface WorkTaskState {
     loading: boolean;
     error: string | null;
@@ -198,6 +233,14 @@ export interface WorkTaskState {
     workTaskCompleteLoading: boolean;
     workTaskCompleteError: string | null;
     workTaskCompleteSuccess: boolean;
+    completionDependenciesLoading: boolean;
+    completionDependencies: {
+        causeTypes: CauseType[];
+        repairDefinitions: RepairDefinition[];
+        initiativeCodes: InitiativeCode[];
+        lateCompletionReasons: LateCompletionReason[];
+    };
+    completionDependenciesError: string | null;
 }
 
 const initialState: WorkTaskState = {
@@ -229,17 +272,19 @@ const initialState: WorkTaskState = {
     workTaskCompleteLoading: false,
     workTaskCompleteError: null,
     workTaskCompleteSuccess: false,
+    completionDependenciesLoading: false,
+    completionDependencies: {
+        causeTypes: [],
+        repairDefinitions: [],
+        initiativeCodes: [],
+        lateCompletionReasons: [],
+    },
+    completionDependenciesError: null,
 };
 
 export const workTaskReducer = (state: WorkTaskState = initialState, action: ActionInterfaces): WorkTaskState => {
     switch (action.type) {
         case WORK_TASK_LOADING:
-            if (action.refresh)
-                return {
-                    ...state,
-                    loading: action.refresh ? false : true,
-                    refreshing: action.refresh,
-                };
             return {
                 ...initialState,
                 loading: action.refresh ? false : true,
@@ -506,7 +551,39 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 workTaskCompleteLoading: true,
                 workTaskCompleteError: null,
             };
-
+        case WORK_TASK_COMPLETE_SUCCESS:
+            return {
+                ...state,
+                workTaskCompleteLoading: false,
+                workTaskCompleteError: null,
+                workTaskCompleteSuccess: true,
+            };
+        case WORK_TASK_COMPLETE_DONE:
+            return {
+                ...initialState,
+            };
+        // Completion Dependencies
+        case WORK_TASK_COMPLETION_DEPENDENCIES_LOADING:
+            return {
+                ...state,
+                completionDependenciesLoading: true,
+                completionDependenciesError: null,
+            };
+        case WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS:
+            return {
+                ...state,
+                completionDependenciesLoading: false,
+                completionDependenciesError: null,
+                completionDependencies: {
+                    ...action.dependencies,
+                },
+            };
+        case WORK_TASK_COMPLETION_DEPENDENCIES_ERROR:
+            return {
+                ...state,
+                completionDependenciesLoading: false,
+                completionDependenciesError: action.error,
+            };
         default:
             return {
                 ...state,

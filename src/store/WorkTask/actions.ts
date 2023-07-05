@@ -1,10 +1,11 @@
 import axios, { AxiosError } from "axios";
 import dayjs from "dayjs";
-// import { container } from "tsyringe";
+import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
 import { WorkTask } from "../WorkTasks/reducer";
 import { ANIMATION_DELAY_MS, testingDelay } from "../../EnableAnimationsDelay";
+import { NavigationService } from "../../services/Navigation.Service";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import {
@@ -36,6 +37,10 @@ import {
     WORK_TASK_COMPLETE_LOADING,
     WORK_TASK_COMPLETE_ERROR,
     WORK_TASK_COMPLETE_SUCCESS,
+    WORK_TASK_COMPLETION_DEPENDENCIES_LOADING,
+    WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS,
+    WORK_TASK_COMPLETION_DEPENDENCIES_ERROR,
+    WORK_TASK_COMPLETE_DONE,
 } from "./actionTypes";
 import { ChildTask, EventLog, FullWorkTask, ServiceRequest, TimeLog } from "./reducer";
 
@@ -426,7 +431,28 @@ export const workTaskComplete =
 
         try {
             // TODO: add api call
-            await testingDelay(ANIMATION_DELAY_MS);
+            // await testingDelay(ANIMATION_DELAY_MS);
+            await testingDelay(3000);
+
+            const postData = {
+                data: {
+                    triInput1TX: "workTaskComplete",
+                    triInput2TX: data.serviceRequestNumber,
+                    triInput3TX: "Mobile - " + data.comment,
+                    triInput4TX: data.causeType,
+                    triInput5TX: data.repairDefinition,
+                    triInput6TX: data.initiativeCode || "",
+                    triInput7TX: data.lateCompletionReason || "",
+                },
+            };
+
+            const response = await axios.post(
+                "https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstHelper?actionGroup=actions&action=calculate&refresh=true",
+                postData,
+            );
+            console.log(response);
+
+            // FIXME: assuming this task has been posted successfully!
 
             dispatch(pureActionCreator(WORK_TASK_COMPLETE_SUCCESS, {}));
         } catch (error) {
@@ -438,3 +464,79 @@ export const workTaskComplete =
             );
         }
     };
+
+// worktask completion dependencies
+export const loadWorkTaskCompletionDependencies =
+    (): AppThunkAction<ActionInterfaces> => async (dispatch, _getState) => {
+        // Check if the dependencies are already loaded
+        const dependencies = _getState().workTask.completionDependencies;
+        if (
+            dependencies.causeTypes.length > 0 ||
+            dependencies.repairDefinitions.length > 0 ||
+            dependencies.initiativeCodes.length > 0 ||
+            dependencies.lateCompletionReasons.length > 0
+        ) {
+            console.log("Dependencies are already loaded");
+            // Dependencies are already loaded
+            return;
+        }
+
+        dispatch(pureActionCreator(WORK_TASK_COMPLETION_DEPENDENCIES_LOADING, {}));
+
+        try {
+            // TODO: add api call
+            const urls = {
+                lateCompletitionReasons:
+                    "https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstLateCompletion?countOnly=false",
+                causeTypes:
+                    "https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstCauseType?countOnly=false",
+                repairDefinitions:
+                    "https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstRepairDefintions?countOnly=false",
+                initiativeCodes:
+                    "https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstInitiativeCode?countOnly=false",
+            };
+
+            const responses = await Promise.all([
+                axios.get(urls.lateCompletitionReasons),
+                axios.get(urls.causeTypes),
+                axios.get(urls.repairDefinitions),
+                axios.get(urls.initiativeCodes),
+            ]);
+
+            const lateCompletionReasons = responses[0].data.data;
+            const causeTypes = responses[1].data.data;
+            const repairDefinitions = responses[2].data.data;
+            const initiativeCodes = responses[3].data.data;
+
+            await testingDelay(ANIMATION_DELAY_MS);
+
+            dispatch(
+                pureActionCreator(WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS, {
+                    dependencies: {
+                        causeTypes,
+                        repairDefinitions,
+                        initiativeCodes,
+                        lateCompletionReasons,
+                    },
+                }),
+            );
+        } catch (error) {
+            const err = error as AxiosError;
+            dispatch(
+                pureActionCreator(WORK_TASK_COMPLETION_DEPENDENCIES_ERROR, {
+                    error: err.message || "Something went wrong",
+                }),
+            );
+        }
+    };
+
+export const onWorkTaskCompleteDone = (): AppThunkAction<ActionInterfaces> => async (dispatch, _getState) => {
+    console.log("onWorkTaskCompleteDone");
+    // Navigate to the work task screen with the param as workTaskId
+    const navigationContainer = container.resolve(NavigationService);
+    navigationContainer.goBack();
+
+    dispatch(pureActionCreator(WORK_TASK_COMPLETE_DONE, {}));
+
+    // TODO: need to remove this worktask from the list, so that it doesn't show up again
+};

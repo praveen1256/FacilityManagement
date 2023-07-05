@@ -119,13 +119,12 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                         }}
                     >
                         <Text variant="bodyMedium">
-                            {workTask.Description || "No Description Provided!"}
-                            {/* lorem ipsum dolor sit amet, consectetur adipiscing elit. sed euismod, diam sit amet
-                            consectetur consectetur adipiscing elit. sed euismod, diam sit amet consectetur adipiscing
-                            elit. sed euismod, diam sit amet consectetur adipiscing elit. sed euismod, diam sit amet
-                            consectetur adipiscing elit. sed euismod, diam sit amet consectetur adipiscing */}
+                            {/* {workTask.Description || "No Description Provided!"} */}
+                            lorem ipsum dolor sit amet, consectetur adipiscing elit. sed euismod, diam sit amet
+                            consectetur consectetur adipiscing elit. sed euismod, consectetur adipiscing elit. sed
+                            euismod, diam sit amet consectetur adipiscing....
                             {/* 1000  random characters */}
-                            {/* {generateRandomCharacters(1000)} */}
+                            {/* {_generateRandomCharacters(1000)} */}
                             {/* {`lorem ipsum dolor sit amet, consectetur adipiscing elit. sed euismod, diam sit amet consectetur consectetur adipiscing elit. sed euismod, diam sit amet consectetur adipiscing...`} */}
                         </Text>
                     </View>

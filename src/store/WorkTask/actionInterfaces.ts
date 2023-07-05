@@ -27,8 +27,23 @@ import {
     WORK_TASK_COMPLETE_ERROR,
     WORK_TASK_COMPLETE_LOADING,
     WORK_TASK_COMPLETE_SUCCESS,
+    WORK_TASK_COMPLETION_DEPENDENCIES_ERROR,
+    WORK_TASK_COMPLETION_DEPENDENCIES_LOADING,
+    WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS,
+    WORK_TASK_COMPLETE_DONE,
 } from "./actionTypes";
-import { ChildTask, EventLog, FullWorkTask, ServiceRequest, TimeLog, TimeLogCategory } from "./reducer";
+import {
+    CauseType,
+    ChildTask,
+    EventLog,
+    FullWorkTask,
+    InitiativeCode,
+    LateCompletionReason,
+    RepairDefinition,
+    ServiceRequest,
+    TimeLog,
+    TimeLogCategory,
+} from "./reducer";
 export interface WorkTaskLoading {
     type: typeof WORK_TASK_LOADING;
     refresh?: boolean;
@@ -182,6 +197,31 @@ export interface WorkTaskCompleteError {
     error: string;
 }
 
+// Work Task completion dependencies
+export interface WorkTaskCompletionDependenciesLoading {
+    type: typeof WORK_TASK_COMPLETION_DEPENDENCIES_LOADING;
+}
+
+export interface WorkTaskCompletionDependenciesSuccess {
+    type: typeof WORK_TASK_COMPLETION_DEPENDENCIES_SUCCESS;
+    // TODO: need to add CauseType, late completion reason, repair definition and initiative codes
+    dependencies: {
+        causeTypes: CauseType[];
+        lateCompletionReasons: LateCompletionReason[];
+        repairDefinitions: RepairDefinition[];
+        initiativeCodes: InitiativeCode[];
+    };
+}
+
+export interface WorkTaskCompletionDependenciesError {
+    type: typeof WORK_TASK_COMPLETION_DEPENDENCIES_ERROR;
+    error: string;
+}
+
+export interface WorkTaskCompleteDone {
+    type: typeof WORK_TASK_COMPLETE_DONE;
+}
+
 export type ActionInterfaces =
     | WorkTaskLoading
     | WorkTaskSuccess
@@ -210,7 +250,11 @@ export type ActionInterfaces =
     | ServiceRequestError
     | WorkTaskCompleteLoading
     | WorkTaskCompleteSuccess
-    | WorkTaskCompleteError;
+    | WorkTaskCompleteError
+    | WorkTaskCompletionDependenciesLoading
+    | WorkTaskCompletionDependenciesSuccess
+    | WorkTaskCompletionDependenciesError
+    | WorkTaskCompleteDone;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,
