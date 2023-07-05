@@ -94,6 +94,17 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
                             }}
                         />
                     ))}
+
+                <Button
+                    onPress={() => setIsAddTimeLogModalOpen(true)}
+                    mode="contained"
+                    style={{
+                        marginTop: 20,
+                        marginHorizontal: 20,
+                    }}
+                >
+                    Add Time Log
+                </Button>
             </View>
         </>
     );
