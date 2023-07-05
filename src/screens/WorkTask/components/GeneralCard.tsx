@@ -135,7 +135,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                         }}
                     >
                         <Text variant="bodyMedium" style={{ fontWeight: "bold" }}>
-                            {`${workTask.Building}\n${workTask.Address}\n${workTask.City} ${workTask.StateProvince} ${workTask.Zip}`}{" "}
+                            {`${workTask.BuildingName}\n${workTask.Address}\n${workTask.City} ${workTask.StateProvince} ${workTask.Zip}`}{" "}
                             <Icon
                                 name="map-marker"
                                 color={theme.colors?.primary}

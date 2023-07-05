@@ -17,6 +17,7 @@ import CardLabelValue from "./components/CardLabelValue";
 import GeneralCard from "./components/GeneralCard";
 import EventLogCard from "./components/EventLog";
 import CompletitionForm from "./components/CompletitionForm";
+import CreateCommentForm from "./components/CreateCommentForm";
 
 // TODO: move this to the App.tsx file, since its better to define this only once instead of many places!!
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -53,6 +54,11 @@ type WorkTaskScreenViewProps = {
     completionDependencies: RootState["workTask"]["completionDependencies"];
     completeWorkTaskSuccess: boolean;
     onCompleteDone: () => void;
+    onCommentCreate: (...args: Parameters<typeof WorkTask.Actions.postComment>) => void;
+    onCommentCreateDone: () => void;
+    commentPostLoading: boolean;
+    commentPostError: string | null;
+    commentPostSuccess: boolean;
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -82,13 +88,21 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         completeWorkTaskSuccess,
         onCompleteDone,
         workTaskLoading,
+        onCommentCreate,
+        onCommentCreateDone,
+        commentPostError,
+        commentPostLoading,
+        commentPostSuccess,
     } = props;
 
     const { workTaskId } = props.route.params;
 
     useEffect(() => {
         // debounce the initializeState call
-        if (!workTaskLoading) initializeState(workTaskId);
+        if (!workTaskLoading) {
+            initializeState(workTaskId);
+            console.log("workTaskId", workTaskId);
+        }
     }, [initializeState, workTaskId]);
 
     useEffect(() => {
@@ -105,6 +119,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
 
     const [expandedAccordians, setExpandedAccordians] = React.useState<(string | number)[]>([]);
     const [completitionFormOpen, setCompletitionFormOpen] = React.useState(false);
+    const [createCommentFormOpen, setCreateCommentFormOpen] = React.useState(false);
 
     const theme = useAppTheme();
 
@@ -446,7 +461,9 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                         <IconButton
                             icon={"comment"}
                             // size={20}
-                            onPress={() => console.log("Pressed")}
+                            onPress={() => {
+                                setCreateCommentFormOpen(true);
+                            }}
                             iconColor="white"
                             style={{
                                 backgroundColor: theme.colors?.primary,
@@ -457,7 +474,6 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                             icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
                             // size={20}
                             onPress={() => {
-                                console.log("Pressed - Completition Form");
                                 setCompletitionFormOpen(true);
                             }}
                             iconColor="white"
@@ -479,6 +495,23 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     </View>
                 </View>
             </View>
+            <CreateCommentForm
+                isOpen={createCommentFormOpen}
+                onCancel={() => setCreateCommentFormOpen(false)}
+                onDone={() => {
+                    setCreateCommentFormOpen(false);
+                    onCommentCreateDone();
+                }}
+                onSubmit={(data) => {
+                    onCommentCreate(workTaskId, {
+                        comment: data.comment,
+                        image: data.image || "",
+                    });
+                }}
+                isLoading={commentPostLoading}
+                error={commentPostError}
+                success={commentPostSuccess}
+            />
             <CompletitionForm
                 isOpen={completitionFormOpen}
                 onCancel={() => setCompletitionFormOpen(false)}
@@ -541,6 +574,9 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTask.ActionInterfaces>) => (
     onCompleteFormSubmit: (...args: Parameters<typeof WorkTask.Actions.workTaskComplete>) =>
         dispatch(WorkTask.Actions.workTaskComplete(...args)),
     onCompleteDone: () => dispatch(WorkTask.Actions.onWorkTaskCompleteDone()),
+    onCommentCreate: (...args: Parameters<typeof WorkTask.Actions.postComment>) =>
+        dispatch(WorkTask.Actions.postComment(...args)),
+    onCommentCreateDone: () => dispatch(WorkTask.Actions.commentPostDone()),
 });
 
 const mapState = (state: RootState) => ({
@@ -569,6 +605,10 @@ const mapState = (state: RootState) => ({
     completeWorkTaskError: state.workTask.workTaskCompleteError,
     completeWorkTaskSuccess: state.workTask.workTaskCompleteSuccess,
     completionDependencies: state.workTask.completionDependencies,
+    // Comment Stuff
+    commentPostLoading: state.workTask.commentPostLoading,
+    commentPostError: state.workTask.commentPostError,
+    commentPostSuccess: state.workTask.commentPostSuccess,
 });
 
 const connector = connect(mapState, mapDispatch);
