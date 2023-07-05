@@ -4,10 +4,8 @@ import { ActivityIndicator, Button, Card, HelperText, Text } from "react-native-
 import dayjs from "dayjs";
 
 import { WorkTask } from "../../../store";
-import { TimeLogCategory, TimeLogExtended } from "../../../store/WorkTask/reducer";
+import { TimeLogExtended } from "../../../store/WorkTask/reducer";
 import { useAppTheme } from "../../../theme";
-
-import CreateTimeLogModal from "./CreateTimeLogModal";
 
 type TimeLogsProps = {
     timeLogs: TimeLogExtended[];
@@ -16,10 +14,6 @@ type TimeLogsProps = {
     onTimeLogDelete: (...args: Parameters<typeof WorkTask.Actions.deleteTimeLog>) => void;
     workTaskId: string;
     serviceRequestId: string;
-    // TimeLog Dependencies
-    timeLogCategories: TimeLogCategory[];
-    timeLogCategoriesLoading: boolean;
-    timeLogCategoriesError: string | null;
     // Timelog creation dependencies
     onTimeLogCreate: (...args: Parameters<typeof WorkTask.Actions.createTimeLog>) => void;
     onCancelRetry: (...args: Parameters<typeof WorkTask.Actions.onTimeLogCancelRetry>) => void;
@@ -31,25 +25,12 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
     timeLogsError,
     onTimeLogDelete,
     workTaskId,
-    timeLogCategories,
     onTimeLogCreate,
     serviceRequestId,
     onCancelRetry,
 }) => {
-    const [isAddTimeLogModalOpen, setIsAddTimeLogModalOpen] = React.useState(false);
     return (
         <>
-            <CreateTimeLogModal
-                isOpen={isAddTimeLogModalOpen}
-                onClose={() => setIsAddTimeLogModalOpen(false)}
-                timeLogCategories={timeLogCategories}
-                onSubmit={(data) => {
-                    setIsAddTimeLogModalOpen(false);
-                    onTimeLogCreate(workTaskId, serviceRequestId, {
-                        ...data,
-                    });
-                }}
-            />
             <View
                 style={{
                     paddingHorizontal: 20,
@@ -94,17 +75,6 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
                             }}
                         />
                     ))}
-
-                <Button
-                    onPress={() => setIsAddTimeLogModalOpen(true)}
-                    mode="contained"
-                    style={{
-                        marginTop: 20,
-                        marginHorizontal: 20,
-                    }}
-                >
-                    Add Time Log
-                </Button>
             </View>
         </>
     );
