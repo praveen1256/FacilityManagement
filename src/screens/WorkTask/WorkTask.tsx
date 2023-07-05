@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import AntDesignIcon from "react-native-vector-icons/AntDesign";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FlipCard from "react-native-flip-card";
+import Toast from "react-native-toast-message";
 
 import { useAppTheme } from "../../theme";
 import { RootStackParamList } from "../../Navigator";
@@ -474,6 +475,14 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                             icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
                             // size={20}
                             onPress={() => {
+                                if (timeLogs.length === 0)
+                                    return Toast.show({
+                                        type: "error",
+                                        text1: "Time log Needed!",
+                                        text2: "Please add a time log to complete the work task.",
+                                        position: "top",
+                                    });
+
                                 setCompletitionFormOpen(true);
                             }}
                             iconColor="white"
