@@ -81,7 +81,8 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                 style={{
                                     color: "white",
                                     paddingHorizontal: 4,
-                                    backgroundColor: "green",
+                                    // backgroundColor: "green",
+                                    backgroundColor: "black",
                                     marginRight: 8,
                                     fontWeight: "bold",
                                 }}

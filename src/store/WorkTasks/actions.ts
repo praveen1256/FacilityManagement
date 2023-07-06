@@ -5,6 +5,7 @@ import { AppThunkAction } from "../index";
 import { NavigationService } from "../../services/Navigation.Service";
 import { WorkTaskScreenName } from "../../screens/WorkTask";
 import { WorkTasksScreenName } from "../../screens/WorkTasks";
+import { FullWorkTask } from "../WorkTask/reducer";
 
 import { ActionInterfaces, pureActionCreator } from "./actionInterfaces";
 import {
@@ -14,6 +15,7 @@ import {
     COUNT_SUCCESS,
     COUNT_ERROR,
     COUNT_LOADING,
+    MOVE_TASK_TO_COMPLETED,
 } from "./actionTypes";
 
 export function navigateToWorkTask(workTaskId: string): AppThunkAction<ActionInterfaces> {
@@ -126,3 +128,16 @@ export function getCountsAndTasks(isOnlyCount: boolean): AppThunkAction<ActionIn
         }
     };
 }
+
+export const markWorkTaskAsComplete = (
+    workTaskId: string,
+    worktask: FullWorkTask,
+): AppThunkAction<ActionInterfaces> => {
+    return async (dispatch) => {
+        dispatch(
+            pureActionCreator(MOVE_TASK_TO_COMPLETED, {
+                workTask: worktask,
+            }),
+        );
+    };
+};

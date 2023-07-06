@@ -13,11 +13,12 @@ export const theme = {
         // @ts-ignore - these are custom properties
         p1: "#990000",
         onP1Container: "teal",
-        p2: "#FF6600",
-        onP2Container: "#000000",
-        corrective: "#800000",
-        onCorrectiveContainer: "#FFFFFF",
-        preventative: "#556B2F",
-        onPreventativeContainer: "#FFFFFF",
+        p2: "teal",
+        onP2Container: "white",
+
+        corrective: "black",
+        onCorrectiveContainer: "white",
+        preventative: "black",
+        onPreventativeContainer: "white",
     },
 };

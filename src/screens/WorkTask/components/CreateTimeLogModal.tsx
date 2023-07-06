@@ -33,7 +33,6 @@ type CreateTimeLogModalProps = {
 };
 
 const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose, timeLogCategories, onSubmit }) => {
-    const containerStyle = { backgroundColor: "white", padding: 20 };
     const theme = useAppTheme();
 
     // Create a memoized date objects with 1hr as difference
@@ -78,6 +77,7 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                 Hours: `${totalHours}`,
                 Date: data.date.toISOString(),
             });
+            reset();
         },
         [reset],
     );
@@ -99,9 +99,11 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                 <Modal
                     visible={isOpen}
                     onDismiss={onClose}
-                    contentContainerStyle={containerStyle}
-                    style={{
-                        marginHorizontal: 20,
+                    contentContainerStyle={{
+                        backgroundColor: "white",
+                        padding: 20,
+                        margin: 20,
+                        borderRadius: 10,
                     }}
                 >
                     <Text

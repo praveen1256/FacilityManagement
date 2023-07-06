@@ -48,7 +48,7 @@ const CompletitionForm: React.FunctionComponent<CompletitionFormProps> = ({
     onCompleteDone,
     completionDependendies,
 }) => {
-    const { handleSubmit, control } = useForm<CompleteWorkTaskFormValues>({
+    const { handleSubmit, control, reset } = useForm<CompleteWorkTaskFormValues>({
         mode: "onBlur",
         reValidateMode: "onChange",
         defaultValues: {
@@ -108,7 +108,13 @@ const CompletitionForm: React.FunctionComponent<CompletitionFormProps> = ({
                             >
                                 Task Completed
                             </Text>
-                            <Button mode="contained" onPress={onCompleteDone}>
+                            <Button
+                                mode="contained"
+                                onPress={() => {
+                                    onCompleteDone();
+                                    reset();
+                                }}
+                            >
                                 Done
                             </Button>
                         </View>
@@ -274,26 +280,45 @@ const CompletitionForm: React.FunctionComponent<CompletitionFormProps> = ({
                                     );
                                 }}
                             />
-
-                            <Button
-                                onPress={handleSubmit((d) =>
-                                    onSubmit({
-                                        causeType: d.causeType,
-                                        comment: d.comment,
-                                        initiativeCode: d.initiativeCode,
-                                        lateCompletionReason: d.lateCompletionReason,
-                                        repairDefinition: d.repairDefinition,
-                                    }),
-                                )}
-                                mode="contained"
-                                loading={isLoading}
-                                disabled={isLoading}
-                            >
-                                Complete
-                            </Button>
                             <HelperText type="error" visible={!!error}>
                                 {error}
                             </HelperText>
+                            <View
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    justifyContent: "flex-end",
+                                }}
+                            >
+                                <Button
+                                    onPress={handleSubmit((d) =>
+                                        onSubmit({
+                                            causeType: d.causeType,
+                                            comment: d.comment,
+                                            initiativeCode: d.initiativeCode,
+                                            lateCompletionReason: d.lateCompletionReason,
+                                            repairDefinition: d.repairDefinition,
+                                        }),
+                                    )}
+                                    uppercase={false}
+                                    mode="contained"
+                                    style={{
+                                        marginRight: 10,
+                                    }}
+                                >
+                                    Submit
+                                </Button>
+                                <Button
+                                    onPress={() => {
+                                        reset();
+                                        onCancel();
+                                    }}
+                                    uppercase={false}
+                                    mode="outlined"
+                                >
+                                    Cancel
+                                </Button>
+                            </View>
                         </View>
                     </>
                 )}

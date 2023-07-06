@@ -1,3 +1,5 @@
+import { FullWorkTask } from "../WorkTask/reducer";
+
 import {
     WORK_TASKS_LOADING,
     WORK_TASKS_SUCCESS,
@@ -5,6 +7,7 @@ import {
     COUNT_LOADING,
     COUNT_SUCCESS,
     COUNT_ERROR,
+    MOVE_TASK_TO_COMPLETED,
 } from "./actionTypes";
 
 export interface WorkTaskInterface {
@@ -77,13 +80,19 @@ export interface CountError {
     error: string;
 }
 
+export interface MoveWorkTaskToCompleted {
+    type: typeof MOVE_TASK_TO_COMPLETED;
+    workTask: FullWorkTask;
+}
+
 export type ActionInterfaces =
     | WorkTasksLoading
     | WorkTasksSuccess
     | WorkTasksError
     | CountLoading
     | CountSuccess
-    | CountError;
+    | CountError
+    | MoveWorkTaskToCompleted;
 
 export const pureActionCreator = <T extends ActionInterfaces["type"]>(
     type: T,

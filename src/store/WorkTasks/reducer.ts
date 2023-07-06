@@ -5,6 +5,7 @@ import {
     COUNT_LOADING,
     COUNT_SUCCESS,
     COUNT_ERROR,
+    MOVE_TASK_TO_COMPLETED,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -120,6 +121,11 @@ export const workTasksReducer = (state: AppState = initialState, action: ActionI
                 ...state,
                 loading: false,
                 error: action.error,
+            };
+        case MOVE_TASK_TO_COMPLETED:
+            console.log("MOVE_TASK_TO_COMPLETED", action.workTask);
+            return {
+                ...state,
             };
         default:
             return {
