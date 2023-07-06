@@ -38,6 +38,17 @@ const TimeLogs: React.FC<TimeLogsProps> = ({
             >
                 <ActivityIndicator animating={timeLogsLoading} />
                 {timeLogsError && <HelperText type="error">{timeLogsError}</HelperText>}
+                {timeLogs.length === 0 && !timeLogsLoading && (
+                    <HelperText
+                        type="info"
+                        style={{
+                            textAlign: "center",
+                            marginBottom: 20,
+                        }}
+                    >
+                        No time logs yet
+                    </HelperText>
+                )}
                 {!timeLogsLoading &&
                     timeLogs.map((item, index) => (
                         <TimeLogCard
