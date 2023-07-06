@@ -8,7 +8,7 @@ import { connect } from "react-redux";
 import SwitchSelector from "react-native-switch-selector";
 
 import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
-import { WorkTask as IWorkTask, WorkTask } from "../../store/WorkTasks/reducer";
+import { WorkTask } from "../../store/WorkTasks/reducer";
 
 const windowWidth = Dimensions.get("window").width / 6;
 const windowHeight = Dimensions.get("window").height / 12;
@@ -25,9 +25,8 @@ interface WorkTasksScreenProps {
     countOverDueTasks: WorkTask[];
     countDueTodayTasks: WorkTask[];
     countCompletedTasks: WorkTask[];
-    tasks: IWorkTask[];
     // onPressWorkTaks: (isOnlyCount: boolean) => void;
-    onSelectWorkTask: (task: IWorkTask) => void;
+    onSelectWorkTask: (task: WorkTask) => void;
 }
 
 const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = ({
@@ -776,7 +775,7 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
-    onSelectWorkTask: (workTask: IWorkTask) => dispatch(WorkTasks.Actions.navigateToWorkTask(workTask._id)),
+    onSelectWorkTask: (workTask: WorkTask) => dispatch(WorkTasks.Actions.navigateToWorkTask(workTask._id)),
 });
 
 const mapState = (state: RootState) => ({
