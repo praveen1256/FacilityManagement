@@ -196,7 +196,7 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                         <Controller
                             control={control}
                             name="image"
-                            render={({ field: { onChange }, fieldState, formState }) => {
+                            render={({ field: { onChange }, fieldState }) => {
                                 const [localImage, setLocalImage] = React.useState<string | null>(null);
                                 return (
                                     <>
