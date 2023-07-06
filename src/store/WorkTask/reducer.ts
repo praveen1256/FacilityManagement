@@ -573,6 +573,9 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
         case WORK_TASK_COMPLETE_DONE:
             return {
                 ...initialState,
+                // We need to keep the dependencies that dont change based on the workTask
+                completionDependencies: state.completionDependencies,
+                timeLogCategories: state.timeLogCategories,
             };
         // Completion Dependencies
         case WORK_TASK_COMPLETION_DEPENDENCIES_LOADING:

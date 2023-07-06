@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import dayjs from "dayjs";
 import { container } from "tsyringe";
 
-import { AppThunkAction } from "../index";
+import { AppThunkAction, WorkTasks } from "../index";
 import { WorkTask } from "../WorkTasks/reducer";
 import { ANIMATION_DELAY_MS, testingDelay } from "../../EnableAnimationsDelay";
 import { NavigationService } from "../../services/Navigation.Service";
@@ -459,6 +459,13 @@ export const workTaskComplete =
             // FIXME: assuming this task has been posted successfully!
 
             dispatch(pureActionCreator(WORK_TASK_COMPLETE_SUCCESS, {}));
+
+            // TODO: Move the worktask to the completed list
+            const fullWorkTask = _getState().workTask.workTask;
+            if (!fullWorkTask) {
+                throw new Error("Worktask not found");
+            }
+            dispatch(WorkTasks.Actions.markWorkTaskAsComplete(workTaskId, fullWorkTask));
         } catch (error) {
             const err = error as AxiosError;
             dispatch(

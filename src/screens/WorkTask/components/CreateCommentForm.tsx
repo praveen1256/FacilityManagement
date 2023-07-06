@@ -11,7 +11,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useAppTheme } from "../../../theme";
 const commentSchema = z.object({
     comment: z.string().nonempty(),
-    image: z.string().nonempty(),
+    image: z.string(),
 });
 
 type CommentFormValues = z.infer<typeof commentSchema>;
@@ -184,6 +184,7 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                                             error={!!fieldState.error}
                                             autoCapitalize="none"
                                             returnKeyType="next"
+                                            disabled={isLoading}
                                         />
                                         <HelperText type="error" visible={!!fieldState.error}>
                                             {fieldState.error?.message}
@@ -195,7 +196,7 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                         <Controller
                             control={control}
                             name="image"
-                            render={({ field: { onChange }, fieldState }) => {
+                            render={({ field: { onChange }, fieldState, formState }) => {
                                 const [localImage, setLocalImage] = React.useState<string | null>(null);
                                 return (
                                     <>
@@ -209,6 +210,11 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                                                         selectionLimit: 1,
                                                     },
                                                     async (img) => {
+                                                        if (img.didCancel) return;
+                                                        // New Image Selected, So Reset the Image
+                                                        setLocalImage(null);
+                                                        onChange("");
+
                                                         const fileUrl = await uploadImage(img);
                                                         console.log("img", fileUrl);
                                                         onChange(fileUrl.fileURL || "");
@@ -216,7 +222,7 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                                                         if (fileUrl.errorMessage)
                                                             setError("image", {
                                                                 type: "custom",
-                                                                message: "custom message",
+                                                                message: fileUrl.errorMessage,
                                                             });
                                                     },
                                                 );
@@ -235,8 +241,8 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                                             >
                                                 {!localImage && (
                                                     <>
-                                                        <Icon name="image" />
-                                                        <Text>Upload Image</Text>
+                                                        <Icon name="file-send" size={32} />
+                                                        {/* <Text>Upload Image</Text> */}
                                                     </>
                                                 )}
                                                 {imageUploading && <ActivityIndicator />}
@@ -270,15 +276,28 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                             {error}
                         </HelperText>
 
-                        <Button
-                            mode="contained"
-                            onPress={handleSubmit(onSubmit)}
-                            loading={isLoading}
-                            disabled={isLoading}
-                            style={{ marginTop: 10 }}
+                        <View
+                            style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "flex-end",
+                            }}
                         >
-                            Submit
-                        </Button>
+                            <Button
+                                onPress={handleSubmit(onSubmit)}
+                                uppercase={false}
+                                disabled={isLoading || imageUploading}
+                                mode="contained"
+                                style={{
+                                    marginRight: 10,
+                                }}
+                            >
+                                Submit
+                            </Button>
+                            <Button onPress={handleCancelOrDone} uppercase={false} mode="outlined">
+                                Cancel
+                            </Button>
+                        </View>
                     </View>
                 )}
             </Modal>
