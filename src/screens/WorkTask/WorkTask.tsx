@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { LayoutAnimation, Platform, RefreshControl, ScrollView, StyleSheet, UIManager, View } from "react-native";
-import { List, Text, IconButton, ActivityIndicator, HelperText, Avatar, Card } from "react-native-paper";
+import { List, Text, ActivityIndicator, HelperText, Avatar, Card } from "react-native-paper";
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
-import AntDesignIcon from "react-native-vector-icons/AntDesign";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import FlipCard from "react-native-flip-card";
 import Toast from "react-native-toast-message";
@@ -20,6 +19,7 @@ import EventLogCard from "./components/EventLog";
 import CompletitionForm from "./components/CompletitionForm";
 import CreateCommentForm from "./components/CreateCommentForm";
 import CreateTimeLogModal from "./components/CreateTimeLogModal";
+import BottomBar from "./components/BottomBar";
 
 // TODO: move this to the App.tsx file, since its better to define this only once instead of many places!!
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -413,95 +413,24 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     </View>
                 </ScrollView>
                 {/* Escape the bottom action bar */}
-                <View
-                    style={{
-                        paddingBottom: 64,
+                <BottomBar
+                    onCompletitionPress={() => {
+                        if (timeLogs.length === 0)
+                            return Toast.show({
+                                type: "error",
+                                text1: "Time log Needed!",
+                                text2: "Please add a time log to complete the work task.",
+                                position: "top",
+                            });
+                        setCompletitionFormOpen(true);
+                    }}
+                    onCommentPress={() => {
+                        setCreateCommentFormOpen(true);
+                    }}
+                    onTimeSlotPress={() => {
+                        setCreateTimeLogModalOpen(true);
                     }}
                 />
-                <View
-                    style={{
-                        // backgroundColor: "grey",
-                        position: "absolute",
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        borderRadius: 20,
-                        height: 64,
-                        padding: 10,
-                        marginHorizontal: 10,
-                        marginBottom: 10,
-                        // Flexbox
-                        flex: 1,
-                        flexDirection: "row",
-                        display: "flex",
-                        // justifyContent: "flex-end",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "grey",
-                            // borderRadius: 20,
-                            paddingVertical: 10,
-                            paddingHorizontal: 20,
-                            //
-                            borderTopLeftRadius: 20,
-                            borderTopRightRadius: 20,
-                            flex: 1,
-                        }}
-                    >
-                        {/* Comment Icon */}
-                        <IconButton
-                            icon={"comment"}
-                            // size={20}
-                            onPress={() => {
-                                setCreateCommentFormOpen(true);
-                            }}
-                            iconColor="white"
-                            style={{
-                                backgroundColor: theme.colors?.primary,
-                            }}
-                        />
-                        <IconButton
-                            // icon={"account-clock"}
-                            icon={() => <AntDesignIcon name="checkcircle" size={20} color="white" />}
-                            // size={20}
-                            onPress={() => {
-                                if (timeLogs.length === 0)
-                                    return Toast.show({
-                                        type: "error",
-                                        text1: "Time log Needed!",
-                                        text2: "Please add a time log to complete the work task.",
-                                        position: "top",
-                                    });
-
-                                setCompletitionFormOpen(true);
-                            }}
-                            iconColor="white"
-                            style={{
-                                backgroundColor: theme.colors?.primary,
-                            }}
-                        />
-
-                        {/* TimeSlot icon */}
-                        <IconButton
-                            icon={"account-clock"}
-                            // size={20}
-                            onPress={() => {
-                                setCreateTimeLogModalOpen(true);
-                            }}
-                            iconColor="white"
-                            style={{
-                                backgroundColor: theme.colors?.primary,
-                            }}
-                        />
-                    </View>
-                </View>
             </View>
             <CreateCommentForm
                 isOpen={createCommentFormOpen}
