@@ -98,7 +98,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     const [filter, setFilter] = useState("all");
     const [sortValue, setSortValue] = useState("");
     const [searchText, setSearchText] = useState("");
-    const [refreshing, setRefreshing] = React.useState(false);
+    const [refreshing, _setRefreshing] = React.useState(false);
 
     const [isFocus, setIsFocus] = useState(false);
 
@@ -135,7 +135,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     useEffect(() => {
         if (isLoading) return;
 
-        setRefreshing(false);
+        // setRefreshing(false);
         filterTasks();
         sortData();
         handleTextChange();
@@ -239,7 +239,6 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                     <Text style={styles.itemInfo6}>{taskType}</Text>
                 </View>
             </View>
-            <View style={styles.line} />
         </Card>
     );
 
@@ -268,7 +267,6 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     };
 
     const onRefresh = () => {
-        setRefreshing(true);
         onRetry(false, selectedCard);
     };
 
@@ -494,7 +492,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                         renderItem={({ item }) => (
                             <Pressable onPress={() => onSelectWorkTask(item)}>
                                 <Item
-                                    srid={item.SRID}
+                                    srid={item.ID}
                                     priority={item.TaskPriority}
                                     requestClass={item.RequestClass}
                                     address={item.Address}
@@ -517,6 +515,25 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
 };
 
 const styles = StyleSheet.create({
+    contentContainer: {
+        display: "flex",
+        height: "100%",
+        width: "100%",
+        position: "absolute",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    cardContainer: {
+        width: 350,
+        height: 200,
+    },
+    card: {
+        height: "100%",
+        width: "100%",
+        borderColor: "rgba(255,255,255,0.3)",
+        borderRadius: 20,
+        borderWidth: 2,
+    },
     layoutContainer: {
         width: "100%",
         height: "100%",
@@ -540,12 +557,6 @@ const styles = StyleSheet.create({
     paragraph: {
         fontSize: 10,
         fontWeight: "bold",
-        color: "#FFFFFF",
-        textAlign: "center",
-        marginTop: 10,
-    },
-    customerCareInfo: {
-        fontSize: 16,
         color: "#FFFFFF",
         textAlign: "center",
         marginTop: 10,
@@ -622,6 +633,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 5,
         paddingTop: 15,
         paddingBottom: 1,
+        backgroundColor: "#FFFFFF",
+        opacity: 40,
     },
     settingIcon: {
         alignSelf: "center",
@@ -673,6 +686,9 @@ const styles = StyleSheet.create({
     },
     item5_Bg: {
         backgroundColor: "#a7d9f2",
+    },
+    glasscard: {
+        backgroundColor: "rgba(255, 255, 255, 0.3)",
     },
     customerCardBg: {
         backgroundColor: "#384247",

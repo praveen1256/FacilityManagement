@@ -7,7 +7,7 @@ export const en = {
         headerVerizon: "VERIZON",
         headerFacility: "Facility",
         headerManagement: "Management",
-        headerEveryWhere: "EVERYWHERE",
+        headerEveryWhere: "MOBILE",
         headerWelcome: "Hello Wellcome...",
     },
     login: {
