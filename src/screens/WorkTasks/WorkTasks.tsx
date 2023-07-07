@@ -222,7 +222,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
         plannedEnd,
         taskType,
     }: ItemProps) => (
-        <Card style={[styles.itemCardStyle, getCardBackgroundStyles()]}>
+        <Card style={[styles.itemCardStyle, styles.shadowProp, styles.elevation, getCardBackgroundStyles()]}>
             <View style={styles.flexRow}>
                 <MaterialIcon style={styles.settingIcon} name="settings" size={30} />
                 <View style={styles.paramsView}>
@@ -635,6 +635,16 @@ const styles = StyleSheet.create({
         paddingBottom: 1,
         backgroundColor: "#FFFFFF",
         opacity: 40,
+    },
+    shadowProp: {
+        shadowColor: "#171717",
+        shadowOffset: { width: -2, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+    },
+    elevation: {
+        elevation: 40,
+        shadowColor: "#D52818",
     },
     settingIcon: {
         alignSelf: "center",
