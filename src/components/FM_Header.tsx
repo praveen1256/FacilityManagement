@@ -11,6 +11,8 @@ const FM_Header = ({}) => {
 
     const rightPosition = useRef(new Animated.Value(600)).current;
     const leftPosition = useRef(new Animated.Value(-300)).current;
+
+    // Left & Right Animations
     const startAnimationFromRight = () => {
         Animated.timing(rightPosition, {
             toValue: 0, // Target position on the X-axis (left side)

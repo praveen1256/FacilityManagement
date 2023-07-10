@@ -315,7 +315,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                 updateFilteredList(
                     selectedTab,
                     filteredUseRef.current[selectedTab].sort((priority1, priority2) =>
-                        alphanumericComparator(priority1.TaskPriority, priority2.TaskPriority),
+                        alphanumericComparator(priority2.TaskPriority, priority1.TaskPriority),
                     ),
                     false,
                 );
@@ -345,7 +345,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
         updateFilteredList(
             selectedTab,
             filteredUseRef.current[selectedTab].filter((obj) => {
-                return obj.Address.includes(searchText) || obj.SRID?.includes(searchText);
+                return obj.ID?.includes(searchText);
             }),
             true,
         );
@@ -390,8 +390,8 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     };
 
     return (
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh}>
-            <View style={styles.workTaskContainer}>
+        <View style={styles.workTaskContainer}>
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh}>
                 <SwitchSelector
                     buttonColor="#384247"
                     selectedColor="#FFFFFF"
@@ -484,33 +484,33 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                         />
                     </View>
                 </View>
-                <View style={styles.taskContainer}>
-                    <FlatList
-                        data={flatListData[selectedTab]}
-                        extraData={flatListData[selectedTab]}
-                        ListEmptyComponent={renderEmptyList}
-                        renderItem={({ item }) => (
-                            <Pressable onPress={() => onSelectWorkTask(item)}>
-                                <Item
-                                    srid={item.ID}
-                                    priority={item.TaskPriority}
-                                    requestClass={item.RequestClass}
-                                    address={item.Address}
-                                    building={item.Building}
-                                    locationCode={item.LocationCode}
-                                    city={item.City}
-                                    state={item.State}
-                                    description={item.Description}
-                                    plannedEnd={item.PlannedEnd}
-                                    taskType={item.TaskType}
-                                />
-                            </Pressable>
-                        )}
-                        keyExtractor={(item, idx) => `${item._id}-${item.SRID}-${idx}`}
-                    />
-                </View>
+            </RefreshControl>
+            <View style={styles.taskContainer}>
+                <FlatList
+                    data={flatListData[selectedTab]}
+                    extraData={flatListData[selectedTab]}
+                    ListEmptyComponent={renderEmptyList}
+                    renderItem={({ item }) => (
+                        <Pressable onPress={() => onSelectWorkTask(item)}>
+                            <Item
+                                srid={item.ID}
+                                priority={item.TaskPriority}
+                                requestClass={item.RequestClass}
+                                address={item.Address}
+                                building={item.Building}
+                                locationCode={item.LocationCode}
+                                city={item.City}
+                                state={item.State}
+                                description={item.Description}
+                                plannedEnd={item.PlannedEnd}
+                                taskType={item.TaskType}
+                            />
+                        </Pressable>
+                    )}
+                    keyExtractor={(item, idx) => `${item._id}-${item.SRID}-${idx}`}
+                />
             </View>
-        </RefreshControl>
+        </View>
     );
 };
 
