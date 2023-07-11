@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { HomeScreen, LoginScreen, WorkTaskScreen, WorkTasksScreen } from "./screens";
+import { PlayGroundScreen, PlayGroundScreenName } from "./screens/PlayGround";
 
 export type RootStackParamList = {
     [HomeScreen.HomeScreenName]: undefined;
@@ -10,6 +11,7 @@ export type RootStackParamList = {
     [WorkTaskScreen.WorkTaskScreenName]: {
         workTaskId: string;
     };
+    [PlayGroundScreenName]: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -19,6 +21,8 @@ interface NavigatorProps {
     isAuthenticated?: boolean;
     initializationError?: unknown;
 }
+
+const PLAYGROUND_MODE = false;
 
 const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
     const renderStackScreens = () => {
@@ -87,10 +91,21 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
         );
     };
 
-    return (
-        // <Stack.Navigator initialRouteName={LoginScreen.LoginScreenName}>{renderStackScreens()}</Stack.Navigator>
+    if (PLAYGROUND_MODE)
+        return (
+            <Stack.Navigator initialRouteName={PlayGroundScreenName}>
+                <Stack.Screen
+                    name={PlayGroundScreenName}
+                    options={{ headerShown: false }}
+                    component={PlayGroundScreen}
+                />
+            </Stack.Navigator>
+        );
 
-        <Stack.Navigator initialRouteName={WorkTaskScreen.WorkTaskScreenName}>{renderStackScreens()}</Stack.Navigator>
+    return (
+        <Stack.Navigator initialRouteName={LoginScreen.LoginScreenName}>{renderStackScreens()}</Stack.Navigator>
+
+        // <Stack.Navigator initialRouteName={WorkTaskScreen.WorkTaskScreenName}>{renderStackScreens()}</Stack.Navigator>
     );
 };
 
