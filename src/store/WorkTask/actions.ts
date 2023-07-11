@@ -551,6 +551,7 @@ export const onWorkTaskCompleteDone = (): AppThunkAction<ActionInterfaces> => as
     dispatch(pureActionCreator(WORK_TASK_COMPLETE_DONE, {}));
 
     // TODO: need to remove this worktask from the list, so that it doesn't show up again
+    dispatch(WorkTasks.Actions.getCountsAndTasks(false, _getState().worktasks.selectedCard));
 };
 
 // Comment Post
