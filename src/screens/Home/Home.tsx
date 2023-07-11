@@ -7,8 +7,9 @@ import {
     SafeAreaView,
     TouchableOpacity,
     Animated,
+    RefreshControl,
 } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, Text, ActivityIndicator, Button } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
@@ -37,25 +38,29 @@ interface HomeScreenProps {
     // tasks: {
     //     _id: number;
     // }[];
-    onPressWorkTaks: (isOnlyCount: boolean) => void;
+    // onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) => void;
     onPressLogout: () => void;
-    getCounts: (isOnlyCount: boolean) => void;
+    getCountsOrTasks: (isOnlyCount: boolean, selectedCard: number) => void;
 }
 
 const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
-    onPressWorkTaks,
+    // onPressWorkTaks,
     onPressLogout,
-    getCounts,
+    getCountsOrTasks,
     userName,
     countP1,
     countP2P7,
     countOverDue,
     countDueToday,
+    isLoading,
+    error,
 }) => {
     // const isLoginPage = false;
+    console.log("error : ", error);
     const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
     const [visible, setVisible] = useState(false);
+    const [refreshing, _setRefreshing] = React.useState(false);
     const options = [
         {
             title: "Help",
@@ -66,165 +71,221 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
     ];
 
     useEffect(() => {
-        console.log("Get Counts");
-        getCounts(true);
+        getCountsOrTasks(true, 0);
     }, []);
 
-    return (
-        <View style={styles.homeContainer}>
-            <View style={styles.flexRow}>
-                <View style={styles.flexRowPaddingVertical}>
-                    <Text style={styles.textLeft}>V</Text>
-                    <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
-                </View>
-                <View style={styles.userName}>
-                    <Text style={styles.loggedInUserName}>{userName}</Text>
-                </View>
-                <TouchableOpacity style={styles.optionIcon} onPress={() => setVisible(true)}>
-                    <FontAwesome5 style={styles.ellipsisIcon} name="ellipsis-v" size={25} />
-                </TouchableOpacity>
+    if (isLoading)
+        return (
+            <View
+                style={[
+                    styles.layoutContainer,
+                    {
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    },
+                ]}
+            >
+                <ActivityIndicator animating={true} />
+                <Text>Loading...</Text>
             </View>
-            <View style={styles.greyLine} />
-            <ScrollView>
-                <View>
-                    <FM_Header />
-                    <View style={styles.container}>
-                        <View style={styles.view1}>
-                            <AnimatedTouchable
-                                onPress={() => {
-                                    // console.log("Card 1 Touched");
-                                }}
-                            >
-                                <Card style={[styles.cardStyle, styles.card1_Bg]}>
-                                    <Text style={styles.paragraph}>{locationzedStrings.home.card1_count_title}</Text>
-                                    <Text style={styles.paragraph}>{countP1}</Text>
-                                </Card>
-                            </AnimatedTouchable>
-                            <AnimatedTouchable
-                                onPress={() => {
-                                    // console.log("Card 2 Touched");
-                                }}
-                            >
-                                <Card style={[styles.cardStyle, styles.card2_Bg]}>
-                                    <Text style={styles.paragraph}>{locationzedStrings.home.card2_count_title}</Text>
-                                    <Text style={styles.paragraph}>{countP2P7}</Text>
-                                </Card>
-                            </AnimatedTouchable>
-                            <AnimatedTouchable
-                                onPress={() => {
-                                    // console.log("Card 3 Touched");
-                                }}
-                            >
-                                <Card style={[styles.cardStyle, styles.card3_Bg]}>
-                                    <Text style={styles.paragraph}>{locationzedStrings.home.card3_count_title}</Text>
-                                    <Text style={styles.paragraph}>{countDueToday}</Text>
-                                </Card>
-                            </AnimatedTouchable>
-                            <AnimatedTouchable
-                                onPress={() => {
-                                    // console.log("Card 4 Touched");
-                                }}
-                            >
-                                <Card style={[styles.cardStyle, styles.card4_Bg]}>
-                                    <Text style={styles.paragraph}>{locationzedStrings.home.card4_count_title}</Text>
-                                    <Text style={styles.paragraph}>{countOverDue}</Text>
-                                </Card>
-                            </AnimatedTouchable>
+        );
+    else if (error) {
+        return (
+            <View
+                style={[
+                    styles.layoutContainer,
+                    {
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        flexDirection: "column",
+                    },
+                ]}
+            >
+                <Text>{error}</Text>
+                <Button
+                    mode="contained"
+                    onPress={() => getCountsOrTasks(true, 0)}
+                    style={{
+                        marginVertical: 10,
+                    }}
+                >
+                    Retry
+                </Button>
+            </View>
+        );
+    } else
+        return (
+            <RefreshControl refreshing={refreshing} onRefresh={() => getCountsOrTasks(true, 0)}>
+                <View style={styles.homeContainer}>
+                    <View style={styles.flexRow}>
+                        <View style={styles.flexRowPaddingVertical}>
+                            <Text style={styles.textLeft}>V</Text>
+                            <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
                         </View>
+                        <View style={styles.userName}>
+                            <Text style={styles.loggedInUserName}>{userName}</Text>
+                        </View>
+                        <TouchableOpacity style={styles.optionIcon} onPress={() => setVisible(true)}>
+                            <FontAwesome5 style={styles.ellipsisIcon} name="ellipsis-v" size={25} />
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.taskContainer}>
-                        <View style={styles.taskListCol1}>
-                            <ColorfulCard
-                                title={locationzedStrings.home.card1_title}
-                                // iconImageStyle={styles.iconBackgroundStyle}
-                                value=""
-                                valuePostfix=""
-                                footerTitle={locationzedStrings.home.card1_message}
-                                footerValue=""
-                                iconImageSource={require("../../assets/images/tasks.png")}
-                                style={{ backgroundColor: "#e48058" }}
-                                onPress={() => {
-                                    onPressWorkTaks(false);
-                                }}
-                            />
+                    <View style={styles.greyLine} />
+                    <ScrollView>
+                        <View>
+                            <FM_Header />
+                            <View style={styles.container}>
+                                <View style={styles.view1}>
+                                    <AnimatedTouchable
+                                        onPress={() => {
+                                            getCountsOrTasks(false, 0);
+                                        }}
+                                    >
+                                        <Card style={[styles.cardStyle, styles.card1_Bg]}>
+                                            <Text style={styles.paragraph}>
+                                                {locationzedStrings.home.card1_count_title}
+                                            </Text>
+                                            <Text style={styles.paragraph}>{countP1}</Text>
+                                        </Card>
+                                    </AnimatedTouchable>
+                                    <AnimatedTouchable
+                                        onPress={() => {
+                                            getCountsOrTasks(false, 1);
+                                        }}
+                                    >
+                                        <Card style={[styles.cardStyle, styles.card2_Bg]}>
+                                            <Text style={styles.paragraph}>
+                                                {locationzedStrings.home.card2_count_title}
+                                            </Text>
+                                            <Text style={styles.paragraph}>{countP2P7}</Text>
+                                        </Card>
+                                    </AnimatedTouchable>
+                                    <AnimatedTouchable
+                                        onPress={() => {
+                                            getCountsOrTasks(false, 4);
+                                        }}
+                                    >
+                                        <Card style={[styles.cardStyle, styles.card3_Bg]}>
+                                            <Text style={styles.paragraph}>
+                                                {locationzedStrings.home.card3_count_title}
+                                            </Text>
+                                            <Text style={styles.paragraph}>{countDueToday}</Text>
+                                        </Card>
+                                    </AnimatedTouchable>
+                                    <AnimatedTouchable
+                                        onPress={() => {
+                                            getCountsOrTasks(false, 3);
+                                        }}
+                                    >
+                                        <Card style={[styles.cardStyle, styles.card4_Bg]}>
+                                            <Text style={styles.paragraph}>
+                                                {locationzedStrings.home.card4_count_title}
+                                            </Text>
+                                            <Text style={styles.paragraph}>{countOverDue}</Text>
+                                        </Card>
+                                    </AnimatedTouchable>
+                                </View>
+                            </View>
+                            <View style={styles.taskContainer}>
+                                <View style={styles.taskListCol1}>
+                                    <ColorfulCard
+                                        title={locationzedStrings.home.card1_title}
+                                        // iconImageStyle={styles.iconBackgroundStyle}
+                                        value=""
+                                        valuePostfix=""
+                                        footerTitle={locationzedStrings.home.card1_message}
+                                        footerValue=""
+                                        iconImageSource={require("../../assets/images/tasks.png")}
+                                        style={{ backgroundColor: "#e48058" }}
+                                        onPress={() => {
+                                            getCountsOrTasks(false, 0);
+                                        }}
+                                    />
 
-                            <ColorfulCard
-                                title={locationzedStrings.home.card2_title}
-                                value=""
-                                valuePostfix=""
-                                footerTitle={locationzedStrings.home.card2_message}
-                                footerValue=""
-                                iconImageSource={require("../../assets/images/porfolios.png")}
-                                style={{ backgroundColor: "#26AFE5", marginVertical: 10 }}
-                                onPress={() => {
-                                    // onPressWorkTaks(false);
-                                }}
-                            />
-                        </View>
-                        <View style={styles.taskListCol2}>
-                            <ColorfulCard
-                                title={locationzedStrings.home.card3_title}
-                                value=""
-                                valuePostfix=""
-                                footerTitle={locationzedStrings.home.card3_message}
-                                footerValue=""
-                                iconImageSource={require("../../assets/images/alarm-clock.png")}
-                                style={{ backgroundColor: "#515ae5" }}
-                                onPress={() => {
-                                    // onPressWorkTaks(false);
-                                }}
-                            />
+                                    <ColorfulCard
+                                        title={locationzedStrings.home.card2_title}
+                                        value=""
+                                        valuePostfix=""
+                                        footerTitle={locationzedStrings.home.card2_message}
+                                        footerValue=""
+                                        iconImageSource={require("../../assets/images/porfolios.png")}
+                                        style={{ backgroundColor: "#26AFE5", marginVertical: 10 }}
+                                        onPress={() => {
+                                            console.log("Card 2 Selected");
+                                        }}
+                                    />
+                                </View>
+                                <View style={styles.taskListCol2}>
+                                    <ColorfulCard
+                                        title={locationzedStrings.home.card3_title}
+                                        value=""
+                                        valuePostfix=""
+                                        footerTitle={locationzedStrings.home.card3_message}
+                                        footerValue=""
+                                        iconImageSource={require("../../assets/images/alarm-clock.png")}
+                                        style={{ backgroundColor: "#515ae5" }}
+                                        onPress={() => {
+                                            console.log("Card 3 Selected");
+                                        }}
+                                    />
 
-                            <ColorfulCard
-                                title={locationzedStrings.home.card4_title}
-                                value=""
-                                valuePostfix=""
-                                footerTitle={locationzedStrings.home.card4_message}
-                                footerValue=""
-                                iconImageSource={require("../../assets/images/repair-tool.png")}
-                                style={{ backgroundColor: "#87c43e", marginVertical: 10 }}
-                                onPress={() => {
-                                    // onPressWorkTaks(false);
-                                }}
-                            />
+                                    <ColorfulCard
+                                        title={locationzedStrings.home.card4_title}
+                                        value=""
+                                        valuePostfix=""
+                                        footerTitle={locationzedStrings.home.card4_message}
+                                        footerValue=""
+                                        iconImageSource={require("../../assets/images/repair-tool.png")}
+                                        style={{ backgroundColor: "#87c43e", marginVertical: 10 }}
+                                        onPress={() => {
+                                            console.log("Card 4 Selected");
+                                        }}
+                                    />
+                                </View>
+                            </View>
+                            <Card style={[styles.customerCardStyle, styles.customerCardBg]}>
+                                <View style={styles.criticalView}>
+                                    <FontAwesome5 style={styles.callIcon} name="exclamation-triangle" size={30} />
+                                    <Text style={styles.criticalCareInfo}>
+                                        {locationzedStrings.home.critical_request}
+                                    </Text>
+                                </View>
+                                <View style={styles.callView}>
+                                    <MaterialIcon style={styles.callIcon} name="call" size={30} />
+                                    <Text style={styles.customerCareCall}>
+                                        {locationzedStrings.home.customercare_call}
+                                    </Text>
+                                </View>
+                                <Text style={styles.customerCareInfo}>{locationzedStrings.home.ivr_message}</Text>
+                                <Text style={styles.customerCareInfo}>{locationzedStrings.home.local_assistance}</Text>
+                            </Card>
                         </View>
-                    </View>
-                    <Card style={[styles.customerCardStyle, styles.customerCardBg]}>
-                        <View style={styles.criticalView}>
-                            <FontAwesome5 style={styles.callIcon} name="exclamation-triangle" size={30} />
-                            <Text style={styles.criticalCareInfo}>{locationzedStrings.home.critical_request}</Text>
-                        </View>
-                        <View style={styles.callView}>
-                            <MaterialIcon style={styles.callIcon} name="call" size={30} />
-                            <Text style={styles.customerCareCall}>{locationzedStrings.home.customercare_call}</Text>
-                        </View>
-                        <Text style={styles.customerCareInfo}>{locationzedStrings.home.ivr_message}</Text>
-                        <Text style={styles.customerCareInfo}>{locationzedStrings.home.local_assistance}</Text>
-                    </Card>
+                    </ScrollView>
+                    <Modal transparent visible={visible}>
+                        <SafeAreaView style={{ flex: 1 }}>
+                            <View style={styles.popup}>
+                                {options.map((option, i) => (
+                                    <TouchableOpacity
+                                        key={i}
+                                        style={styles.flexRow}
+                                        onPress={() => {
+                                            if (option.title == "Help") console.log("Menu Option Clicked 1");
+                                            else onPressLogout();
+                                            setVisible(false);
+                                        }}
+                                    >
+                                        <FontAwesome5 style={styles.popUpIcon} name="check" size={20} />
+                                        <Text>{option.title}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </SafeAreaView>
+                    </Modal>
                 </View>
-            </ScrollView>
-            <Modal transparent visible={visible}>
-                <SafeAreaView style={{ flex: 1 }}>
-                    <View style={styles.popup}>
-                        {options.map((option, i) => (
-                            <TouchableOpacity
-                                key={i}
-                                style={styles.flexRow}
-                                onPress={() => {
-                                    if (option.title == "Help") console.log("Menu Option Clicked 1");
-                                    else onPressLogout();
-                                    setVisible(false);
-                                }}
-                            >
-                                <FontAwesome5 style={styles.popUpIcon} name="check" size={20} />
-                                <Text>{option.title}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                </SafeAreaView>
-            </Modal>
-        </View>
-    );
+            </RefreshControl>
+        );
 };
 
 const styles = StyleSheet.create({
@@ -442,6 +503,13 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
         fontSize: 15,
     },
+    layoutContainer: {
+        width: "100%",
+        height: "100%",
+        backgroundColor: "#f8f8f8",
+        paddingVertical: 20,
+        flex: 1,
+    },
 });
 
 const HeaderOptions: NativeStackHeaderProps["options"] = {
@@ -449,9 +517,11 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 };
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
-    onPressWorkTaks: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount)),
+    // onPressWorkTaks: (isOnlyCount: boolean, selectedCard: number) =>
+    //     dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
     onPressLogout: () => dispatch(Authentication.Actions.logout()),
-    getCounts: (isOnlyCount: boolean) => dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount)),
+    getCountsOrTasks: (isOnlyCount: boolean, selectedCard: number) =>
+        dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
 });
 
 const mapState = (state: RootState) => ({

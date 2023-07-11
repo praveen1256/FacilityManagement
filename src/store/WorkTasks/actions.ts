@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { container } from "tsyringe";
 
 import { AppThunkAction } from "../index";
@@ -26,14 +26,14 @@ export function navigateToWorkTask(workTaskId: string): AppThunkAction<ActionInt
     };
 }
 
-export function getCountsAndTasks(isOnlyCount: boolean): AppThunkAction<ActionInterfaces> {
+export function getCountsAndTasks(isOnlyCount: boolean, selectedCardIndex: number): AppThunkAction<ActionInterfaces> {
     return async (dispatch) => {
         try {
             if (isOnlyCount) dispatch(pureActionCreator(COUNT_LOADING, {}));
             else {
                 dispatch(pureActionCreator(WORK_TASKS_LOADING, {}));
                 const navigationContainer = container.resolve(NavigationService);
-                navigationContainer.navigate(WorkTasksScreenName, undefined);
+                navigationContainer.navigate(WorkTasksScreenName, selectedCardIndex);
             }
 
             const request1 = axios.get(
@@ -101,6 +101,7 @@ export function getCountsAndTasks(isOnlyCount: boolean): AppThunkAction<ActionIn
                             countOverDueTasks: response3.data.data,
                             countDueTodayTasks: response4.data.data,
                             countCompletedTasks: response5.data.data,
+                            selectedCard: selectedCardIndex,
                         }),
                     );
                     return;
@@ -112,16 +113,17 @@ export function getCountsAndTasks(isOnlyCount: boolean): AppThunkAction<ActionIn
                 );
             }
         } catch (error) {
+            const err = error as AxiosError;
             if (isOnlyCount) {
                 dispatch(
                     pureActionCreator(COUNT_ERROR, {
-                        error: "Something went wrong in fetching count...",
+                        error: err.message || "Something went wrong in fetching count...",
                     }),
                 );
             } else {
                 dispatch(
                     pureActionCreator(WORK_TASKS_ERROR, {
-                        error: "Something went wrong in fetching tasks...",
+                        error: err.message || "Something went wrong in fetching tasks...",
                     }),
                 );
             }

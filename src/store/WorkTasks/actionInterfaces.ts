@@ -55,6 +55,7 @@ export interface WorkTasksSuccess {
     countOverDueTasks: WorkTaskInterface[];
     countDueTodayTasks: WorkTaskInterface[];
     countCompletedTasks: WorkTaskInterface[];
+    selectedCard: number;
 }
 
 export interface WorkTasksError {

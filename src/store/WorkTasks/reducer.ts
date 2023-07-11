@@ -57,6 +57,7 @@ export interface AppState {
     countOverDue: number;
     countDueToday: number;
     countCompleted: number;
+    selectedCard: number;
 }
 
 const initialState: AppState = {
@@ -73,6 +74,7 @@ const initialState: AppState = {
     countOverDue: 0,
     countDueToday: 0,
     countCompleted: 0,
+    selectedCard: 0,
 };
 
 export const workTasksReducer = (state: AppState = initialState, action: ActionInterfaces): AppState => {
@@ -93,6 +95,7 @@ export const workTasksReducer = (state: AppState = initialState, action: ActionI
                 countOverDueTasks: action.countOverDueTasks,
                 countDueTodayTasks: action.countDueTodayTasks,
                 countCompletedTasks: action.countCompletedTasks,
+                selectedCard: action.selectedCard,
             };
         case WORK_TASKS_ERROR:
             return {
@@ -117,6 +120,7 @@ export const workTasksReducer = (state: AppState = initialState, action: ActionI
                 countCompleted: action.countCompleted,
             };
         case COUNT_ERROR:
+            console.log("Reducer error : ", action.error);
             return {
                 ...state,
                 loading: false,
