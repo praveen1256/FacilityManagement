@@ -120,6 +120,7 @@ export const workTasksReducer = (state: AppState = initialState, action: ActionI
                 countCompleted: action.countCompleted,
             };
         case COUNT_ERROR:
+            console.log("Reducer error : ", action.error);
             return {
                 ...state,
                 loading: false,
