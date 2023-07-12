@@ -97,6 +97,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
                 }
             }
             initialRouteName={LoginScreen.LoginScreenName}
+            // initialRouteName={HomeScreen.HomeScreenName}
         >
             {renderStackScreens()}
         </Stack.Navigator>

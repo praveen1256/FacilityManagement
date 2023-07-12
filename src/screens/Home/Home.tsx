@@ -8,12 +8,14 @@ import {
     TouchableOpacity,
     Animated,
     RefreshControl,
+    Platform,
 } from "react-native";
 import { Card, Text, ActivityIndicator, Button } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Feather from "react-native-vector-icons/Feather";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import ColorfulCard from "react-native-colorful-card";
 
@@ -55,8 +57,6 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
     isLoading,
     error,
 }) => {
-    // const isLoginPage = false;
-    console.log("error : ", error);
     const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
     const [visible, setVisible] = useState(false);
@@ -118,173 +118,179 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
         );
     } else
         return (
-            <RefreshControl refreshing={refreshing} onRefresh={() => getCountsOrTasks(true, 0)}>
-                <View style={styles.homeContainer}>
-                    <View style={styles.flexRow}>
-                        <View style={styles.flexRowPaddingVertical}>
-                            <Text style={styles.textLeft}>V</Text>
-                            <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
-                        </View>
-                        <View style={styles.userName}>
-                            <Text style={styles.loggedInUserName}>{userName}</Text>
-                        </View>
-                        <TouchableOpacity style={styles.optionIcon} onPress={() => setVisible(true)}>
-                            <FontAwesome5 style={styles.ellipsisIcon} name="ellipsis-v" size={25} />
-                        </TouchableOpacity>
+            <View style={styles.homeContainer}>
+                <View style={styles.flexRow}>
+                    <View style={styles.flexRowPaddingVertical}>
+                        <Text style={styles.textLeft}>V</Text>
+                        <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
                     </View>
-                    <View style={styles.greyLine} />
-                    <ScrollView>
-                        <View>
-                            <FM_Header />
-                            <View style={styles.container}>
-                                <View style={styles.view1}>
-                                    <AnimatedTouchable
-                                        onPress={() => {
-                                            getCountsOrTasks(false, 0);
-                                        }}
-                                    >
-                                        <Card style={[styles.cardStyle, styles.card1_Bg]}>
-                                            <Text style={styles.paragraph}>
-                                                {locationzedStrings.home.card1_count_title}
-                                            </Text>
-                                            <Text style={styles.paragraph}>{countP1}</Text>
-                                        </Card>
-                                    </AnimatedTouchable>
-                                    <AnimatedTouchable
-                                        onPress={() => {
-                                            getCountsOrTasks(false, 1);
-                                        }}
-                                    >
-                                        <Card style={[styles.cardStyle, styles.card2_Bg]}>
-                                            <Text style={styles.paragraph}>
-                                                {locationzedStrings.home.card2_count_title}
-                                            </Text>
-                                            <Text style={styles.paragraph}>{countP2P7}</Text>
-                                        </Card>
-                                    </AnimatedTouchable>
-                                    <AnimatedTouchable
-                                        onPress={() => {
-                                            getCountsOrTasks(false, 4);
-                                        }}
-                                    >
-                                        <Card style={[styles.cardStyle, styles.card3_Bg]}>
-                                            <Text style={styles.paragraph}>
-                                                {locationzedStrings.home.card3_count_title}
-                                            </Text>
-                                            <Text style={styles.paragraph}>{countDueToday}</Text>
-                                        </Card>
-                                    </AnimatedTouchable>
-                                    <AnimatedTouchable
-                                        onPress={() => {
-                                            getCountsOrTasks(false, 3);
-                                        }}
-                                    >
-                                        <Card style={[styles.cardStyle, styles.card4_Bg]}>
-                                            <Text style={styles.paragraph}>
-                                                {locationzedStrings.home.card4_count_title}
-                                            </Text>
-                                            <Text style={styles.paragraph}>{countOverDue}</Text>
-                                        </Card>
-                                    </AnimatedTouchable>
-                                </View>
-                            </View>
-                            <View style={styles.taskContainer}>
-                                <View style={styles.taskListCol1}>
-                                    <ColorfulCard
-                                        title={locationzedStrings.home.card1_title}
-                                        // iconImageStyle={styles.iconBackgroundStyle}
-                                        value=""
-                                        valuePostfix=""
-                                        footerTitle={locationzedStrings.home.card1_message}
-                                        footerValue=""
-                                        iconImageSource={require("../../assets/images/tasks.png")}
-                                        style={{ backgroundColor: "#e48058" }}
-                                        onPress={() => {
-                                            getCountsOrTasks(false, 0);
-                                        }}
-                                    />
-
-                                    <ColorfulCard
-                                        title={locationzedStrings.home.card2_title}
-                                        value=""
-                                        valuePostfix=""
-                                        footerTitle={locationzedStrings.home.card2_message}
-                                        footerValue=""
-                                        iconImageSource={require("../../assets/images/porfolios.png")}
-                                        style={{ backgroundColor: "#26AFE5", marginVertical: 10 }}
-                                        onPress={() => {
-                                            console.log("Card 2 Selected");
-                                        }}
-                                    />
-                                </View>
-                                <View style={styles.taskListCol2}>
-                                    <ColorfulCard
-                                        title={locationzedStrings.home.card3_title}
-                                        value=""
-                                        valuePostfix=""
-                                        footerTitle={locationzedStrings.home.card3_message}
-                                        footerValue=""
-                                        iconImageSource={require("../../assets/images/alarm-clock.png")}
-                                        style={{ backgroundColor: "#515ae5" }}
-                                        onPress={() => {
-                                            console.log("Card 3 Selected");
-                                        }}
-                                    />
-
-                                    <ColorfulCard
-                                        title={locationzedStrings.home.card4_title}
-                                        value=""
-                                        valuePostfix=""
-                                        footerTitle={locationzedStrings.home.card4_message}
-                                        footerValue=""
-                                        iconImageSource={require("../../assets/images/repair-tool.png")}
-                                        style={{ backgroundColor: "#87c43e", marginVertical: 10 }}
-                                        onPress={() => {
-                                            console.log("Card 4 Selected");
-                                        }}
-                                    />
-                                </View>
-                            </View>
-                            <Card style={[styles.customerCardStyle, styles.customerCardBg]}>
-                                <View style={styles.criticalView}>
-                                    <FontAwesome5 style={styles.callIcon} name="exclamation-triangle" size={30} />
-                                    <Text style={styles.criticalCareInfo}>
-                                        {locationzedStrings.home.critical_request}
-                                    </Text>
-                                </View>
-                                <View style={styles.callView}>
-                                    <MaterialIcon style={styles.callIcon} name="call" size={30} />
-                                    <Text style={styles.customerCareCall}>
-                                        {locationzedStrings.home.customercare_call}
-                                    </Text>
-                                </View>
-                                <Text style={styles.customerCareInfo}>{locationzedStrings.home.ivr_message}</Text>
-                                <Text style={styles.customerCareInfo}>{locationzedStrings.home.local_assistance}</Text>
-                            </Card>
-                        </View>
-                    </ScrollView>
-                    <Modal transparent visible={visible}>
-                        <SafeAreaView style={{ flex: 1 }}>
-                            <View style={styles.popup}>
-                                {options.map((option, i) => (
-                                    <TouchableOpacity
-                                        key={i}
-                                        style={styles.flexRow}
-                                        onPress={() => {
-                                            if (option.title == "Help") console.log("Menu Option Clicked 1");
-                                            else onPressLogout();
-                                            setVisible(false);
-                                        }}
-                                    >
-                                        <FontAwesome5 style={styles.popUpIcon} name="check" size={20} />
-                                        <Text>{option.title}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </SafeAreaView>
-                    </Modal>
+                    <View style={styles.userName}>
+                        <Text style={styles.loggedInUserName}>{userName}</Text>
+                    </View>
+                    <TouchableOpacity style={styles.optionIcon} onPress={() => setVisible(true)}>
+                        <FontAwesome5 style={styles.ellipsisIcon} name="ellipsis-v" size={25} />
+                    </TouchableOpacity>
                 </View>
-            </RefreshControl>
+                <View style={styles.greyLine} />
+                <ScrollView
+                    refreshControl={
+                        <RefreshControl refreshing={refreshing} onRefresh={() => getCountsOrTasks(true, 0)} />
+                    }
+                >
+                    <View>
+                        <FM_Header />
+                        <View style={styles.container}>
+                            <View style={styles.view1}>
+                                <AnimatedTouchable
+                                    onPress={() => {
+                                        getCountsOrTasks(false, 0);
+                                    }}
+                                >
+                                    <Card style={[styles.cardStyle, styles.card1_Bg]}>
+                                        <Text style={styles.paragraph}>
+                                            {locationzedStrings.home.card1_count_title}
+                                        </Text>
+                                        <Text style={styles.paragraph}>{countP1}</Text>
+                                    </Card>
+                                </AnimatedTouchable>
+                                <AnimatedTouchable
+                                    onPress={() => {
+                                        getCountsOrTasks(false, 1);
+                                    }}
+                                >
+                                    <Card style={[styles.cardStyle, styles.card2_Bg]}>
+                                        <Text style={styles.paragraph}>
+                                            {locationzedStrings.home.card2_count_title}
+                                        </Text>
+                                        <Text style={styles.paragraph}>{countP2P7}</Text>
+                                    </Card>
+                                </AnimatedTouchable>
+                                <AnimatedTouchable
+                                    onPress={() => {
+                                        getCountsOrTasks(false, 4);
+                                    }}
+                                >
+                                    <Card style={[styles.cardStyle, styles.card3_Bg]}>
+                                        <Text style={styles.paragraph}>
+                                            {locationzedStrings.home.card3_count_title}
+                                        </Text>
+                                        <Text style={styles.paragraph}>{countDueToday}</Text>
+                                    </Card>
+                                </AnimatedTouchable>
+                                <AnimatedTouchable
+                                    onPress={() => {
+                                        getCountsOrTasks(false, 3);
+                                    }}
+                                >
+                                    <Card style={[styles.cardStyle, styles.card4_Bg]}>
+                                        <Text style={styles.paragraph}>
+                                            {locationzedStrings.home.card4_count_title}
+                                        </Text>
+                                        <Text style={styles.paragraph}>{countOverDue}</Text>
+                                    </Card>
+                                </AnimatedTouchable>
+                            </View>
+                        </View>
+                        <View style={styles.taskContainer}>
+                            <View style={styles.taskListCol1}>
+                                <ColorfulCard
+                                    title={locationzedStrings.home.card1_title}
+                                    // iconImageStyle={styles.iconBackgroundStyle}
+                                    value=""
+                                    valuePostfix=""
+                                    footerTitle={locationzedStrings.home.card1_message}
+                                    footerValue=""
+                                    iconImageSource={require("../../assets/images/tasks.png")}
+                                    style={{ backgroundColor: "#e48058" }}
+                                    onPress={() => {
+                                        getCountsOrTasks(false, 1);
+                                    }}
+                                />
+
+                                <ColorfulCard
+                                    title={locationzedStrings.home.card2_title}
+                                    value=""
+                                    valuePostfix=""
+                                    footerTitle={locationzedStrings.home.card2_message}
+                                    footerValue=""
+                                    iconImageSource={require("../../assets/images/porfolios.png")}
+                                    style={{ backgroundColor: "#26AFE5", marginVertical: 10 }}
+                                    onPress={() => {
+                                        console.log("Card 2 Selected");
+                                    }}
+                                />
+                            </View>
+                            <View style={styles.taskListCol2}>
+                                <ColorfulCard
+                                    title={locationzedStrings.home.card3_title}
+                                    value=""
+                                    valuePostfix=""
+                                    footerTitle={locationzedStrings.home.card3_message}
+                                    footerValue=""
+                                    iconImageSource={require("../../assets/images/alarm-clock.png")}
+                                    style={{ backgroundColor: "#515ae5" }}
+                                    onPress={() => {
+                                        console.log("Card 3 Selected");
+                                    }}
+                                />
+
+                                <ColorfulCard
+                                    title={locationzedStrings.home.card4_title}
+                                    value=""
+                                    valuePostfix=""
+                                    footerTitle={locationzedStrings.home.card4_message}
+                                    footerValue=""
+                                    iconImageSource={require("../../assets/images/repair-tool.png")}
+                                    style={{ backgroundColor: "#87c43e", marginVertical: 10 }}
+                                    onPress={() => {
+                                        console.log("Card 4 Selected");
+                                    }}
+                                />
+                            </View>
+                        </View>
+                        <Card style={[styles.customerCardStyle, styles.customerCardBg]}>
+                            <View style={styles.criticalView}>
+                                <FontAwesome5 style={styles.callIcon} name="exclamation-triangle" size={30} />
+                                <Text style={styles.criticalCareInfo}>{locationzedStrings.home.critical_request}</Text>
+                            </View>
+                            <View style={styles.callView}>
+                                <MaterialIcon style={styles.callIcon} name="call" size={30} />
+                                <Text style={styles.customerCareCall}>{locationzedStrings.home.customercare_call}</Text>
+                            </View>
+                            <Text style={styles.customerCareInfo}>{locationzedStrings.home.ivr_message}</Text>
+                            <Text style={styles.customerCareInfo}>{locationzedStrings.home.local_assistance}</Text>
+                        </Card>
+                    </View>
+                </ScrollView>
+                <Modal transparent visible={visible}>
+                    <SafeAreaView style={{ flex: 1 }}>
+                        <View style={styles.popup}>
+                            {options.map((option, i) => (
+                                <TouchableOpacity
+                                    key={i}
+                                    onPress={() => {
+                                        if (option.title == "Help") console.log("Menu Option Clicked 1");
+                                        else onPressLogout();
+                                        setVisible(false);
+                                    }}
+                                >
+                                    {option.title == "Help" ? (
+                                        <View style={styles.flexRow}>
+                                            <MaterialIcon style={styles.popUpIcon} name="question" size={20} />
+                                            <Text style={{ fontSize: 16, marginStart: 14 }}>{option.title}</Text>
+                                        </View>
+                                    ) : (
+                                        <View style={styles.flexRow}>
+                                            <Feather style={styles.popUpIcon} name="power" size={18} />
+                                            <Text style={{ fontSize: 16, marginStart: 5 }}>{option.title}</Text>
+                                        </View>
+                                    )}
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </SafeAreaView>
+                </Modal>
+            </View>
         );
 };
 
@@ -293,6 +299,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         backgroundColor: "#222D32",
+        marginTop: Platform.OS === "ios" ? 20 : 0,
     },
     tasks: {
         flex: 1,
@@ -315,6 +322,14 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
         textAlign: "center",
         marginTop: 10,
+    },
+    optionName: {
+        fontSize: 16,
+        marginStart: 5,
+        // textAlign: "right",
+        // alignContent: "flex-end",
+        // alignItems: "flex-end",
+        // alignSelf: "flex-end",
     },
     criticalCareInfo: {
         fontSize: 16,
@@ -450,18 +465,18 @@ const styles = StyleSheet.create({
         borderColor: "#333",
         borderWidth: 1,
         backgroundColor: "#FFF",
-        paddingHorizontal: 10,
         position: "absolute",
         top: 50,
         right: 15,
     },
     popUpIcon: {
-        alignSelf: "center",
-        marginHorizontal: 5,
+        // alignSelf: "center",
+        // marginStart: 5,
         color: "#D52818",
     },
     flexRow: {
         flexDirection: "row",
+        alignItems: "flex-start",
         padding: 15,
     },
     ellipsisIcon: {
