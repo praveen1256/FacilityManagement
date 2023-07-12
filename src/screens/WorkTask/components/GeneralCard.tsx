@@ -6,19 +6,13 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { FullWorkTask } from "../../../store/WorkTask/reducer";
 import { useAppTheme } from "../../../theme";
+
 type GeneralCardProps = {
     workTask: FullWorkTask;
     style?: StyleProp<ViewStyle>;
 };
 
 const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
-    const _generateRandomCharacters = (length: number) => {
-        let result = "";
-        const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        const charactersLength = characters.length;
-        for (let i = 0; i < length; i++) result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        return result;
-    };
     const theme = useAppTheme();
     return (
         <View style={style}>
@@ -56,10 +50,15 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                     }}
                     right={() => (
                         <View
-                            style={{
-                                // marginRight: 8,
-                                flexDirection: "row",
-                            }}
+                            style={
+                                {
+                                    // flexDirection: "column",
+                                    // justifyContent: "center",
+                                    // alignItems: "center",
+                                    // minWidth: 40,
+                                    // minHeight: 40,
+                                }
+                            }
                         >
                             <Badge
                                 style={{
@@ -67,31 +66,34 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                         workTask.TaskPriority.value === "P1"
                                             ? theme.colors?.onP1Container
                                             : theme.colors?.onP2Container,
-                                    paddingHorizontal: 4,
                                     backgroundColor:
                                         workTask.TaskPriority.value === "P1" ? theme.colors?.p1 : theme.colors?.p2,
-                                    marginRight: 8,
                                     fontWeight: "bold",
+                                    alignSelf: "center",
+                                    marginBottom: 2,
                                 }}
-                                size={20}
+                                size={18}
                             >
                                 {workTask.TaskPriority.value}
                             </Badge>
                             <Badge
                                 style={{
                                     color: "white",
-                                    paddingHorizontal: 4,
+                                    // paddingHorizontal: 4,
                                     // backgroundColor: "green",
                                     backgroundColor: "black",
-                                    marginRight: 8,
+                                    // marginRight: 8,
                                     fontWeight: "bold",
+                                    alignSelf: "center",
+                                    marginBottom: 2,
                                 }}
+                                size={18}
                             >
                                 {workTask.Status}
                             </Badge>
                             <Badge
                                 style={{
-                                    paddingHorizontal: 4,
+                                    // paddingHorizontal: 4,
                                     color:
                                         workTask.TaskType.value === "Corrective"
                                             ? theme.colors.onCorrectiveContainer
@@ -101,7 +103,10 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                                             ? theme.colors?.corrective
                                             : theme.colors?.preventative,
                                     fontWeight: "bold",
+                                    alignSelf: "center",
+                                    marginBottom: 2,
                                 }}
+                                size={18}
                             >
                                 {workTask.TaskType.value}
                             </Badge>
@@ -119,10 +124,15 @@ const GeneralCard: React.FC<GeneralCardProps> = ({ workTask, style }) => {
                             paddingBottom: 8,
                         }}
                     >
-                        <Text variant="bodyMedium">
+                        <Text
+                            variant="bodyMedium"
+                            style={{
+                                fontStyle: "italic",
+                            }}
+                        >
                             {workTask.Description || "No Description Provided!"}
                             {/* 1000  random characters */}
-                            {/* {_generateRandomCharacters(1000)} */}
+                            {/* {generateRandomCharacters(1000)} */}
                         </Text>
                     </View>
                     {/* Full address */}

@@ -9,6 +9,7 @@ import axios from "axios";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useAppTheme } from "../../../theme";
+
 const commentSchema = z.object({
     comment: z.string().nonempty(),
     image: z.string(),
@@ -185,6 +186,9 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                                             autoCapitalize="none"
                                             returnKeyType="next"
                                             disabled={isLoading}
+                                            style={{
+                                                maxHeight: 200,
+                                            }}
                                         />
                                         <HelperText type="error" visible={!!fieldState.error}>
                                             {fieldState.error?.message}

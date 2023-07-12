@@ -118,5 +118,7 @@ export function logout(): AppThunkAction<ActionInterfaces> {
         dispatch(pureActionCreator(AUTH_LOGOUT, {}));
         const navigationContainer = container.resolve(NavigationService);
         navigationContainer.navigate(LoginScreenName, "");
+
+        await axios.get("https://verizon-dev2.tririga.com/oslc/logout");
     };
 }

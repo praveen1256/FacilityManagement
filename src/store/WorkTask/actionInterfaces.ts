@@ -45,6 +45,7 @@ import {
     LateCompletionReason,
     RepairDefinition,
     ServiceRequest,
+    ServiceRequestResource,
     TimeLog,
     TimeLogCategory,
 } from "./reducer";
@@ -57,6 +58,7 @@ export interface WorkTaskSuccess {
     type: typeof WORK_TASK_SUCCESS;
     // TODO: fix me
     workTask: FullWorkTask;
+    serviceRequestAssociation: ServiceRequestResource[];
 }
 
 export interface WorkTaskError {

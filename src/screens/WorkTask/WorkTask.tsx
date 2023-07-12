@@ -10,7 +10,15 @@ import Toast from "react-native-toast-message";
 import { useAppTheme } from "../../theme";
 import { RootStackParamList } from "../../Navigator";
 import { AppThunkDispatch, RootState, WorkTask } from "../../store";
-import { ChildTask, EventLog, FullWorkTask, TimeLogCategory, TimeLogExtended } from "../../store/WorkTask/reducer";
+import {
+    ChildTask,
+    EventLog,
+    FullWorkTask,
+    ServiceRequest,
+    ServiceRequestResource,
+    TimeLogCategory,
+    TimeLogExtended,
+} from "../../store/WorkTask/reducer";
 
 import TimeLogs from "./components/TimeLogs";
 import CardLabelValue from "./components/CardLabelValue";
@@ -61,6 +69,11 @@ type WorkTaskScreenViewProps = {
     commentPostLoading: boolean;
     commentPostError: string | null;
     commentPostSuccess: boolean;
+    // Service Request
+    serviceRequest: ServiceRequest | null;
+    serviceRequestLoading: boolean;
+    serviceRequestError: string | null;
+    serviceRequestResource: ServiceRequestResource[];
 } & NativeStackScreenProps<RootStackParamList, "WorkTaskScreen">;
 
 const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (props) => {
@@ -93,6 +106,10 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
         commentPostError,
         commentPostLoading,
         commentPostSuccess,
+        serviceRequest,
+        serviceRequestLoading,
+        serviceRequestError,
+        serviceRequestResource,
     } = props;
 
     const { workTaskId } = props.route.params;
@@ -210,7 +227,7 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                             > */}
                                     <Card>
                                         <Card.Content>
-                                            <Text variant="labelMedium">Resources</Text>
+                                            {/* <Text variant="labelMedium">Resources</Text> */}
                                             <View
                                                 style={{
                                                     flexDirection: "row",
@@ -219,24 +236,22 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                                     // backgroundColor: "lightgrey",
                                                 }}
                                             >
-                                                {[{ name: "Gary Bray" }, { name: "Gary Bray" }].map(
-                                                    (person, idx, arr) => {
-                                                        return (
-                                                            <View
-                                                                key={`${person.name}-${idx}`}
-                                                                style={{
-                                                                    // backgroundColor: "aqua",
-                                                                    justifyContent: "center",
-                                                                    alignItems: "center",
-                                                                    marginRight: idx === arr.length - 1 ? 0 : 8,
-                                                                }}
-                                                            >
-                                                                <Avatar.Text size={24} label={person.name[0]} />
-                                                                <Text variant="bodySmall">{person.name}</Text>
-                                                            </View>
-                                                        );
-                                                    },
-                                                )}
+                                                {serviceRequestResource.map((person, idx, arr) => {
+                                                    return (
+                                                        <View
+                                                            key={`${person.Name}-${idx}`}
+                                                            style={{
+                                                                // backgroundColor: "aqua",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                                marginRight: idx === arr.length - 1 ? 0 : 8,
+                                                            }}
+                                                        >
+                                                            <Avatar.Text size={32} label={person.Name[0]} />
+                                                            <Text variant="bodySmall">{person.Name}</Text>
+                                                        </View>
+                                                    );
+                                                })}
                                             </View>
                                             <Text variant="labelMedium">Responsible:</Text>
                                             <View
@@ -254,18 +269,26 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                                                         alignItems: "center",
                                                     }}
                                                 >
-                                                    <Avatar.Text size={24} label={workTask.respperson[0]} />
+                                                    <Avatar.Text size={32} label={workTask.respperson[0]} />
                                                     <Text variant="bodySmall">{workTask.respperson}</Text>
                                                 </View>
                                             </View>
                                             <View>
-                                                <Text variant="labelMedium">Service Request</Text>
-                                                <Text variant="bodySmall">SR123456 | Electrical | Ray White</Text>
+                                                <Text variant="labelMedium">Service Request:</Text>
+                                                {serviceRequest ? (
+                                                    <Text variant="bodySmall">{serviceRequest.ID}</Text>
+                                                ) : (
+                                                    <Text variant="bodySmall">No Service Request Found</Text>
+                                                )}
+                                                {serviceRequestLoading && <ActivityIndicator animating={true} />}
+                                                {serviceRequestError && (
+                                                    <Text variant="bodySmall">{serviceRequestError}</Text>
+                                                )}
                                             </View>
-                                            <View>
+                                            {/* <View>
                                                 <Text variant="labelMedium">Parent Task</Text>
                                                 <Text variant="bodySmall">SR123456 | Electrical | Ray White</Text>
-                                            </View>
+                                            </View> */}
                                         </Card.Content>
                                     </Card>
                                 </View>
@@ -415,14 +438,21 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                 {/* Escape the bottom action bar */}
                 <BottomBar
                     onCompletitionPress={() => {
-                        if (timeLogs.length === 0)
-                            return Toast.show({
-                                type: "error",
-                                text1: "Time log Needed!",
-                                text2: "Please add a time log to complete the work task.",
-                                position: "top",
-                            });
-                        setCompletitionFormOpen(true);
+                        // FIXME: disabled for the demo purpose
+                        return Toast.show({
+                            type: "error",
+                            text1: "Complete feature under construction!",
+                            text2: "Please wait for the next release.",
+                            position: "top",
+                        });
+                        // if (timeLogs.length === 0)
+                        //     return Toast.show({
+                        //         type: "error",
+                        //         text1: "Time log Needed!",
+                        //         text2: "Please add a time log to complete the work task.",
+                        //         position: "top",
+                        //     });
+                        // setCompletitionFormOpen(true);
                     }}
                     onCommentPress={() => {
                         setCreateCommentFormOpen(true);
@@ -558,6 +588,12 @@ const mapState = (state: RootState) => ({
     commentPostLoading: state.workTask.commentPostLoading,
     commentPostError: state.workTask.commentPostError,
     commentPostSuccess: state.workTask.commentPostSuccess,
+    // Service Request
+    serviceRequest: state.workTask.serviceRequest,
+    serviceRequestLoading: state.workTask.serviceRequestLoading,
+    serviceRequestError: state.workTask.serviceRequestError,
+    // Service Request Resource
+    serviceRequestResource: state.workTask.serviceRequestResource,
 });
 
 const connector = connect(mapState, mapDispatch);

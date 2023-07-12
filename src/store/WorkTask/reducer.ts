@@ -208,6 +208,12 @@ export interface LateCompletionReason {
     internalParentValue: string | null;
 }
 
+export interface ServiceRequestResource {
+    PercentAllocated: string;
+    _id: string;
+    Name: string;
+}
+
 export interface WorkTaskState {
     loading: boolean;
     error: string | null;
@@ -249,6 +255,8 @@ export interface WorkTaskState {
     commentPostLoading: boolean;
     commentPostError: string | null;
     commentPostSuccess: boolean;
+    // Resource
+    serviceRequestResource: ServiceRequestResource[];
 }
 
 const initialState: WorkTaskState = {
@@ -292,6 +300,8 @@ const initialState: WorkTaskState = {
     commentPostLoading: false,
     commentPostError: null,
     commentPostSuccess: false,
+    // Resource
+    serviceRequestResource: [],
 };
 
 export const workTaskReducer = (state: WorkTaskState = initialState, action: ActionInterfaces): WorkTaskState => {
@@ -309,6 +319,7 @@ export const workTaskReducer = (state: WorkTaskState = initialState, action: Act
                 error: null,
                 workTask: action.workTask,
                 refreshing: false,
+                serviceRequestResource: action.serviceRequestAssociation,
                 // Removing existing state
                 // TODO: Move to a separate action
             };
