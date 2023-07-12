@@ -1,12 +1,11 @@
 import React, { useRef, useState } from "react";
-import { StyleSheet, TextInput as RNTextInput, View, Text } from "react-native";
+import { StyleSheet, TextInput as RNTextInput, View, Image, Platform } from "react-native";
 import { Button, TextInput, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import { Controller, useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 import FM_Header from "../../components/FM_Header";
 import { AppThunkDispatch, Authentication, RootState } from "../../store";
@@ -45,8 +44,13 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
             {/* <Text style={styles.textCenter}>{username}</Text> */}
             <View style={styles.heading}>
                 <View style={styles.flexRow}>
-                    <Text style={styles.textCenter}>{locationzedStrings.header.headerVerizon}</Text>
-                    <FontAwesome5 style={styles.checkIcon} name="check" size={20} />
+                    {/* <Text style={styles.textCenter}>{locationzedStrings.header.headerVerizon}</Text>
+                    <FontAwesome5 style={styles.checkIcon} name="check" size={20} /> */}
+                    <Image
+                        source={require("../../assets/images/verizon_logo.png")} // Replace with your image path
+                        style={styles.image}
+                        resizeMode="contain" // Adjust the resizeMode as per your requirement
+                    />
                 </View>
             </View>
             <View style={styles.greyLine} />
@@ -140,6 +144,11 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         backgroundColor: "#222D32",
+        marginTop: Platform.OS === "ios" ? 20 : 0,
+    },
+    image: {
+        width: 200,
+        height: 200,
     },
     form: {
         flex: 1,

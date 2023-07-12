@@ -8,6 +8,7 @@ import {
     TouchableOpacity,
     ViewStyle,
     RefreshControl,
+    Platform,
 } from "react-native";
 import { Card, Text, ActivityIndicator, Button } from "react-native-paper";
 import React, { useEffect, useState, useRef } from "react";
@@ -103,7 +104,6 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     const [isFocus, setIsFocus] = useState(false);
 
     const [selectedTab, setSelectedTab] = useState(selectedCard);
-    console.log("error : ", error);
 
     const [forceRender, setForceRender] = useState(false);
 
@@ -234,7 +234,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                     <Text style={styles.itemInfo4}>
                         {locationCode} | {city} | {state}
                     </Text>
-                    <Text style={styles.itemInfo5}>{plannedEnd}</Text>
+                    <Text style={styles.itemInfo4}>{plannedEnd}</Text>
                     <Text style={styles.itemInfo5}>{description}</Text>
                     <Text style={styles.itemInfo6}>{taskType}</Text>
                 </View>
@@ -391,105 +391,106 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
 
     return (
         <View style={styles.workTaskContainer}>
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh}>
-                <SwitchSelector
-                    buttonColor="#384247"
-                    selectedColor="#FFFFFF"
-                    borderColor="#384247"
-                    textColor="#384247"
-                    fontSize={16}
-                    style={styles.switchSelectorStyle}
-                    options={switchoptions}
-                    initial={0}
-                    onPress={(value: string) => {
-                        setFilter(value);
+            {/* <RefreshControl refreshing={refreshing} onRefresh={onRefresh}> */}
+            <SwitchSelector
+                buttonColor="#384247"
+                selectedColor="#FFFFFF"
+                borderColor="#384247"
+                textColor="#384247"
+                fontSize={16}
+                style={styles.switchSelectorStyle}
+                options={switchoptions}
+                initial={0}
+                onPress={(value: string) => {
+                    setFilter(value);
+                }}
+            />
+            <View style={styles.flexRow}>
+                <Dropdown
+                    style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    iconStyle={styles.iconStyle}
+                    data={data}
+                    mode="modal"
+                    search
+                    maxHeight={300}
+                    labelField="label"
+                    valueField="value"
+                    placeholder={!isFocus ? "Select item" : "..."}
+                    searchPlaceholder="Search..."
+                    value={sortValue}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={(item) => {
+                        setSortValue(item.value);
                     }}
                 />
-                <View style={styles.flexRow}>
-                    <Dropdown
-                        style={[styles.dropdown, isFocus && { borderColor: "blue" }]}
-                        placeholderStyle={styles.placeholderStyle}
-                        selectedTextStyle={styles.selectedTextStyle}
-                        inputSearchStyle={styles.inputSearchStyle}
-                        iconStyle={styles.iconStyle}
-                        data={data}
-                        mode="modal"
-                        search
-                        maxHeight={300}
-                        labelField="label"
-                        valueField="value"
-                        placeholder={!isFocus ? "Select item" : "..."}
-                        searchPlaceholder="Search..."
-                        value={sortValue}
-                        onFocus={() => setIsFocus(true)}
-                        onBlur={() => setIsFocus(false)}
-                        onChange={(item) => {
-                            setSortValue(item.value);
-                        }}
+                <TextInput
+                    style={styles.textInputStyle}
+                    onChangeText={setSearchText}
+                    underlineColorAndroid="transparent"
+                    placeholder="Search Here"
+                    value={searchText}
+                />
+            </View>
+            <View style={styles.container}>
+                <View style={styles.view1}>
+                    <TaskCardView
+                        id={0}
+                        title="Active P1"
+                        value={countP1}
+                        isSelected={selectedTab === 0}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card1_Bg}
                     />
-                    <TextInput
-                        style={styles.textInputStyle}
-                        onChangeText={setSearchText}
-                        underlineColorAndroid="transparent"
-                        placeholder="Search Here"
-                        value={searchText}
+                    <TaskCardView
+                        id={1}
+                        title="Active P2-P7"
+                        value={countP2P7}
+                        isSelected={selectedTab === 1}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card2_Bg}
+                    />
+                    <TaskCardView
+                        id={2}
+                        title="Completed"
+                        value={countCompleted}
+                        isSelected={selectedTab === 2}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card3_Bg}
+                    />
+                    <TaskCardView
+                        id={3}
+                        title="OverDue"
+                        value={countOverDue}
+                        isSelected={selectedTab === 3}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card4_Bg}
+                    />
+                    <TaskCardView
+                        id={4}
+                        title="Due Today"
+                        value={countDueToday}
+                        isSelected={selectedTab === 4}
+                        onPress={handleCardPress}
+                        cardStyle={styles.cardStyle}
+                        cardBdStyle={styles.card5_Bg}
                     />
                 </View>
-                <View style={styles.container}>
-                    <View style={styles.view1}>
-                        <TaskCardView
-                            id={0}
-                            title="Active P1"
-                            value={countP1}
-                            isSelected={selectedTab === 0}
-                            onPress={handleCardPress}
-                            cardStyle={styles.cardStyle}
-                            cardBdStyle={styles.card1_Bg}
-                        />
-                        <TaskCardView
-                            id={1}
-                            title="Active P2-P7"
-                            value={countP2P7}
-                            isSelected={selectedTab === 1}
-                            onPress={handleCardPress}
-                            cardStyle={styles.cardStyle}
-                            cardBdStyle={styles.card2_Bg}
-                        />
-                        <TaskCardView
-                            id={2}
-                            title="Completed"
-                            value={countCompleted}
-                            isSelected={selectedTab === 2}
-                            onPress={handleCardPress}
-                            cardStyle={styles.cardStyle}
-                            cardBdStyle={styles.card3_Bg}
-                        />
-                        <TaskCardView
-                            id={3}
-                            title="OverDue"
-                            value={countOverDue}
-                            isSelected={selectedTab === 3}
-                            onPress={handleCardPress}
-                            cardStyle={styles.cardStyle}
-                            cardBdStyle={styles.card4_Bg}
-                        />
-                        <TaskCardView
-                            id={4}
-                            title="Due Today"
-                            value={countDueToday}
-                            isSelected={selectedTab === 4}
-                            onPress={handleCardPress}
-                            cardStyle={styles.cardStyle}
-                            cardBdStyle={styles.card5_Bg}
-                        />
-                    </View>
-                </View>
-            </RefreshControl>
+            </View>
+            {/* </RefreshControl> */}
             <View style={styles.taskContainer}>
                 <FlatList
                     data={flatListData[selectedTab]}
                     extraData={flatListData[selectedTab]}
                     ListEmptyComponent={renderEmptyList}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                     renderItem={({ item }) => (
                         <Pressable onPress={() => onSelectWorkTask(item)}>
                             <Item
@@ -544,6 +545,7 @@ const styles = StyleSheet.create({
     workTaskContainer: {
         width: "100%",
         height: "100%",
+        marginTop: Platform.OS === "ios" ? 20 : 0,
     },
     tasks: {
         flex: 1,
@@ -886,14 +888,15 @@ const styles = StyleSheet.create({
     },
     itemInfo3: {
         fontSize: 12,
+        fontWeight: "normal",
     },
     itemInfo4: {
-        fontSize: 14,
+        variant: "bodyMedium",
         fontWeight: "bold",
     },
     itemInfo5: {
-        fontSize: 16,
-        fontWeight: "bold",
+        variant: "bodyMedium",
+        fontStyle: "italic",
     },
     itemInfo6: {
         fontSize: 14,
