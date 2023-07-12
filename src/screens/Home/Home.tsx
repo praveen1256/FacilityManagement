@@ -17,6 +17,7 @@ import { connect } from "react-redux";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
 import ColorfulCard from "react-native-colorful-card";
 
 import FM_Header from "../../components/FM_Header";
@@ -276,7 +277,7 @@ const HomeScreenView: React.FunctionComponent<HomeScreenProps> = ({
                                 >
                                     {option.title == "Help" ? (
                                         <View style={styles.flexRow}>
-                                            <MaterialIcon style={styles.popUpIcon} name="question" size={20} />
+                                            <EvilIcons style={styles.popUpIcon} name="question" size={20} />
                                             <Text style={{ fontSize: 16, marginStart: 14 }}>{option.title}</Text>
                                         </View>
                                     ) : (

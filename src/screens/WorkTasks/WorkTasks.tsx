@@ -34,12 +34,9 @@ interface WorkTasksScreenProps {
     countOverDue: number;
     countDueToday: number;
     countCompleted: number;
-    countP1Tasks: WorkTask[];
-    countP2P7Tasks: WorkTask[];
-    countOverDueTasks: WorkTask[];
-    countDueTodayTasks: WorkTask[];
-    countCompletedTasks: WorkTask[];
+    allTasks: WorkTask[];
     onSelectWorkTask: (task: WorkTask) => void;
+    updateSelectedTab: (selectedCard: number) => void;
     onRetry: (isOnlyCount: boolean, selectedCard: number) => void;
 }
 
@@ -56,6 +53,7 @@ interface TaskCardProps {
 const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (props) => {
     const {
         onSelectWorkTask,
+        updateSelectedTab,
         isLoading,
         error,
         countP1,
@@ -63,38 +61,16 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
         countOverDue,
         countDueToday,
         countCompleted,
-        countP1Tasks,
-        countP2P7Tasks,
-        countCompletedTasks,
-        countOverDueTasks,
-        countDueTodayTasks,
         selectedCard,
+        allTasks,
         onRetry,
     } = props;
 
-    const [tasksList, setTasksList] = useState([
-        countP1Tasks,
-        countP2P7Tasks,
-        countCompletedTasks,
-        countOverDueTasks,
-        countDueTodayTasks,
-    ]);
+    const [tasksList, setTasksList] = useState(allTasks);
 
-    const [flatListData, setFlatListData] = useState([
-        countP1Tasks,
-        countP2P7Tasks,
-        countCompletedTasks,
-        countOverDueTasks,
-        countDueTodayTasks,
-    ]);
+    const [flatListData, setFlatListData] = useState(allTasks);
 
-    const filteredUseRef = useRef([
-        countP1Tasks,
-        countP2P7Tasks,
-        countCompletedTasks,
-        countOverDueTasks,
-        countDueTodayTasks,
-    ]);
+    const filteredUseRef = useRef(allTasks);
 
     const [filter, setFilter] = useState("all");
     const [sortValue, setSortValue] = useState("");
@@ -121,16 +97,10 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     ];
 
     useEffect(() => {
-        setTasksList([countP1Tasks, countP2P7Tasks, countCompletedTasks, countOverDueTasks, countDueTodayTasks]);
+        setTasksList(allTasks);
         setSelectedTab(selectedCard);
-        filteredUseRef.current = [
-            countP1Tasks,
-            countP2P7Tasks,
-            countCompletedTasks,
-            countOverDueTasks,
-            countDueTodayTasks,
-        ];
-    }, [countP1Tasks, countP2P7Tasks, countOverDueTasks, countDueTodayTasks, countCompletedTasks, selectedCard]);
+        filteredUseRef.current = allTasks;
+    }, [allTasks, selectedCard]);
 
     useEffect(() => {
         if (isLoading) return;
@@ -185,10 +155,8 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
         );
     }
 
-    const updateFilteredList = (arrayIndex: number, newArray: WorkTask[], updateUI: boolean) => {
-        const updatedArrays = filteredUseRef.current;
-        updatedArrays[arrayIndex] = newArray;
-        filteredUseRef.current = updatedArrays;
+    const updateFilteredList = (newArray: WorkTask[], updateUI: boolean) => {
+        filteredUseRef.current = newArray;
         if (updateUI) {
             setFlatListData(filteredUseRef.current);
             setForceRender(!forceRender);
@@ -231,11 +199,15 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                     <Text style={styles.itemInfo1}>{requestClass}</Text>
                     <Text style={styles.itemInfo2}>{address}</Text>
                     <Text style={styles.itemInfo3}>{building}</Text>
-                    <Text style={styles.itemInfo4}>
+                    <Text variant="bodyMedium" style={styles.itemInfo4}>
                         {locationCode} | {city} | {state}
                     </Text>
-                    <Text style={styles.itemInfo4}>{plannedEnd}</Text>
-                    <Text style={styles.itemInfo5}>{description}</Text>
+                    <Text variant="bodyMedium" style={styles.itemInfo4}>
+                        {plannedEnd}
+                    </Text>
+                    <Text variant="bodyMedium" style={styles.itemInfo5}>
+                        {description}
+                    </Text>
                     <Text style={styles.itemInfo6}>{taskType}</Text>
                 </View>
             </View>
@@ -274,20 +246,57 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
         filterTaks function is to filter based on All, CM, PM
     */
     function filterTasks() {
+        let data: WorkTask[];
         if (filter == "cm") {
-            const cm = tasksList[selectedTab].filter((item) => {
+            data = tasksList.filter((item) => {
                 return item.TaskType == "Corrective";
             });
-            updateFilteredList(selectedTab, cm, false);
         } else if (filter == "pm") {
-            const pm = tasksList[selectedTab].filter((item) => {
+            data = tasksList.filter((item) => {
                 return item.TaskType == "Preventive";
             });
-            updateFilteredList(selectedTab, pm, false);
         } else {
-            const all = tasksList[selectedTab];
-            updateFilteredList(selectedTab, all, false);
+            data = tasksList;
         }
+        switch (selectedCard) {
+            case 0:
+                data = data.filter((item) => {
+                    return item.TaskPriority == "P1";
+                });
+                break;
+            case 1:
+                data = data
+                    .filter((item) => {
+                        return (
+                            item.TaskPriority == "P2" ||
+                            item.TaskPriority == "P3" ||
+                            item.TaskPriority == "P4" ||
+                            item.TaskPriority == "P5" ||
+                            item.TaskPriority == "P6" ||
+                            item.TaskPriority == "P7"
+                        );
+                    })
+                    .filter((item) => {
+                        return item.Status == "Active";
+                    });
+                break;
+            case 2:
+                data = data.filter((item) => {
+                    return item.Status == "Completed";
+                });
+                break;
+            case 3:
+                data = data.filter((item) => {
+                    return item.Status == "Active";
+                });
+                break;
+            case 4:
+                data = data.filter((item) => {
+                    return item.Status == "Due Today";
+                });
+                break;
+        }
+        updateFilteredList(data, false);
     }
 
     /*
@@ -297,8 +306,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
         switch (sortValue) {
             case "sortByLocation":
                 updateFilteredList(
-                    selectedTab,
-                    filteredUseRef.current[selectedTab].sort((location1, location2) =>
+                    filteredUseRef.current.sort((location1, location2) =>
                         location1.Address.localeCompare(location2.Address),
                     ),
                     false,
@@ -306,15 +314,13 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                 break;
             case "sortById":
                 updateFilteredList(
-                    selectedTab,
-                    filteredUseRef.current[selectedTab].sort((id1, id2) => id1.ID.localeCompare(id2.ID)),
+                    filteredUseRef.current.sort((id1, id2) => id1.ID.localeCompare(id2.ID)),
                     false,
                 );
                 break;
             case "sortByPriority":
                 updateFilteredList(
-                    selectedTab,
-                    filteredUseRef.current[selectedTab].sort((priority1, priority2) =>
+                    filteredUseRef.current.sort((priority1, priority2) =>
                         alphanumericComparator(priority2.TaskPriority, priority1.TaskPriority),
                     ),
                     false,
@@ -322,8 +328,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                 break;
             case "sortByDueDate":
                 updateFilteredList(
-                    selectedTab,
-                    filteredUseRef.current[selectedTab].sort((plannedEnd1, plannedEnd2) => {
+                    filteredUseRef.current.sort((plannedEnd1, plannedEnd2) => {
                         const dateA = new Date(plannedEnd1.PlannedEnd);
                         const dateB = new Date(plannedEnd2.PlannedEnd);
                         return dateA.getTime() - dateB.getTime();
@@ -339,12 +344,11 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     */
     const handleTextChange = () => {
         if (searchText.length == 0) {
-            updateFilteredList(selectedTab, filteredUseRef.current[selectedTab], true);
+            updateFilteredList(filteredUseRef.current, true);
             return;
         }
         updateFilteredList(
-            selectedTab,
-            filteredUseRef.current[selectedTab].filter((obj) => {
+            filteredUseRef.current.filter((obj) => {
                 return obj.ID?.includes(searchText);
             }),
             true,
@@ -386,6 +390,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
     };
 
     const handleCardPress = (cardId: number) => {
+        updateSelectedTab(cardId);
         setSelectedTab(cardId);
     };
 
@@ -487,8 +492,10 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
             {/* </RefreshControl> */}
             <View style={styles.taskContainer}>
                 <FlatList
-                    data={flatListData[selectedTab]}
-                    extraData={flatListData[selectedTab]}
+                    // data={flatListData[selectedTab]}
+                    // extraData={flatListData[selectedTab]}
+                    data={flatListData}
+                    extraData={flatListData}
                     ListEmptyComponent={renderEmptyList}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                     renderItem={({ item }) => (
@@ -891,11 +898,9 @@ const styles = StyleSheet.create({
         fontWeight: "normal",
     },
     itemInfo4: {
-        variant: "bodyMedium",
         fontWeight: "bold",
     },
     itemInfo5: {
-        variant: "bodyMedium",
         fontStyle: "italic",
     },
     itemInfo6: {
@@ -916,6 +921,7 @@ const HeaderOptions: NativeStackHeaderProps["options"] = {
 
 const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => ({
     onSelectWorkTask: (workTask: WorkTask) => dispatch(WorkTasks.Actions.navigateToWorkTask(workTask._id)),
+    updateSelectedTab: (selectedCard: number) => dispatch(WorkTasks.Actions.updateSelectedTab(selectedCard)),
     onRetry: (isOnlyCount: boolean, selectedCard: number) =>
         dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
 });
@@ -929,11 +935,7 @@ const mapState = (state: RootState) => ({
     countOverDue: state.worktasks.countOverDue,
     countDueToday: state.worktasks.countDueToday,
     countCompleted: state.worktasks.countCompleted,
-    countP1Tasks: state.worktasks.countP1Tasks,
-    countP2P7Tasks: state.worktasks.countP2P7Tasks,
-    countOverDueTasks: state.worktasks.countOverDueTasks,
-    countDueTodayTasks: state.worktasks.countDueTodayTasks,
-    countCompletedTasks: state.worktasks.countCompletedTasks,
+    allTasks: state.worktasks.allTasks,
 });
 
 const connector = connect(mapState, mapDispatch);
