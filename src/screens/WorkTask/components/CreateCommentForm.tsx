@@ -10,8 +10,10 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 import { useAppTheme } from "../../../theme";
 
+const MAX_COMMENT_LENGTH = 999;
+
 const commentSchema = z.object({
-    comment: z.string().nonempty(),
+    comment: z.string().nonempty().max(MAX_COMMENT_LENGTH),
     image: z.string(),
 });
 
@@ -190,8 +192,16 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                                                 maxHeight: 200,
                                             }}
                                         />
-                                        <HelperText type="error" visible={!!fieldState.error}>
-                                            {fieldState.error?.message}
+                                        <HelperText
+                                            type={fieldState.error ? "error" : "info"}
+                                            visible
+                                            style={{
+                                                textAlign: fieldState.error ? "left" : "right",
+                                            }}
+                                        >
+                                            {fieldState.error?.message
+                                                ? fieldState.error.message
+                                                : `${MAX_COMMENT_LENGTH - value.length} characters remaining`}
                                         </HelperText>
                                     </>
                                 );

@@ -11,8 +11,13 @@ import { RootState } from "../../../store";
 import { useAppTheme } from "../../../theme";
 import { CauseType, InitiativeCode, LateCompletionReason, RepairDefinition } from "../../../store/WorkTask/reducer";
 
+const MAX_COMMENT_LENGTH = 999;
+
 const completeWorkTaskSchema = z.object({
-    comment: z.string().nonempty(),
+    comment: z
+        .string()
+        .nonempty()
+        .max(MAX_COMMENT_LENGTH - 1, "Comment is too long"),
     causeType: z.string().nonempty(),
     repairDefinition: z.string().nonempty(),
     initiativeCode: z.string().optional(),
@@ -141,8 +146,17 @@ const CompletitionForm: React.FunctionComponent<CompletitionFormProps> = ({
                                                 autoCapitalize="none"
                                                 returnKeyType="next"
                                             />
-                                            <HelperText type="error" visible={!!fieldState.error}>
-                                                {fieldState.error?.message}
+                                            <HelperText
+                                                type={fieldState.error ? "error" : "info"}
+                                                visible
+                                                style={{
+                                                    textAlign: fieldState.error ? "left" : "right",
+                                                    marginBottom: 4,
+                                                }}
+                                            >
+                                                {fieldState.error?.message
+                                                    ? fieldState.error.message
+                                                    : `${MAX_COMMENT_LENGTH - value.length} characters remaining`}
                                             </HelperText>
                                         </>
                                     );

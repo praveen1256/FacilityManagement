@@ -11,6 +11,8 @@ import dayjs from "dayjs";
 import { TimeLog, TimeLogCategory } from "../../../store/WorkTask/reducer";
 import { useAppTheme } from "../../../theme";
 
+const MAX_COMMENT_LENGTH = 1000;
+
 const timeLogSchema = z.object({
     date: z.date().refine((val) => val <= new Date(), "Date cannot be in the future"),
     // hours: z.preprocess(
@@ -18,7 +20,10 @@ const timeLogSchema = z.object({
     //     z.number().min(1, "Must be at least 1 hour").max(24, "Must be less than 24 hours"),
     // ),
     category: z.string().nonempty("Category is required"),
-    comment: z.string().nonempty("Comment is required"),
+    comment: z
+        .string()
+        .nonempty("Comment is required")
+        .max(MAX_COMMENT_LENGTH - 1, "Comment is too long"),
     startTime: z.date(),
     endTime: z.date(),
 });
@@ -334,8 +339,17 @@ const CreateTimeLogModal: React.FC<CreateTimeLogModalProps> = ({ isOpen, onClose
                                             returnKeyType="next"
                                             multiline
                                         />
-                                        <HelperText type="error" visible={!!fieldState.error}>
-                                            {fieldState.error?.message}
+                                        <HelperText
+                                            type={fieldState.error ? "error" : "info"}
+                                            visible
+                                            style={{
+                                                textAlign: fieldState.error ? "left" : "right",
+                                                marginBottom: 4,
+                                            }}
+                                        >
+                                            {fieldState.error?.message
+                                                ? fieldState.error.message
+                                                : `${MAX_COMMENT_LENGTH - value.length} characters remaining`}
                                         </HelperText>
                                     </>
                                 );
