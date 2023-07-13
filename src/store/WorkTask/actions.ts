@@ -229,7 +229,8 @@ export const createTimeLog =
 
             // Allow Breathing room for the Server to create the timelog
             const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-            await delay(4000);
+            // TODO: Optimize this, find a better way to do this
+            await delay(8000);
 
             // Fetch all the timelogs again
             const timeLogsUrl = `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskDetails/${workTaskId}/cstTMLog?countOnly=false`;

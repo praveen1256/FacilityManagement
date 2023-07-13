@@ -17,6 +17,7 @@ import { Dropdown } from "react-native-element-dropdown";
 import MaterialIcon from "react-native-vector-icons/MaterialIcons";
 import { connect } from "react-redux";
 import SwitchSelector from "react-native-switch-selector";
+import dayjs from "dayjs";
 
 import { AppThunkDispatch, RootState, WorkTasks } from "../../store";
 import { WorkTask } from "../../store/WorkTasks/reducer";
@@ -926,17 +927,51 @@ const mapDispatch = (dispatch: AppThunkDispatch<WorkTasks.ActionInterfaces>) => 
         dispatch(WorkTasks.Actions.getCountsAndTasks(isOnlyCount, selectedCard)),
 });
 
-const mapState = (state: RootState) => ({
-    isLoading: state.worktasks.loading,
-    selectedCard: state.worktasks.selectedCard,
-    error: state.worktasks.error,
-    countP1: state.worktasks.countP1,
-    countP2P7: state.worktasks.countP2P7,
-    countOverDue: state.worktasks.countOverDue,
-    countDueToday: state.worktasks.countDueToday,
-    countCompleted: state.worktasks.countCompleted,
-    allTasks: state.worktasks.allTasks,
-});
+const mapState = (state: RootState) => {
+    const today = dayjs();
+    const p1Tasks: WorkTask[] = [];
+    const p2P7Tasks: WorkTask[] = [];
+    const overDueTasks: WorkTask[] = [];
+    const dueTodayTasks: WorkTask[] = [];
+    const completedTasks: WorkTask[] = [];
+    for (const task of state.worktasks.allTasks) {
+        // Status Section
+        if (task.Status === "Completed") {
+            completedTasks.push(task);
+            continue;
+        }
+
+        // Priority Section
+        if (task.TaskPriority === "P1") {
+            p1Tasks.push(task);
+        } else {
+            p2P7Tasks.push(task);
+        }
+
+        // Due Date Section
+        if (dayjs(task.PlannedStart).isBefore(today, "day")) {
+            overDueTasks.push(task);
+        } else if (dayjs(task.PlannedStart).isSame(today, "day")) {
+            dueTodayTasks.push(task);
+        }
+    }
+
+    return {
+        isLoading: state.worktasks.loading,
+        selectedCard: state.worktasks.selectedCard,
+        error: state.worktasks.error,
+        countP1: p1Tasks.length,
+        // countP2: 0,
+        countP2P7: p2P7Tasks.length,
+        // countP2P7: 0,
+        countOverDue: overDueTasks.length,
+        // countOverDue: 0,
+        countDueToday: dueTodayTasks.length,
+        countCompleted: completedTasks.length,
+        // countCompleted: 0,
+        allTasks: state.worktasks.allTasks,
+    };
+};
 
 const connector = connect(mapState, mapDispatch);
 
