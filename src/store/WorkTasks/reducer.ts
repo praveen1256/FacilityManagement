@@ -114,16 +114,26 @@ export const workTasksReducer = (state: AppState = initialState, action: ActionI
                 countCompleted: action.countCompleted,
             };
         case COUNT_ERROR:
-            console.log("Reducer error : ", action.error);
             return {
                 ...state,
                 loading: false,
                 error: action.error,
             };
         case MOVE_TASK_TO_COMPLETED:
-            console.log("MOVE_TASK_TO_COMPLETED", action.workTask);
             return {
                 ...state,
+                // ResourceAssignmentStatus = "Completed"
+                // Status = "Completed"
+                allTasks: state.allTasks.map((task) => {
+                    if (task._id === action.workTask._id) {
+                        return {
+                            ...task,
+                            ResourceAssignmentStatus: "Completed",
+                            Status: "Completed",
+                        };
+                    }
+                    return task;
+                }),
             };
         default:
             return {
