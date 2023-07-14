@@ -345,19 +345,20 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                 <BottomBar
                     onCompletitionPress={() => {
                         // FIXME: disabled for the demo purpose
+                        if (timeLogs.length === 0)
+                            return Toast.show({
+                                type: "error",
+                                text1: "Time log Needed!",
+                                text2: "Please add a time log to complete the work task.",
+                                position: "top",
+                            });
+
                         return Toast.show({
                             type: "error",
                             text1: "Complete feature under construction!",
                             text2: "Please wait for the next release.",
                             position: "top",
                         });
-                        // if (timeLogs.length === 0)
-                        //     return Toast.show({
-                        //         type: "error",
-                        //         text1: "Time log Needed!",
-                        //         text2: "Please add a time log to complete the work task.",
-                        //         position: "top",
-                        //     });
                         // setCompletitionFormOpen(true);
                     }}
                     onCommentPress={() => {

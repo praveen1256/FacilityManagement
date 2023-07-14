@@ -66,17 +66,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                 marginBottom: 8,
             }}
             right={() => (
-                <View
-                    style={
-                        {
-                            // flexDirection: "column",
-                            // justifyContent: "center",
-                            // alignItems: "center",
-                            // minWidth: 40,
-                            // minHeight: 40,
-                        }
-                    }
-                >
+                <View>
                     <Badge
                         style={{
                             color:
@@ -135,15 +125,9 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
         <FlipCard
             flipHorizontal={true}
             flipVertical={false}
-            flip
             useNativeDriver
             onFlipStart={() => {
-                console.log("onFlipStart");
-
                 startAnimating();
-            }}
-            onFlipEnd={() => {
-                console.log("onFlipEnd");
             }}
         >
             <Animated.View
@@ -198,8 +182,6 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                                     size={18}
                                     onPress={() => {
                                         // map-link
-                                        console.log("pressed-MAP");
-                                        console.log(workTask);
                                         const scheme = Platform.select({ ios: "maps://0,0?q=", android: "geo:0,0?q=" });
                                         const lat = "37.484847";
                                         const lng = "-122.084";
@@ -214,14 +196,6 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                                     }}
                                 />
                             </Text>
-
-                            {/* <IconButton
-                            icon="map-marker"
-                            size={24}
-                            onPress={() => {
-                                console.log("pressed");
-                            }}
-                        /> */}
                         </View>
                         <View
                             style={{
@@ -272,7 +246,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                                         icon={() => <Icon name="phone" color={"white"} size={16} />}
                                         size={12}
                                         onPress={() => {
-                                            Linking.openURL(`tel:347-241-6715`);
+                                            Linking.openURL(`tel:${workTask.RequestedByWorkPhone}}`);
                                         }}
                                         style={{
                                             backgroundColor: theme.colors?.primary,
@@ -284,8 +258,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                                         icon={() => <Icon name="email" color={"white"} size={16} />}
                                         size={12}
                                         onPress={() => {
-                                            console.log("Phone Pressed");
-                                            Linking.openURL(`mailto:auston.barboza@verizon.com`);
+                                            Linking.openURL(`mailto:${workTask.RequestedByEmail}`);
                                         }}
                                         style={{
                                             backgroundColor: theme.colors?.primary,
@@ -333,8 +306,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                                         icon={() => <Icon name="phone" color={"white"} size={16} />}
                                         size={12}
                                         onPress={() => {
-                                            console.log("Phone Pressed");
-                                            Linking.openURL(`tel:347-241-6715`);
+                                            Linking.openURL(`tel:${workTask.RequestedForWorkPhone}`);
                                         }}
                                         style={{
                                             backgroundColor: theme.colors?.primary,
@@ -346,8 +318,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                                         icon={() => <Icon name="email" color={"white"} size={16} />}
                                         size={12}
                                         onPress={() => {
-                                            console.log("Phone Pressed");
-                                            Linking.openURL(`mailto:auston.barboza@verizon.com`);
+                                            Linking.openURL(`mailto:${workTask.RequestedForEmail}`);
                                         }}
                                         style={{
                                             backgroundColor: theme.colors?.primary,
@@ -455,7 +426,7 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                 >
                     {cardTitle}
                     <Card.Content>
-                        <View
+                        {/* <View
                             style={{
                                 flexDirection: "row",
                                 justifyContent: "center",
@@ -498,7 +469,79 @@ const GeneralCard: React.FC<GeneralCardProps> = ({
                                 <Avatar.Text size={32} label={workTask.respperson[0]} />
                                 <Text variant="bodySmall">{workTask.respperson}</Text>
                             </View>
+                        </View> */}
+                        {/* Columns View */}
+                        <View
+                            style={{
+                                width: "100%",
+                                minHeight: 20,
+                                borderRadius: 8,
+                                flexDirection: "row",
+                                paddingVertical: 8,
+                            }}
+                        >
+                            {/* Left column */}
+                            <View
+                                style={{
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: "50%",
+                                    borderRightWidth: 1,
+                                    borderColor: theme.colors?.primary,
+                                }}
+                            >
+                                <Text
+                                    variant="labelSmall"
+                                    style={{
+                                        textAlign: "center",
+                                        marginBottom: 8,
+                                    }}
+                                >
+                                    Resource
+                                </Text>
+                                <Avatar.Text size={32} label={serviceRequestResource[0]?.Name[0]} />
+                                <Text
+                                    variant="labelMedium"
+                                    style={{
+                                        textAlign: "center",
+                                        fontWeight: "bold",
+                                        marginTop: 4,
+                                    }}
+                                >
+                                    {serviceRequestResource[0]?.Name}
+                                </Text>
+                            </View>
+                            {/* Right column */}
+                            <View
+                                style={{
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    width: "50%",
+                                }}
+                            >
+                                <Text
+                                    variant="labelSmall"
+                                    style={{
+                                        textAlign: "center",
+                                        marginBottom: 8,
+                                    }}
+                                >
+                                    Responsible Person
+                                </Text>
+                                <Avatar.Text size={32} label={workTask.respperson[0]} />
+                                <Text
+                                    variant="labelMedium"
+                                    style={{
+                                        textAlign: "center",
+                                        fontWeight: "bold",
+                                        marginTop: 4,
+                                    }}
+                                >
+                                    {workTask.respperson}
+                                </Text>
+                            </View>
                         </View>
+
                         <View>
                             <Text variant="labelMedium">Service Request:</Text>
                             {serviceRequest ? (

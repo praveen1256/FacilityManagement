@@ -64,7 +64,7 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
                     options={WorkTaskScreen.WorkTaskScreenHeaderOptions}
                     component={WorkTaskScreen.WorkTaskScreen}
                     initialParams={{
-                        workTaskId: "1856911114",
+                        workTaskId: "1741660999",
                     }}
                 />
                 {/* <Stack.Screen name={SplashScreenName} options={SplashScreenHeaderOptions} component={SplashScreen} /> */}
@@ -98,11 +98,12 @@ const Navigator: React.FunctionComponent<NavigatorProps> = ({}) => {
             }
             initialRouteName={LoginScreen.LoginScreenName}
             // initialRouteName={HomeScreen.HomeScreenName}
+            // initialRouteName={WorkTaskScreen.WorkTaskScreenName}
         >
             {renderStackScreens()}
         </Stack.Navigator>
 
-        // <Stack.Navigator initialRouteName={WorkTaskScreen.WorkTaskScreenName}>{renderStackScreens()}</Stack.Navigator>
+        // <Stack.Navigator >{renderStackScreens()}</Stack.Navigator>
     );
 };
 
