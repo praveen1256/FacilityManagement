@@ -840,19 +840,19 @@ const styles = StyleSheet.create({
     },
     dropdown: {
         flex: 0.5,
-        width: 165,
+        width: 185,
         borderColor: "gray",
         borderWidth: 0.5,
         borderRadius: 8,
-        paddingHorizontal: 8,
+        paddingStart: 8,
         marginHorizontal: 5,
         marginVertical: 5,
     },
     placeholderStyle: {
-        fontSize: 16,
+        fontSize: 14,
     },
     selectedTextStyle: {
-        fontSize: 16,
+        fontSize: 14,
     },
     iconStyle: {
         width: 20,
