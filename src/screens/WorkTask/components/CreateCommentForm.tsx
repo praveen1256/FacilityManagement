@@ -150,7 +150,7 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                         marginBottom: 10,
                     }}
                 >
-                    Comment
+                    <Icon name="comment-text-outline" size={20} /> Add Comment
                 </Text>
                 {success && (
                     <>
@@ -178,6 +178,7 @@ const CreateCommentForm: React.FC<CreateCommentFormProps> = ({
                                         <TextInput
                                             mode="outlined"
                                             label="Comment"
+                                            // placeholder="Comment"
                                             multiline
                                             // style={styles.inputContainerStyle}
                                             onBlur={onBlur}

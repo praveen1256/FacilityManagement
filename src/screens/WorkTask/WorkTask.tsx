@@ -1,10 +1,9 @@
 import React, { useEffect } from "react";
 import { LayoutAnimation, Platform, RefreshControl, ScrollView, StyleSheet, UIManager, View } from "react-native";
-import { List, Text, ActivityIndicator, HelperText, Avatar, Card } from "react-native-paper";
+import { List, Text, ActivityIndicator, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import FlipCard from "react-native-flip-card";
 import Toast from "react-native-toast-message";
 
 import { useAppTheme } from "../../theme";
@@ -190,110 +189,17 @@ const WorkTaskScreenView: React.FunctionComponent<WorkTaskScreenViewProps> = (pr
                     {/* <Header /> */}
                     <View style={styles.form}>
                         {/* Header */}
-                        <FlipCard flipHorizontal={true} flipVertical={false}>
-                            {/* Frontside */}
-                            <GeneralCard
-                                workTask={workTask}
-                                style={{
-                                    marginBottom: 8,
-                                }}
-                            />
-                            {/* Backside */}
-                            <View style={{ padding: 8 }}>
-                                <View
-                                    style={
-                                        {
-                                            // opacity: 0,
-                                        }
-                                    }
-                                >
-                                    {/* <GeneralCard
-                                    workTask={workTask}
-                                    style={{
-                                        marginBottom: 8,
-                                    }}
-                                />
-                            </View>
-                            <View
-                                style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    bottom: 0,
-                                    // justifyContent: "center",
-                                    // alignItems: "center",
-                                }}
-                            > */}
-                                    <Card>
-                                        <Card.Content>
-                                            {/* <Text variant="labelMedium">Resources</Text> */}
-                                            <View
-                                                style={{
-                                                    flexDirection: "row",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                    // backgroundColor: "lightgrey",
-                                                }}
-                                            >
-                                                {serviceRequestResource.map((person, idx, arr) => {
-                                                    return (
-                                                        <View
-                                                            key={`${person.Name}-${idx}`}
-                                                            style={{
-                                                                // backgroundColor: "aqua",
-                                                                justifyContent: "center",
-                                                                alignItems: "center",
-                                                                marginRight: idx === arr.length - 1 ? 0 : 8,
-                                                            }}
-                                                        >
-                                                            <Avatar.Text size={32} label={person.Name[0]} />
-                                                            <Text variant="bodySmall">{person.Name}</Text>
-                                                        </View>
-                                                    );
-                                                })}
-                                            </View>
-                                            <Text variant="labelMedium">Responsible:</Text>
-                                            <View
-                                                style={{
-                                                    flexDirection: "row",
-                                                    justifyContent: "center",
-                                                    alignItems: "center",
-                                                    // backgroundColor: "lightgrey",
-                                                }}
-                                            >
-                                                <View
-                                                    style={{
-                                                        // backgroundColor: "aqua",
-                                                        justifyContent: "center",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <Avatar.Text size={32} label={workTask.respperson[0]} />
-                                                    <Text variant="bodySmall">{workTask.respperson}</Text>
-                                                </View>
-                                            </View>
-                                            <View>
-                                                <Text variant="labelMedium">Service Request:</Text>
-                                                {serviceRequest ? (
-                                                    <Text variant="bodySmall">{serviceRequest.ID}</Text>
-                                                ) : (
-                                                    <Text variant="bodySmall">No Service Request Found</Text>
-                                                )}
-                                                {serviceRequestLoading && <ActivityIndicator animating={true} />}
-                                                {serviceRequestError && (
-                                                    <Text variant="bodySmall">{serviceRequestError}</Text>
-                                                )}
-                                            </View>
-                                            {/* <View>
-                                                <Text variant="labelMedium">Parent Task</Text>
-                                                <Text variant="bodySmall">SR123456 | Electrical | Ray White</Text>
-                                            </View> */}
-                                        </Card.Content>
-                                    </Card>
-                                </View>
-                            </View>
-                        </FlipCard>
+                        {/* Frontside */}
+                        <GeneralCard
+                            workTask={workTask}
+                            style={{
+                                marginBottom: 8,
+                            }}
+                            serviceRequest={serviceRequest}
+                            serviceRequestLoading={serviceRequestLoading}
+                            serviceRequestError={serviceRequestError}
+                            serviceRequestResource={serviceRequestResource}
+                        />
 
                         {/* </List.Accordion> */}
                         {/* -------EVENT LOGS------- */}
