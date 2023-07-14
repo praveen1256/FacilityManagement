@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { StyleSheet, TextInput as RNTextInput, View, Image, Platform } from "react-native";
+import { StyleSheet, TextInput as RNTextInput, View, Image, Platform, ImageBackground } from "react-native";
 import { Button, TextInput, HelperText } from "react-native-paper";
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { connect } from "react-redux";
@@ -55,7 +55,11 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
             </View>
             <View style={styles.greyLine} />
             <FM_Header />
-            <View style={styles.form}>
+            <ImageBackground
+                style={styles.form}
+                resizeMode="contain"
+                source={require("../../assets/images/login_background.png")}
+            >
                 <Controller
                     control={control}
                     name="username"
@@ -134,7 +138,7 @@ const LoginScreenView: React.FunctionComponent<LoginScreenProps> = ({ error, onP
                 >
                     {locationzedStrings.login.button}
                 </Button>
-            </View>
+            </ImageBackground>
         </View>
     );
 };
@@ -152,7 +156,7 @@ const styles = StyleSheet.create({
     },
     form: {
         flex: 1,
-        marginTop: 10,
+        marginTop: 0,
         backgroundColor: "#FFFFFF",
         padding: 16,
     },
@@ -162,6 +166,7 @@ const styles = StyleSheet.create({
     },
     inputContainerStyle: {
         margin: 8,
+        backgroundColor: "#E0E0E0",
     },
     button: {
         marginTop: 36,
@@ -169,10 +174,12 @@ const styles = StyleSheet.create({
         padding: 6,
         width: 200,
         alignSelf: "center",
+        backgroundColor: "#D52818",
     },
     buttonLabel: {
         fontSize: 16,
         padding: 4,
+        color: "#FFFFFF",
     },
     textCenter: {
         color: "#FFFFFF",

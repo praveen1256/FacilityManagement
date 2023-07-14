@@ -16,6 +16,7 @@ import {
     COUNT_ERROR,
     COUNT_LOADING,
     MOVE_TASK_TO_COMPLETED,
+    SELECTED_CARD,
 } from "./actionTypes";
 
 export function navigateToWorkTask(workTaskId: string): AppThunkAction<ActionInterfaces> {
@@ -42,24 +43,20 @@ export function getCountsAndTasks(isOnlyCount: boolean, selectedCardIndex: numbe
             const request2 = axios.get(
                 `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/COUNT_P2P3?countOnly=${isOnlyCount}`,
             );
-            const request3 = axios.get(
-                `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/workTaskOverDue?countOnly=${isOnlyCount}`,
-            );
 
-            const request4 = axios.get(
+            const request3 = axios.get(
                 `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/COUNT_DUETODAY?countOnly=${isOnlyCount}`,
             );
 
-            const request5 = axios.get(
+            const request4 = axios.get(
                 `https://verizon-dev2.tririga.com/p/webapi/rest/v2/cstServiceRequestT/-1/cstWorkTaskCompleted?countOnly=${isOnlyCount}`,
             );
 
-            const [response1, response2, response3, response4, response5] = await Promise.all([
+            const [response1, response2, response3, response4] = await Promise.all([
                 request1,
                 request2,
                 request3,
                 request4,
-                request5,
             ]);
 
             if (isOnlyCount) {
@@ -67,16 +64,15 @@ export function getCountsAndTasks(isOnlyCount: boolean, selectedCardIndex: numbe
                     response1.status === 200 &&
                     response2.status === 200 &&
                     response3.status === 200 &&
-                    response4.status === 200 &&
-                    response5.status === 200
+                    response4.status === 200
                 ) {
                     dispatch(
                         pureActionCreator(COUNT_SUCCESS, {
                             countP1: response1.data.totalSize,
                             countP2P7: response2.data.totalSize,
-                            countOverDue: response3.data.totalSize,
-                            countDueToday: response4.data.totalSize,
-                            countCompleted: response5.data.totalSize,
+                            countOverDue: response1.data.totalSize + response2.data.totalSize,
+                            countDueToday: response3.data.totalSize,
+                            countCompleted: response4.data.totalSize,
                         }),
                     );
                     return;
@@ -91,16 +87,17 @@ export function getCountsAndTasks(isOnlyCount: boolean, selectedCardIndex: numbe
                     response1.status === 200 &&
                     response2.status === 200 &&
                     response3.status === 200 &&
-                    response4.status === 200 &&
-                    response5.status === 200
+                    response4.status === 200
                 ) {
+                    const tasks = [
+                        ...response1.data.data,
+                        ...response2.data.data,
+                        ...response3.data.data,
+                        ...response4.data.data,
+                    ];
                     dispatch(
                         pureActionCreator(WORK_TASKS_SUCCESS, {
-                            countP1Tasks: response1.data.data,
-                            countP2P7Tasks: response2.data.data,
-                            countOverDueTasks: response3.data.data,
-                            countDueTodayTasks: response4.data.data,
-                            countCompletedTasks: response5.data.data,
+                            allTasks: tasks,
                             selectedCard: selectedCardIndex,
                         }),
                     );
@@ -131,6 +128,11 @@ export function getCountsAndTasks(isOnlyCount: boolean, selectedCardIndex: numbe
     };
 }
 
+export function updateSelectedTab(selectedCardIndex: number): AppThunkAction<ActionInterfaces> {
+    return async (dispatch) => {
+        dispatch(pureActionCreator(SELECTED_CARD, { selectedCardIndex }));
+    };
+}
 export const markWorkTaskAsComplete = (
     workTaskId: string,
     worktask: FullWorkTask,

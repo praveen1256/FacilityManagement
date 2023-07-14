@@ -4,57 +4,26 @@ import {
     WORK_TASKS_LOADING,
     WORK_TASKS_SUCCESS,
     WORK_TASKS_ERROR,
+    SELECTED_CARD,
     COUNT_LOADING,
     COUNT_SUCCESS,
     COUNT_ERROR,
     MOVE_TASK_TO_COMPLETED,
 } from "./actionTypes";
-
-export interface WorkTaskInterface {
-    Building: string;
-    Description: string;
-    Address: string;
-    TaskPriority: string;
-    ModifiedDateTime: string;
-    SRCreatedDateTime: string;
-    LegacyGLC: null;
-    ServiceClass: string;
-    ResourceAssignmentStatus: string;
-    PlannedEnd: string;
-    TaskReIssueReason: string;
-    Currency: string;
-    TaskType: string;
-    SRRecordID: string;
-    ID: string;
-    SRDescription: string;
-    SRID: string;
-    EquipmentAlias: null;
-    Status: string;
-    CreatedFromMobile: string;
-    RequestClass: string;
-    PlannedStart: string;
-    LocationCode: string;
-    SRServiceRequested: string;
-    ResolutionType: string;
-    City: string;
-    TaskName: string;
-    State: string;
-    _id: string;
-    PrimaryWorkLocation: string;
-    CreatedDateTime: string;
-}
+import { WorkTask } from "./reducer";
 
 export interface WorkTasksLoading {
     type: typeof WORK_TASKS_LOADING;
 }
 
+export interface WorkTasksSelectedCard {
+    type: typeof SELECTED_CARD;
+    selectedCardIndex: number;
+}
+
 export interface WorkTasksSuccess {
     type: typeof WORK_TASKS_SUCCESS;
-    countP1Tasks: WorkTaskInterface[];
-    countP2P7Tasks: WorkTaskInterface[];
-    countOverDueTasks: WorkTaskInterface[];
-    countDueTodayTasks: WorkTaskInterface[];
-    countCompletedTasks: WorkTaskInterface[];
+    allTasks: WorkTask[];
     selectedCard: number;
 }
 
@@ -88,6 +57,7 @@ export interface MoveWorkTaskToCompleted {
 
 export type ActionInterfaces =
     | WorkTasksLoading
+    | WorkTasksSelectedCard
     | WorkTasksSuccess
     | WorkTasksError
     | CountLoading

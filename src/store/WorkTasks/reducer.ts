@@ -6,6 +6,7 @@ import {
     COUNT_SUCCESS,
     COUNT_ERROR,
     MOVE_TASK_TO_COMPLETED,
+    SELECTED_CARD,
 } from "./actionTypes";
 import { ActionInterfaces } from "./actionInterfaces";
 
@@ -47,11 +48,7 @@ export interface AppState {
     loading: boolean;
     isAuthenticated: boolean;
     error: string | null;
-    countP1Tasks: WorkTask[];
-    countP2P7Tasks: WorkTask[];
-    countOverDueTasks: WorkTask[];
-    countDueTodayTasks: WorkTask[];
-    countCompletedTasks: WorkTask[];
+    allTasks: WorkTask[];
     countP1: number;
     countP2P7: number;
     countOverDue: number;
@@ -64,11 +61,7 @@ const initialState: AppState = {
     loading: false,
     error: null,
     isAuthenticated: false,
-    countP1Tasks: [],
-    countP2P7Tasks: [],
-    countOverDueTasks: [],
-    countDueTodayTasks: [],
-    countCompletedTasks: [],
+    allTasks: [],
     countP1: 0,
     countP2P7: 0,
     countOverDue: 0,
@@ -85,16 +78,17 @@ export const workTasksReducer = (state: AppState = initialState, action: ActionI
                 loading: true,
                 error: "",
             };
+        case SELECTED_CARD:
+            return {
+                ...state,
+                selectedCard: action.selectedCardIndex,
+            };
         case WORK_TASKS_SUCCESS:
             return {
                 ...state,
                 loading: false,
                 isAuthenticated: true,
-                countP1Tasks: action.countP1Tasks,
-                countP2P7Tasks: action.countP2P7Tasks,
-                countOverDueTasks: action.countOverDueTasks,
-                countDueTodayTasks: action.countDueTodayTasks,
-                countCompletedTasks: action.countCompletedTasks,
+                allTasks: action.allTasks,
                 selectedCard: action.selectedCard,
             };
         case WORK_TASKS_ERROR:
