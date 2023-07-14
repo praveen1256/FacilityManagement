@@ -261,7 +261,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
         switch (selectedCard) {
             case 0:
                 data = data.filter((item) => {
-                    return item.TaskPriority == "P1";
+                    return item.TaskPriority == "P1" && item.Status == "Active";
                 });
                 break;
             case 1:
@@ -423,7 +423,7 @@ const WorkTasksScreenView: React.FunctionComponent<WorkTasksScreenProps> = (prop
                     maxHeight={300}
                     labelField="label"
                     valueField="value"
-                    placeholder={!isFocus ? "Select item" : "..."}
+                    placeholder={!isFocus ? "Sort By" : "..."}
                     searchPlaceholder="Search..."
                     value={sortValue}
                     onFocus={() => setIsFocus(true)}
